@@ -1,4 +1,5 @@
 
+
 export interface GitHubUser {
   login: string;
   id: number;
@@ -105,17 +106,26 @@ export interface GitHubRepo {
   open_issues: number;
   watchers: number;
   default_branch: string;
+  owner: {
+      login: string;
+      type: string;
+  }
 }
 
+export type ScoreCategory = {
+  total: number;
+  breakdown: { [key: string]: number };
+};
+
 export type ScoreBreakdown = {
-  impact: number;
-  consistency: number;
-  quality: number;
-  community: number;
-  diversity: number;
-  experience: number;
-  activity: number;
-  specialBonus: number;
+  impact: ScoreCategory;
+  consistency: ScoreCategory;
+  quality: ScoreCategory;
+  community: ScoreCategory;
+  diversity: ScoreCategory;
+  experience: ScoreCategory;
+  activity: ScoreCategory;
+  specialBonus: ScoreCategory;
 };
 
 export type RoastResultState = {
@@ -166,3 +176,4 @@ export interface FetchProgress {
     severity: 'warning' | 'error';
   }>;
 }
+

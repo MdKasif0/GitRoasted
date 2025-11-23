@@ -1,17 +1,18 @@
 
+
 import Image from 'next/image';
 import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2 } from 'lucide-react';
 import React from 'react';
 import { differenceInYears } from 'date-fns';
 
-import type { RoastResultState, ScoreBreakdown } from '@/lib/types';
+import type { RoastResultState, ScoreBreakdown, ScoreCategory } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ShareableCardDialog } from './ShareableCard';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
-import { Tooltip, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { FlameIcon } from './icons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { AnimatedNumber } from './AnimatedNumber';
@@ -22,15 +23,15 @@ interface ProfileCardProps {
   result: RoastResultState;
 }
 
-const breakdownMeta: Record<keyof ScoreBreakdown, { label: string; icon: React.ElementType, description: string }> = {
-    impact: { label: 'Impact', icon: Package, description: 'Repository impact & stars' },
-    consistency: { label: 'Consistency', icon: Calendar, description: 'Contribution frequency & streaks' },
-    quality: { label: 'Quality', icon: GitCommit, description: 'Code quality indicators' },
-    community: { label: 'Community', icon: Heart, description: 'Social engagement & collaboration' },
-    diversity: { label: 'Diversity', icon: Code, description: 'Technology breadth' },
-    experience: { label: 'Experience', icon: Milestone, description: 'Account age & maturity' },
-    activity: { label: 'Activity', icon: Zap, description: 'Recent activity' },
-    specialBonus: { label: 'Special Bonus', icon: Sparkles, description: 'Exceptional achievements' },
+const breakdownMeta: Record<keyof ScoreBreakdown, { label: string; icon: React.ElementType, description: string, maxScore: number }> = {
+    impact: { label: 'Impact', icon: Package, description: 'Repository impact & stars', maxScore: 250 },
+    consistency: { label: 'Consistency', icon: Calendar, description: 'Contribution frequency & streaks', maxScore: 200 },
+    quality: { label: 'Quality', icon: GitCommit, description: 'Code quality indicators', maxScore: 150 },
+    community: { label: 'Community', icon: Heart, description: 'Social engagement & collaboration', maxScore: 150 },
+    diversity: { label: 'Diversity', icon: Code, description: 'Technology breadth', maxScore: 100 },
+    experience: { label: 'Experience', icon: Milestone, description: 'Account age & maturity', maxScore: 75 },
+    activity: { label: 'Activity', icon: Zap, description: 'Recent activity', maxScore: 50 },
+    specialBonus: { label: 'Special Bonus', icon: Sparkles, description: 'Exceptional achievements', maxScore: 25 },
 }
 
 const StatCard = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: string | number }) => (
@@ -155,34 +156,44 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
                         <AccordionTrigger className='p-6 hover:no-underline'>
                             <CardTitle className='text-lg'>Score Breakdown</CardTitle>
                         </AccordionTrigger>
-                        <AccordionContent className="px-6 pb-6">
-                            <TooltipProvider>
-                                <div className="space-y-4">
-                                    {(Object.keys(breakdown) as Array<keyof ScoreBreakdown>).map((key) => {
-                                        if (key === 'specialBonus' && breakdown[key] === 0) return null;
-                                        const meta = breakdownMeta[key];
-                                        const value = breakdown[key];
-                                        const maxPoints = { impact: 250, consistency: 200, quality: 150, community: 150, diversity: 100, experience: 75, activity: 50, specialBonus: 25 };
-                                        const max = maxPoints[key];
-                                        const percentage = (value / max) * 100;
-                                        return (
-                                            <Tooltip key={key} delayDuration={100}>
+                        <AccordionContent className="px-6 pb-6 space-y-4">
+                            {(Object.keys(breakdown) as Array<keyof ScoreBreakdown>).map((key) => {
+                                const category = breakdown[key as keyof ScoreBreakdown] as ScoreCategory;
+                                if (key === 'specialBonus' && category.total === 0) return null;
+                                
+                                const meta = breakdownMeta[key as keyof ScoreBreakdown];
+                                const percentage = (category.total / meta.maxScore) * 100;
+                                const indicatorClass = percentage > 75 ? 'bg-green-500' : percentage > 40 ? 'bg-yellow-500' : 'bg-red-500';
+
+                                return (
+                                    <div key={key}>
+                                        <TooltipProvider>
+                                            <Tooltip delayDuration={100}>
                                                 <TooltipTrigger className='w-full text-left'>
-                                                    <div className="flex items-center gap-2 text-sm">
+                                                    <div className="flex items-center gap-2 text-sm mb-2">
                                                         <meta.icon className="h-4 w-4 text-muted-foreground" />
-                                                        <span className='flex-1 font-medium'>{meta.label}</span>
-                                                        <span className='text-primary font-bold'>{Math.round(value)} pts</span>
+                                                        <span className='flex-1 font-semibold text-base'>{meta.label}</span>
+                                                        <span className='text-primary font-bold'>{category.total} / {meta.maxScore} pts</span>
                                                     </div>
-                                                    <Progress value={percentage} className="h-2 mt-1" indicatorClassName={percentage > 75 ? 'bg-green-500' : percentage > 40 ? 'bg-yellow-500' : 'bg-red-500'} />
+                                                    <Progress value={percentage} indicatorClassName={indicatorClass} />
                                                 </TooltipTrigger>
                                                 <TooltipContent>
                                                     <p>{meta.description}</p>
                                                 </TooltipContent>
                                             </Tooltip>
-                                        )
-                                    })}
-                                </div>
-                            </TooltipProvider>
+                                        </TooltipProvider>
+
+                                        <div className='mt-3 space-y-2 pl-6 border-l-2 border-purple-500/20'>
+                                            {Object.entries(category.breakdown).map(([subKey, subValue]) => (
+                                                <div key={subKey} className="flex justify-between items-center text-xs">
+                                                    <span className='text-muted-foreground'>{subKey}</span>
+                                                    <span className='font-mono'>{subValue} pts</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )
+                            })}
                         </AccordionContent>
                     </Card>
                 </AccordionItem>
