@@ -1,11 +1,16 @@
+
 import { LeaderboardClient } from './LeaderboardClient';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import type { Metadata } from 'next';
 
-export const metadata = {
-  title: 'Leaderboard',
-  description: 'See the top-roasted developers on the GitRoasted Hall of Flame.',
+export const metadata: Metadata = {
+  title: 'Leaderboard | Hall of Flame',
+  description: 'See the top-roasted developers on the GitRoasted Hall of Flame. Ranked by seriousness score, see who has the most roastable GitHub profile.',
+  alternates: {
+    canonical: '/leaderboard',
+  },
 };
 
 export default function LeaderboardPage() {

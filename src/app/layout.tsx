@@ -10,8 +10,8 @@ import { OfflineIndicator } from '@/components/OfflineIndicator';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 const title = 'GitRoasted | Savage AI Roasts for GitHub Profiles';
-const description = 'Get a savage but friendly AI-generated roast of any GitHub profile based on their stats, commit history, and more. How hard can you get roasted?';
-const url = 'https://gitroasted.app'; // Replace with your actual domain
+const description = 'Get your GitHub profile analyzed with a savage roast! Calculate your developer score out of 1000, compete on the leaderboard, and share your results.';
+const url = 'https://gitroasted.app'; 
 
 export const metadata: Metadata = {
   title: {
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     template: '%s | GitRoasted',
   },
   description: description,
+  keywords: ["github profile analyzer", "developer score", "github roast", "github stats", "contribution tracker", "github leaderboard"],
   manifest: '/manifest.json',
   metadataBase: new URL(url),
   openGraph: {
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     siteName: 'GitRoasted',
     images: [
       {
-        url: '/og-image.png', // Path to your OG image in the `public` folder
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'GitRoasted social sharing image',
@@ -42,6 +43,8 @@ export const metadata: Metadata = {
     title: title,
     description: description,
     images: ['/og-image.png'],
+    creator: '@YourTwitterHandle', // Add your twitter handle
+    site: '@YourTwitterHandle',
   },
   robots: {
     index: true,
@@ -65,7 +68,7 @@ export const metadata: Metadata = {
     initialScale: 1,
     viewportFit: 'cover',
   },
-  themeColor: '#6366F1',
+  themeColor: '#0F172A',
 };
 
 export default function RootLayout({

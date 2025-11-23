@@ -6,6 +6,15 @@ import { FlameIcon } from '@/components/icons';
 import { GitCommitVertical, BotMessageSquare, Trophy, Share2, Github, BookUser, BarChart } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'How It Works',
+    description: 'Learn how GitRoasted analyzes your GitHub profile, calculates your score, and generates a savage AI roast. From data fetching to the final score breakdown.',
+    alternates: {
+        canonical: '/how-it-works',
+    },
+};
 
 const GlassCard = ({ icon, title, description, className }: { icon: React.ElementType, title: string, description: string, className?: string }) => {
   const Icon = icon;
