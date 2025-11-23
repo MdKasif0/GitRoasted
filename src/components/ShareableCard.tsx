@@ -1,63 +1,174 @@
+// src/components/ShareableCard.tsx
+'use client';
+
+import React, { useCallback, useRef, useState } from 'react';
+import * as htmlToImage from 'html-to-image';
+import {
+  Copy,
+  Download,
+  Instagram,
+  Laptop,
+  Smartphone,
+  Tablet,
+  Twitter,
+} from 'lucide-react';
+
+import type { RoastResultState } from '@/lib/types';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "./ui/button";
-import { Share2 } from "lucide-react";
-import type { RoastResultState } from "@/lib/types";
-import Image from "next/image";
-import { FlameIcon } from "./icons";
+} from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
+import { ShareableCardPreview } from './ShareableCardPreview';
+import { CustomizationPanel } from './CustomizationPanel';
+import { Share2 } from 'lucide-react';
 
 interface ShareableCardDialogProps {
   result: RoastResultState;
 }
 
+export type CardFormat = 'instagram' | 'twitter' | 'portrait';
+export type CardTheme = 'light' | 'dark' | 'auto';
+export type BackgroundStyle = 'gradient' | 'solid' | 'pattern' | 'blur';
+export type LayoutStyle = 'compact' | 'balanced' | 'spacious';
+
 export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
-    if (result.status !== 'success' || !result.user) {
-        return null;
+  const { toast } = useToast();
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const [format, setFormat] = useState<CardFormat>('instagram');
+  const [theme, setTheme] = useState<CardTheme>('dark');
+  const [backgroundStyle, setBackgroundStyle] = useState<BackgroundStyle>('gradient');
+  const [layout, setLayout] = useState<LayoutStyle>('balanced');
+  const [showRoast, setShowRoast] = useState(true);
+  const [showStats, setShowStats] = useState(true);
+  const [showLogo, setShowLogo] = useState(true);
+  const [watermark, setWatermark] = useState(true);
+  const [customMessage, setCustomMessage] = useState('');
+  const [previewSize, setPreviewSize] = useState(50);
+
+  const handleDownload = useCallback(async () => {
+    if (!cardRef.current) return;
+
+    try {
+      const dataUrl = await htmlToImage.toPng(cardRef.current, {
+        quality: 1,
+        pixelRatio: 2, // Higher pixel ratio for better quality
+      });
+      const link = document.createElement('a');
+      link.download = `gitroasted-card-${result.user?.login}.png`;
+      link.href = dataUrl;
+      link.click();
+      toast({
+        title: 'Success!',
+        description: 'Your GitRoasted card has been downloaded.',
+      });
+    } catch (err) {
+      console.error('Failed to download image', err);
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh!',
+        description: 'Could not download the card. Please try again.',
+      });
     }
+  }, [cardRef, result.user?.login, toast]);
+
+  const handleCopyToClipboard = useCallback(async () => {
+    if (!cardRef.current) return;
+
+    try {
+      const blob = await htmlToImage.toBlob(cardRef.current, { pixelRatio: 2 });
+      if (!blob) throw new Error('Could not create blob.');
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob }),
+      ]);
+      toast({
+        title: 'Copied to Clipboard!',
+        description: 'You can now paste the card in any application.',
+      });
+    } catch (err) {
+      console.error('Failed to copy image', err);
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh!',
+        description: 'Could not copy the card. Please try again.',
+      });
+    }
+  }, [cardRef, toast]);
+
+
+  if (result.status !== 'success' || !result.user) {
+    return null;
+  }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button size="lg" className="w-full hover:scale-105 transition-transform bg-gradient-to-r from-purple-600 to-pink-500">
-          <Share2 className="mr-2 h-4 w-4" />
-          Share Your Card
+            <Share2 className="mr-2 h-4 w-4" />
+            Share Your Card
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md bg-transparent border-none p-0 shadow-none">
-        <div id="shareable-card" className="p-6 bg-gradient-to-br from-[#0f0f18] to-[#20133a] rounded-xl border border-purple-500/50 shadow-2xl shadow-purple-500/30">
-          <header className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-                <FlameIcon className="w-8 h-8 text-primary" />
-                <h2 className="text-2xl font-bold text-white">GitRoasted</h2>
-            </div>
-            <Image
-                src={result.user.avatar_url}
-                alt={result.user.login}
-                width={60}
-                height={60}
-                className="rounded-full border-2 border-primary"
-            />
-          </header>
-          <div className="text-left mb-6">
-            <h3 className="text-white text-2xl font-bold">{result.user.name || result.user.login}</h3>
-            <p className="text-gray-400">@{result.user.login}</p>
+      <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0">
+        <DialogHeader className="p-4 border-b">
+          <DialogTitle>Share Your GitRoasted Card</DialogTitle>
+        </DialogHeader>
+        <div className="grid md:grid-cols-[2fr_1fr] h-full overflow-hidden">
+          {/* Preview Section */}
+          <div className="flex items-center justify-center p-8 bg-muted/20 overflow-auto relative">
+             <div
+              style={{
+                transform: `scale(${previewSize / 100})`,
+                transformOrigin: 'center center',
+              }}
+              className="transition-transform duration-300"
+            >
+                <ShareableCardPreview
+                    ref={cardRef}
+                    result={result}
+                    format={format}
+                    theme={theme}
+                    backgroundStyle={backgroundStyle}
+                    layout={layout}
+                    showRoast={showRoast}
+                    showStats={showStats}
+                    showLogo={showLogo}
+                    watermark={watermark}
+                    customMessage={customMessage}
+                />
+             </div>
           </div>
-          <div className="my-6 text-center">
-            <p className="text-gray-400 text-sm tracking-widest">ROAST SCORE</p>
-            <p className="text-8xl font-bold text-primary drop-shadow-[0_0_10px_hsl(var(--primary))]">{result.score}</p>
-          </div>
-          <div className="bg-black/30 p-4 rounded-lg border-purple-800/50">
-              <p className="text-gray-200 italic leading-snug">"{result.roast}"</p>
-          </div>
+
+          {/* Customization Panel */}
+          <CustomizationPanel
+            format={format}
+            setFormat={setFormat}
+            theme={theme}
+            setTheme={setTheme}
+            backgroundStyle={backgroundStyle}
+            setBackgroundStyle={setBackgroundStyle}
+            layout={layout}
+            setLayout={setLayout}
+            showRoast={showRoast}
+            setShowRoast={setShowRoast}
+            showStats={showStats}
+            setShowStats={setShowStats}
+            showLogo={showLogo}
+            setShowLogo={setShowLogo}
+            watermark={watermark}
+            setWatermark={setWatermark}
+            customMessage={customMessage}
+            setCustomMessage={setCustomMessage}
+            previewSize={previewSize}
+            setPreviewSize={setPreviewSize}
+            onDownload={handleDownload}
+            onCopyToClipboard={handleCopyToClipboard}
+          />
         </div>
-        <p className="text-center mt-4 text-gray-400 text-sm">
-            Screenshot this card and share your glorious roast!
-        </p>
       </DialogContent>
     </Dialog>
   );

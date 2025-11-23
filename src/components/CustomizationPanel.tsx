@@ -1,0 +1,215 @@
+// src/components/CustomizationPanel.tsx
+import React from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
+import { Button } from '@/components/ui/button';
+import {
+  Copy,
+  Download,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Share,
+} from 'lucide-react';
+import type { CardFormat, CardTheme, BackgroundStyle, LayoutStyle } from './ShareableCard';
+import { ScrollArea } from './ui/scroll-area';
+import { TwitterIcon } from './icons';
+
+
+interface CustomizationPanelProps {
+  format: CardFormat;
+  setFormat: (format: CardFormat) => void;
+  theme: CardTheme;
+  setTheme: (theme: CardTheme) => void;
+  backgroundStyle: BackgroundStyle;
+  setBackgroundStyle: (style: BackgroundStyle) => void;
+  layout: LayoutStyle;
+  setLayout: (style: LayoutStyle) => void;
+  showRoast: boolean;
+  setShowRoast: (show: boolean) => void;
+  showStats: boolean;
+  setShowStats: (show: boolean) => void;
+  showLogo: boolean;
+  setShowLogo: (show: boolean) => void;
+  watermark: boolean;
+  setWatermark: (show: boolean) => void;
+  customMessage: string;
+  setCustomMessage: (message: string) => void;
+  previewSize: number;
+  setPreviewSize: (size: number) => void;
+  onDownload: () => void;
+  onCopyToClipboard: () => void;
+}
+
+const Section: React.FC<{ title: string; children: React.ReactNode, className?: string }> = ({
+  title,
+  children,
+  className,
+}) => (
+  <div className={`space-y-4 border-b border-border pb-6 ${className}`}>
+    <h3 className="font-semibold text-foreground">{title}</h3>
+    {children}
+  </div>
+);
+
+export function CustomizationPanel({
+  format,
+  setFormat,
+  theme,
+  setTheme,
+  backgroundStyle,
+  setBackgroundStyle,
+  layout,
+  setLayout,
+  showRoast,
+  setShowRoast,
+  showStats,
+  setShowStats,
+  showLogo,
+  setShowLogo,
+  watermark,
+  setWatermark,
+  customMessage,
+  setCustomMessage,
+  previewSize,
+  setPreviewSize,
+  onDownload,
+  onCopyToClipboard,
+}: CustomizationPanelProps) {
+  return (
+    <div className="flex flex-col h-full bg-background border-l">
+      <CardHeader>
+        <CardTitle>Customize Your Card</CardTitle>
+      </CardHeader>
+      <ScrollArea className="flex-1">
+        <CardContent className="space-y-6">
+          <Section title="Format Selection">
+            <RadioGroup
+              value={format}
+              onValueChange={(value: string) => setFormat(value as CardFormat)}
+              className="grid grid-cols-3 gap-2"
+            >
+              {[
+                { value: 'instagram', label: 'Instagram Post', icon: <Instagram className="w-6 h-6 mb-2" /> , dim: '1080x1080px' },
+                { value: 'twitter', label: 'Twitter Card', icon: <TwitterIcon className="w-6 h-6 mb-2" />, dim: '1200x675px' },
+                { value: 'portrait', label: '3:4 Portrait', icon: <div className="w-6 h-6 mb-2 font-bold text-xl border-2 rounded-sm flex items-center justify-center">3:4</div>, dim: '1080x1440px' },
+              ].map(({ value, label, icon, dim }) => (
+                <Label
+                  key={value}
+                  htmlFor={`format-${value}`}
+                  className={`border-2 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer transition-colors ${
+                    format === value
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <RadioGroupItem value={value} id={`format-${value}`} className="sr-only" />
+                  {icon}
+                  <span className="text-sm font-semibold text-center">{label}</span>
+                  <span className="text-xs text-muted-foreground">{dim}</span>
+                </Label>
+              ))}
+            </RadioGroup>
+          </Section>
+
+          <Section title="Theme">
+            <RadioGroup
+              value={theme}
+              onValueChange={(value) => setTheme(value as CardTheme)}
+              className="flex items-center gap-4"
+            >
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="light" id="light" />
+                    <Label htmlFor="light">Light</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="dark" id="dark" />
+                    <Label htmlFor="dark">Dark</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="auto" id="auto" />
+                    <Label htmlFor="auto">Auto</Label>
+                </div>
+            </RadioGroup>
+          </Section>
+
+          <Section title="Layout">
+             <div className="flex items-center justify-between">
+                <Label htmlFor="show-roast">Show Roast</Label>
+                <Switch id="show-roast" checked={showRoast} onCheckedChange={setShowRoast} />
+            </div>
+             <div className="flex items-center justify-between">
+                <Label htmlFor="show-stats">Show Stats</Label>
+                <Switch id="show-stats" checked={showStats} onCheckedChange={setShowStats} />
+            </div>
+             <div className="flex items-center justify-between">
+                <Label htmlFor="show-logo">Show Logo</Label>
+                <Switch id="show-logo" checked={showLogo} onCheckedChange={setShowLogo} />
+            </div>
+          </Section>
+
+          <Section title="Branding">
+             <div className="flex items-center justify-between">
+                <Label htmlFor="watermark">Watermark "GitRoasted.app"</Label>
+                <Switch id="watermark" checked={watermark} onCheckedChange={setWatermark} />
+            </div>
+            <Input 
+                placeholder="Add a custom message..."
+                value={customMessage}
+                onChange={(e) => setCustomMessage(e.target.value)}
+            />
+          </Section>
+
+           <Section title="Preview Size" className='border-b-0'>
+                <Slider
+                    value={[previewSize]}
+                    onValueChange={(value) => setPreviewSize(value[0])}
+                    max={100}
+                    min={10}
+                    step={1}
+                />
+            </Section>
+
+        </CardContent>
+      </ScrollArea>
+      <div className="p-4 border-t bg-background mt-auto space-y-3">
+        <h3 className="font-semibold text-foreground">Export Options</h3>
+        <Button onClick={onDownload} className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white">
+          <Download className="mr-2 h-4 w-4" /> Download Card
+        </Button>
+        <Button onClick={onCopyToClipboard} variant="secondary" className="w-full">
+          <Copy className="mr-2 h-4 w-4" /> Copy to Clipboard
+        </Button>
+        <div className="text-center text-sm text-muted-foreground pt-2">Share via:</div>
+         <div className="flex justify-center gap-2">
+            <Button variant="ghost" size="icon"><TwitterIcon className="w-5 h-5" /></Button>
+            <Button variant="ghost" size="icon"><Facebook className="w-5 h-5" /></Button>
+            <Button variant="ghost" size="icon"><Linkedin className="w-5 h-5" /></Button>
+        </div>
+      </div>
+    </div>
+  );
+}
