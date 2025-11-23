@@ -2,7 +2,7 @@ import GitRoastClient from "@/components/GitRoastClient";
 import { Leaderboard } from "@/components/Leaderboard";
 import { FlameIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, Github, Moon, Star, Sun, X, BookUser, Trophy } from "lucide-react";
+import { ArrowDown, Github, Moon, Star, Sun, X, BookUser, Trophy, Coffee } from "lucide-react";
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -36,6 +36,12 @@ export default function Home() {
               <Link href="/leaderboard" className='flex items-center gap-1'>
                 <Trophy className="w-4 h-4" />
                 Leaderboard
+              </Link>
+            </Button>
+             <Button asChild variant="link" className="text-primary">
+              <Link href="/support" className='flex items-center gap-1'>
+                <Coffee className="w-4 h-4" />
+                Support Us
               </Link>
             </Button>
          </div>
