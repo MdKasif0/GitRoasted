@@ -131,9 +131,11 @@ export type RoastResultState = {
 
 
 export interface LeaderboardEntry {
-  rank: number;
-  avatarUrl: string;
+  id?: string; // Firestore document ID
+  userId: string;
   username: string;
   name: string;
+  avatarUrl: string;
   score: number;
+  roastedAt: any; // Firestore Timestamp
 }

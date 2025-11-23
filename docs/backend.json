@@ -1,0 +1,49 @@
+{
+  "entities": {
+    "leaderboardEntry": {
+      "title": "Leaderboard Entry",
+      "description": "Represents a single entry on the GitRoasted leaderboard.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The GitHub user ID."
+        },
+        "username": {
+          "type": "string",
+          "description": "The GitHub username."
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "avatarUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL for the user's avatar."
+        },
+        "score": {
+          "type": "number",
+          "description": "The user's roast score."
+        },
+        "roastedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the roast occurred."
+        }
+      },
+      "required": ["userId", "username", "score", "roastedAt", "avatarUrl"]
+    }
+  },
+  "auth": {
+    "providers": []
+  },
+  "firestore": {
+    "/leaderboard/{leaderboardId}": {
+      "schema": {
+        "$ref": "#/entities/leaderboardEntry"
+      },
+      "description": "Collection of leaderboard entries for top-roasted users."
+    }
+  }
+}

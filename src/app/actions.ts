@@ -5,8 +5,33 @@ import { fetchComprehensiveGitHubData } from '@/lib/github';
 import { calculateRoastScore } from '@/lib/scoring';
 import type { RoastResultState } from '@/lib/types';
 import { z } from 'zod';
+import { initializeApp, getApps } from 'firebase/app';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { firebaseConfig } from '@/firebase/config';
+
+// Initialize Firebase
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const usernameSchema = z.string().min(1, 'GitHub username cannot be empty.').max(39, 'GitHub username is too long.');
+
+async function saveToLeaderboard(result: RoastResultState) {
+    if (result.status !== 'success' || !result.user || !result.score) return;
+
+    try {
+        await addDoc(collection(db, 'leaderboard'), {
+            userId: result.user.id.toString(),
+            username: result.user.login,
+            name: result.user.name || result.user.login,
+            avatarUrl: result.user.avatar_url,
+            score: result.score,
+            roastedAt: serverTimestamp()
+        });
+    } catch (error) {
+        console.error("Error writing to leaderboard: ", error);
+        // Silently fail on leaderboard writes for now
+    }
+}
 
 export async function getRoast(prevState: RoastResultState, formData: FormData): Promise<RoastResultState> {
   const username = formData.get('username') as string;
@@ -30,7 +55,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
       .map(commit => `- ${commit.message.split('\n')[0]}`)
       .slice(0, 20) // Limit commit history sent to AI
       .join('\n');
-
+      
     if (commitHistory.length === 0 && user.public_repos === 0) {
       return {
         status: 'success',
@@ -41,12 +66,6 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
         roast: 'This user has no public activity to roast. Are they a ghost? A legend? Or just really good at keeping their chaotic code private? The world may never know.'
       };
     }
-    
-    // Set a loading status before calling the AI
-    // This allows the UI to show a loading state for the roast text itself
-    Promise.resolve().then(() => {
-        // A little trick to update the UI without a full re-render
-    });
 
     const { roast } = await generateGitHubRoast({
       user,
@@ -57,7 +76,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
       topLanguages,
     });
     
-    return {
+    const result: RoastResultState = {
       status: 'success',
       username,
       ...comprehensiveData,
@@ -65,10 +84,18 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
       breakdown,
       roast,
     };
+
+    // Save to leaderboard, but don't wait for it
+    saveToLeaderboard(result);
+    
+    return result;
   } catch (error: any) {
     console.error('Error in getRoast action:', error);
     if (error.message.includes('404')) {
       return { status: 'error', message: `Could not find a GitHub user named "${username}". Check the spelling and try again.`, username };
+    }
+    if (error.message.includes('rate limit exceeded')) {
+        return { status: 'error', message: `Looks like we're popular! GitHub API rate limit exceeded. Please try again in a few minutes.`, username };
     }
     return { status: 'error', message: error.message || 'An unexpected error occurred. Please try again.', username };
   }

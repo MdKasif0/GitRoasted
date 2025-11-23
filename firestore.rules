@@ -1,0 +1,21 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    match /leaderboard/{entry} {
+      allow read: if true;
+      allow write: if true; // Open for demo purposes, should be secured in production
+    }
+
+    // Default deny all other paths
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}
