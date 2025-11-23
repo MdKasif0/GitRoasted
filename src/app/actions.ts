@@ -6,7 +6,7 @@ import { calculateRoastScore } from '@/lib/scoring';
 import type { RoastResultState } from '@/lib/types';
 import { z } from 'zod';
 import { initializeFirebase } from '@/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 // Initialize Firebase
 const { firestore: db } = initializeFirebase();
@@ -17,14 +17,15 @@ async function saveToLeaderboard(result: RoastResultState) {
     if (result.status !== 'success' || !result.user || !result.score) return;
 
     try {
-        await addDoc(collection(db, 'leaderboard'), {
+        const leaderboardRef = doc(db, 'leaderboard', result.user.id.toString());
+        await setDoc(leaderboardRef, {
             userId: result.user.id.toString(),
             username: result.user.login,
             name: result.user.name || result.user.login,
             avatarUrl: result.user.avatar_url,
             score: result.score,
             roastedAt: serverTimestamp()
-        });
+        }, { merge: true });
     } catch (error) {
         console.error("Error writing to leaderboard: ", error);
         // Silently fail on leaderboard writes for now
