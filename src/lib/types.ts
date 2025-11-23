@@ -117,6 +117,7 @@ export type ScoreBreakdown = {
 
 export type RoastResultState = {
   status: 'idle' | 'loading' | 'success' | 'error';
+  username?: string;
   user?: GitHubUser;
   score?: number;
   breakdown?: ScoreBreakdown;

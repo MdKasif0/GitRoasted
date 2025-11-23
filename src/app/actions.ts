@@ -14,7 +14,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
   const validation = usernameSchema.safeParse(username);
 
   if (!validation.success) {
-    return { status: 'error', message: validation.error.errors[0].message };
+    return { status: 'error', message: validation.error.errors[0].message, username };
   }
 
   try {
@@ -34,6 +34,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
     if (commitHistory.length === 0 && user.public_repos === 0) {
       return {
         status: 'success',
+        username,
         ...comprehensiveData,
         score,
         breakdown,
@@ -58,6 +59,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
     
     return {
       status: 'success',
+      username,
       ...comprehensiveData,
       score,
       breakdown,
@@ -65,6 +67,6 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
     };
   } catch (error: any) {
     console.error('Error in getRoast action:', error);
-    return { status: 'error', message: error.message || 'An unexpected error occurred. Please try again.' };
+    return { status: 'error', message: error.message || 'An unexpected error occurred. Please try again.', username };
   }
 }
