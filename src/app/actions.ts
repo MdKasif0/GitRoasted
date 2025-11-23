@@ -19,12 +19,15 @@ async function saveToLeaderboard(result: RoastResultState) {
 
     try {
         const leaderboardRef = doc(db, 'leaderboard', result.user.login);
+        // The leaderboard should show the "seriousness" score, not the roast score.
+        const seriousnessScore = 1000 - result.score;
+
         await setDoc(leaderboardRef, {
             userId: result.user.id.toString(),
             username: result.user.login,
             name: result.user.name || result.user.login,
             avatarUrl: result.user.avatar_url,
-            score: result.score,
+            score: seriousnessScore,
             roastedAt: serverTimestamp()
         }, { merge: true });
     } catch (error) {

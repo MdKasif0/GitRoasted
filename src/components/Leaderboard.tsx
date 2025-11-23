@@ -1,3 +1,4 @@
+
 'use client';
 import Image from 'next/image';
 import {
@@ -21,6 +22,7 @@ import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import type { LeaderboardEntry } from '@/lib/types';
 import { Skeleton } from './ui/skeleton';
+import { AnimatedNumber } from './AnimatedNumber';
 
 function LeaderboardSkeleton() {
     return (
@@ -29,7 +31,7 @@ function LeaderboardSkeleton() {
                 <TableRow className="hover:bg-transparent border-b-purple-500/30">
                     <TableHead className="w-[50px]">Rank</TableHead>
                     <TableHead>User</TableHead>
-                    <TableHead className="text-right">Roast Score</TableHead>
+                    <TableHead className="text-right">Seriousness Score</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -73,7 +75,7 @@ export function Leaderboard() {
                 <Trophy className="w-6 h-6 text-primary" />
                 Hall of Flame
             </CardTitle>
-            <CardDescription>The top-roasted legends on GitHub.</CardDescription>
+            <CardDescription>The top-roasted legends on GitHub, ranked by Seriousness Score.</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
             <div className="overflow-x-auto">
@@ -84,7 +86,7 @@ export function Leaderboard() {
                         <TableRow className="hover:bg-transparent border-b-purple-500/30">
                         <TableHead className="w-[50px]">Rank</TableHead>
                         <TableHead>User</TableHead>
-                        <TableHead className="text-right">Roast Score</TableHead>
+                        <TableHead className="text-right">Seriousness Score</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -108,7 +110,9 @@ export function Leaderboard() {
                                 </div>
                             </div>
                             </TableCell>
-                            <TableCell className="text-right font-bold text-primary text-lg">{entry.score}</TableCell>
+                            <TableCell className="text-right font-bold text-primary text-lg">
+                                <AnimatedNumber value={entry.score} />
+                            </TableCell>
                         </TableRow>
                         ))}
                     </TableBody>
