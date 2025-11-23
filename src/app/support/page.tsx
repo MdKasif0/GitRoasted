@@ -92,19 +92,13 @@ export default function SupportPage() {
                 <span>Payments are sent securely and directly to the developer via FamApp UPI.</span>
             </div>
 
-            <div className="my-8">
-                 <h3 className="text-lg font-bold text-center mb-4">Perks for Supporters</h3>
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <PerkItem icon={Heart} text="My eternal gratitude" />
-                    <PerkItem icon={Gift} text="A warm, fuzzy feeling" />
-                 </div>
+            <div className="my-8 text-center text-muted-foreground">
+                <p className="text-lg">Thank you for considering! 🙏</p>
+                <p>Every contribution, big or small, is deeply appreciated.</p>
+                <p className="mt-2 text-sm">Alternatively, feel free to share GitRoasted with your friends!</p>
             </div>
 
-            <div className="text-center text-muted-foreground">
-                <p>Thank you for helping keep GitRoasted free, open-source, and awesome!</p>
-            </div>
-            
-            <Accordion type="single" collapsible className="w-full mt-10">
+            <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-1">
                 <AccordionTrigger className="text-lg font-semibold">Why support GitRoasted?</AccordionTrigger>
                 <AccordionContent className="text-lg text-muted-foreground">
