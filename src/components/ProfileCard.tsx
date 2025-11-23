@@ -1,4 +1,5 @@
 
+
 import Image from 'next/image';
 import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare } from 'lucide-react';
 import React from 'react';
@@ -185,7 +186,7 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
                 {celebration.badgeText}
               </Badge>
             )}
-            <ScoreCircle value={score} indicatorClassName={celebration.progressClass} />
+            <ScoreCircle value={invertedScore} indicatorClassName={celebration.progressClass} />
 
             <div className='w-full space-y-2 mt-4'>
                 <ShareableCardDialog result={result} />
@@ -253,11 +254,41 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
                 </Card>
             )}
 
-            <Accordion type="single" collapsible className="w-full mt-6" defaultValue='breakdown'>
+            <Accordion type="multiple" className="w-full mt-6 space-y-6" defaultValue={['stats', 'breakdown']}>
+                <AccordionItem value="stats" className='border-none'>
+                    <Card className="bg-background/50 border-purple-500/50">
+                        <AccordionTrigger className='p-6 hover:no-underline'>
+                            <CardTitle className='text-lg flex items-center gap-2'><BarChart className='text-primary' /> Stats at a Glance</CardTitle>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-6 pb-6">
+                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                <StatCard icon={Star} label="Stars Received" value={totalStars ?? 0} />
+                                <StatCard icon={Users} label="Followers" value={user.followers} />
+                                <StatCard icon={Users2} label="Following" value={user.following} />
+                                <StatCard icon={Package} label="Public Repos" value={user.public_repos} />
+                                <StatCard icon={GitCommit} label="Total Commits (year)" value={totalContributions} />
+                                {topLanguages && topLanguages.length > 0 && (
+                                <div className="bg-white/5 p-4 rounded-lg transition-colors hover:bg-white/10 text-center col-span-2 sm:col-span-1">
+                                    <Languages className="mx-auto h-6 w-6 text-primary mb-2" />
+                                    <div className="flex flex-wrap justify-center gap-1 mt-2">
+                                        {topLanguages.map(([language]) => (
+                                            <Badge key={language} variant="secondary" className="text-xs font-medium border-purple-500/20">
+                                            {language}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-1">Top Languages</p>
+                                </div>
+                                )}
+                            </div>
+                        </AccordionContent>
+                    </Card>
+                </AccordionItem>
+
                 <AccordionItem value="breakdown" className='border-none'>
                     <Card className="bg-background/50 border-purple-500/50">
                         <AccordionTrigger className='p-6 hover:no-underline'>
-                            <CardTitle className='text-lg'>Score Breakdown</CardTitle>
+                            <CardTitle className='text-lg flex items-center gap-2'><Trophy className='text-primary' /> Score Breakdown</CardTitle>
                         </AccordionTrigger>
                         <AccordionContent className="px-6 pb-6 space-y-4">
                             {(Object.keys(breakdown) as Array<keyof ScoreBreakdown>).map((key) => {
@@ -301,27 +332,6 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
                     </Card>
                 </AccordionItem>
             </Accordion>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
-                <StatCard icon={Star} label="Stars Received" value={totalStars ?? 0} />
-                <StatCard icon={Users} label="Followers" value={user.followers} />
-                <StatCard icon={Users2} label="Following" value={user.following} />
-                <StatCard icon={Calendar} label="Account Age" value={`${accountAge} yrs`} />
-                <StatCard icon={GitCommit} label="Total Contributions" value={totalContributions} />
-                {topLanguages && topLanguages.length > 0 && (
-                  <div className="bg-white/5 p-4 rounded-lg transition-colors hover:bg-white/10 text-center col-span-2 sm:col-span-1">
-                    <Languages className="mx-auto h-6 w-6 text-primary mb-2" />
-                     <div className="flex flex-wrap justify-center gap-1 mt-2">
-                        {topLanguages.map(([language]) => (
-                            <Badge key={language} variant="secondary" className="text-xs font-medium border-purple-500/20">
-                            {language}
-                            </Badge>
-                        ))}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">Top Languages</p>
-                  </div>
-                )}
-            </div>
           </div>
         </div>
       </CardContent>
@@ -330,3 +340,4 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
 }
 
 export const ProfileCard = React.memo(ProfileCardComponent);
+    
