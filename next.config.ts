@@ -6,6 +6,59 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
+  cacheStartUrl: true,
+  runtimeCaching: [
+    // --- Cache First Strategy for Static Assets ---
+    // For images, fonts, etc.
+    {
+      urlPattern: /\.(?:png|jpg|jpeg|svg|gif|ico|webp|woff2)$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'static-assets-cache',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+        },
+      },
+    },
+    // --- Network First for API Calls (e.g., GitHub API) ---
+    {
+      urlPattern: /^https:\/\/api\.github\.com\/.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'github-api-cache',
+        networkTimeoutSeconds: 10,
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 24 * 60 * 60, // 1 Day
+        },
+      },
+    },
+    // --- Stale While Revalidate for Avatars ---
+    {
+      urlPattern: /^https:\/\/avatars\.githubusercontent\.com\/.*/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'github-avatars-cache',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 7 * 24 * 60 * 60, // 7 Days
+        },
+      },
+    },
+    // --- Stale While Revalidate for Pages/Documents ---
+    {
+      urlPattern: ({ request }) => request.mode === 'navigate',
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'pages-cache',
+        expiration: {
+          maxEntries: 30,
+          maxAgeSeconds: 24 * 60 * 60, // 1 Day
+        },
+      },
+    },
+  ],
   manifest: {
     name: "GitRoasted",
     short_name: "GitRoasted",
@@ -73,7 +126,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
       }
     ],
     share_target: {
-      action: "/?username=",
+      action: "/",
       method: "GET",
       params: {
         title: "username",
