@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 
 import { getRoast } from '@/app/actions';
 import { Button } from '@/components/ui/button';
@@ -63,7 +64,7 @@ function LoadingSkeleton() {
 }
 
 export default function GitRoastClient() {
-  const [state, formAction] = useFormState(getRoast, initialState);
+  const [state, formAction] = useActionState(getRoast, initialState);
 
   return (
     <section className="w-full max-w-4xl">
