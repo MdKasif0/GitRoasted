@@ -90,12 +90,14 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
     return result;
   } catch (error: any) {
     console.error('Error in getRoast action:', error);
-    if (error.message.includes('404')) {
+    // User-facing errors are now more specific based on the fetch result
+    if (error.message.includes('Could not find a GitHub user')) {
       return { status: 'error', message: `Could not find a GitHub user named "${username}". Check the spelling and try again.`, username };
     }
     if (error.message.includes('rate limit exceeded')) {
         return { status: 'error', message: `Looks like we're popular! GitHub API rate limit exceeded. Please try again in a few minutes.`, username };
     }
+    // Fallback for other errors, like the token not being configured
     return { status: 'error', message: error.message || 'An unexpected error occurred. Please try again.', username };
   }
 }
