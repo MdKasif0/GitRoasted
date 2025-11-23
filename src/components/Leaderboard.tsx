@@ -86,7 +86,7 @@ export function Leaderboard() {
                         </div>
 
                         {leaderboardData.map((entry, index) => (
-                            <Collapsible key={entry.id} asChild>
+                            <Collapsible key={entry.id}>
                                 <div className="flex flex-col">
                                     <CollapsibleTrigger asChild>
                                       <div className='flex items-center p-4 hover:bg-white/5 cursor-pointer'>
@@ -112,9 +112,9 @@ export function Leaderboard() {
                                       </div>
                                     </CollapsibleTrigger>
                                     {entry.roast && (
-                                      <CollapsibleContent asChild>
-                                          <div className="bg-primary/10 p-3 text-center italic text-primary-foreground/80">
-                                                "{entry.roast}"
+                                      <CollapsibleContent>
+                                          <div className="bg-background/50 border-t border-b border-purple-500/20 p-4 mx-4 mb-4 rounded-lg">
+                                            <p className="text-center italic text-primary/90">"{entry.roast}"</p>
                                           </div>
                                       </CollapsibleContent>
                                     )}

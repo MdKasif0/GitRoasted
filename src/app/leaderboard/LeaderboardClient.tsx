@@ -171,7 +171,7 @@ export function LeaderboardClient() {
                 
                 <div className="space-y-2">
                     {listData.map((entry, index) => (
-                        <Collapsible key={entry.id} asChild>
+                        <Collapsible key={entry.id}>
                             <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10">
                                 <CollapsibleTrigger className="flex items-center p-3 text-lg w-full">
                                     <div className="w-12 font-bold text-muted-foreground text-center">{index + 4}</div>
@@ -195,8 +195,9 @@ export function LeaderboardClient() {
                                 </CollapsibleTrigger>
                                 {entry.roast && (
                                 <CollapsibleContent>
-                                    <div className="border-t border-white/10 mx-4 my-2"></div>
-                                    <p className="text-sm text-primary/80 italic text-center px-4 pb-3">"{entry.roast}"</p>
+                                    <div className="bg-background/50 border-t border-b border-purple-500/20 p-4 mx-4 mb-4 rounded-lg">
+                                        <p className="text-sm text-primary/90 italic text-center">"{entry.roast}"</p>
+                                    </div>
                                 </CollapsibleContent>
                                 )}
                             </div>
