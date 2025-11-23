@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/table';
 import { Crown, Search, Trophy } from 'lucide-react';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, orderBy, limit, where, startAfter, endBefore, limitToLast } from 'firebase/firestore';
+import { collection, query, orderBy, limit, where, startOfMonth, startOfWeek } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import type { LeaderboardEntry } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,7 +36,7 @@ const PodiumCard = ({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 
     return (
         <div className={cn(
             'relative flex flex-col items-center text-center p-6 bg-white/5 backdrop-blur-xl rounded-2xl border transition-all duration-300',
-            isFirst ? 'border-primary/60 shadow-primary/20 shadow-2xl scale-110 z-10' : 'border-white/10 mt-8'
+            isFirst ? 'border-primary/60 shadow-primary/20 shadow-2xl md:scale-110 z-10' : 'border-white/10 md:mt-8'
         )}>
             <div className="absolute top-0 -translate-y-1/2 flex items-center justify-center w-12 h-12 text-2xl font-bold rounded-full bg-background border-2 border-white/10">{rank}</div>
              <Crown className={cn(
@@ -104,7 +104,7 @@ export function LeaderboardClient() {
       if (!searchTerm) return leaderboardData;
       return leaderboardData.filter(entry => 
         entry.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        entry.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        (entry.name && entry.name.toLowerCase().includes(searchTerm.toLowerCase()))
       );
   }, [leaderboardData, searchTerm])
 
@@ -123,13 +123,13 @@ export function LeaderboardClient() {
                 <Trophy className="w-12 h-12 text-primary" />
                 Leaderboard
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
                 The Hall of Flame: See the top-roasted legends and where you stand.
             </p>
         </header>
 
         <div className="flex flex-col md:flex-row gap-4 mb-8">
-            <div className="relative w-full md:w-1/2">
+            <div className="relative w-full md:flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input 
                     placeholder="Search username..."
@@ -157,15 +157,15 @@ export function LeaderboardClient() {
         {!loading && (
             <>
                 {filteredData.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center max-w-4xl mx-auto mb-16">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center max-w-4xl mx-auto mb-12 md:mb-16">
                         {podiumDisplayOrder.map((entry, index) => {
-                            let rank: 1 | 2 | 3 = 1;
+                            let rank: 1 | 2 | 3;
                              if(podiumData.length === 3) {
                                 if (entry.id === podiumData[0].id) rank = 1;
-                                if (entry.id === podiumData[1].id) rank = 2;
-                                if (entry.id === podiumData[2].id) rank = 3;
+                                else if (entry.id === podiumData[1].id) rank = 2;
+                                else rank = 3;
                             } else {
-                                rank = (index + 1) as 1 | 2 | 3;
+                                rank = (podiumData.findIndex(p => p.id === entry.id) + 1) as 1 | 2 | 3;
                             }
                             return <PodiumCard key={entry.id} entry={entry} rank={rank} />
                         })}
@@ -176,20 +176,20 @@ export function LeaderboardClient() {
                     {listData.map((entry, index) => (
                         <div key={entry.id} className="flex items-center p-3 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 text-lg">
                             <div className="w-12 font-bold text-muted-foreground text-center">{index + 4}</div>
-                            <div className="flex items-center gap-4 flex-1">
+                            <div className="flex items-center gap-4 flex-1 overflow-hidden">
                                 <Image
                                     src={entry.avatarUrl}
                                     alt={entry.username}
                                     width={48}
                                     height={48}
-                                    className="rounded-full border-2 border-primary/50"
+                                    className="rounded-full border-2 border-primary/50 shrink-0"
                                 />
-                                <div>
-                                     <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors">{entry.name}</a>
-                                     <p className="text-sm text-muted-foreground">@{entry.username}</p>
+                                <div className="truncate">
+                                     <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors truncate">{entry.name}</a>
+                                     <p className="text-sm text-muted-foreground truncate">@{entry.username}</p>
                                 </div>
                             </div>
-                             <div className="text-xl font-bold text-primary flex items-center gap-2">
+                             <div className="text-xl font-bold text-primary flex items-center gap-2 shrink-0">
                                 <FlameIcon className="w-5 h-5" />
                                 <AnimatedNumber value={entry.score} /> / 1000
                             </div>
@@ -235,3 +235,5 @@ const FlameIcon = (props: React.SVGProps<SVGSVGElement>) => (
       <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
     </svg>
   );
+
+    
