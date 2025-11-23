@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const withPWA = require("@ducanh2912/next-pwa").default({
@@ -5,6 +6,94 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
+  manifest: {
+    name: "GitRoasted",
+    short_name: "GitRoasted",
+    description: "Analyze your GitHub profile, get roasted, compete on the leaderboard",
+    start_url: "/",
+    display: "standalone",
+    theme_color: "#6366F1",
+    background_color: "#0F172A",
+    orientation: "portrait-primary",
+    categories: ["developer tools", "productivity", "social"],
+    icons: [
+        {
+            "src": "/app-icon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/app-icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/app-icon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/app-icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    screenshots: [
+      {
+        "src": "https://storage.googleapis.com/a-studio-images/public/sample-apps/gitroasted/screenshot-main.png",
+        "sizes": "1280x720",
+        "type": "image/png",
+        "form_factor": "wide",
+        "label": "Main interface of GitRoasted"
+      },
+      {
+        "src": "https://storage.googleapis.com/a-studio-images/public/sample-apps/gitroasted/screenshot-card.png",
+        "sizes": "1280x720",
+        "type": "image/png",
+        "form_factor": "wide",
+        "label": "Example of a generated profile card"
+      },
+      {
+        "src": "https://storage.googleapis.com/a-studio-images/public/sample-apps/gitroasted/screenshot-main-mobile.png",
+        "sizes": "720x1280",
+        "type": "image/png",
+        "form_factor": "narrow",
+        "label": "Main interface of GitRoasted on Mobile"
+      },
+      {
+        "src": "https://storage.googleapis.com/a-studio-images/public/sample-apps/gitroasted/screenshot-card-mobile.png",
+        "sizes": "720x1280",
+        "type": "image/png",
+        "form_factor": "narrow",
+        "label": "Example of a generated profile card on Mobile"
+      }
+    ],
+    share_target: {
+      action: "/?username=",
+      method: "GET",
+      params: {
+        title: "username",
+        text: "Check out this GitHub profile on GitRoasted",
+        url: "url"
+      }
+    },
+    shortcuts: [
+      {
+        name: "View Leaderboard",
+        url: "/leaderboard",
+        description: "See the top-roasted developers."
+      },
+      {
+        name: "Roast a Random Profile",
+        url: "/?username=google",
+        description: "Roast a random developer profile."
+      }
+    ]
+  }
 });
 
 
@@ -39,6 +128,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'avatars.githubusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
         port: '',
         pathname: '/**',
       }
