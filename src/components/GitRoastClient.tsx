@@ -23,13 +23,16 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending} size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 shrink-0">
+    <Button type="submit" disabled={pending} size="lg" className="shrink-0">
       {pending ? (
           <span className="animate-spin">
             <FlameIcon className="w-5 h-5" />
           </span>
       ) : (
-          <Search className="h-5 w-5" />
+        <>
+          <FlameIcon className="w-5 h-5 mr-2" />
+          Roast!
+        </>
       )}
        <span className="sr-only">Roast</span>
     </Button>
@@ -39,28 +42,24 @@ function SubmitButton() {
 function LoadingSkeleton() {
     return (
         <Card className="w-full max-w-4xl bg-black/20 backdrop-blur-lg border-purple-500/30">
-            <CardContent className="p-6">
-                <div className="flex flex-col sm:flex-row items-center gap-6">
-                    <Skeleton className="h-24 w-24 rounded-full" />
-                    <div className="space-y-3 flex-1 w-full text-center sm:text-left">
-                        <Skeleton className="h-8 w-1/2 mx-auto sm:mx-0" />
-                        <Skeleton className="h-6 w-1/4 mx-auto sm:mx-0" />
-                        <Skeleton className="h-4 w-3/4 mx-auto sm:mx-0" />
+            <CardContent className="p-6 md:p-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {/* Left Column Skeleton */}
+                    <div className="md:col-span-1 flex flex-col items-center text-center space-y-4">
+                        <Skeleton className="h-32 w-32 rounded-full" />
+                        <Skeleton className="h-8 w-3/4" />
+                        <Skeleton className="h-6 w-1/2" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-4/5" />
+                        <Skeleton className="h-20 w-20 mt-4" />
+                    </div>
+                    {/* Right Column Skeleton */}
+                    <div className="md:col-span-2 space-y-6">
+                        <Skeleton className="h-24 w-full" />
+                        <Skeleton className="h-32 w-full" />
+                        <Skeleton className="h-40 w-full" />
                     </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center my-6">
-                    <Skeleton className="h-24 w-full" />
-                    <Skeleton className="h-24 w-full" />
-                    <Skeleton className="h-24 w-full" />
-                </div>
-                <Card className="mt-4 bg-background/50 border-purple-500/50">
-                    <CardContent className='p-6'>
-                        <Skeleton className="h-6 w-1/4 mb-4" />
-                        <Skeleton className="h-4 w-full mb-2" />
-                        <Skeleton className="h-4 w-full mb-2" />
-                        <Skeleton className="h-4 w-3/4" />
-                    </CardContent>
-                </Card>
             </CardContent>
         </Card>
     )
@@ -71,21 +70,23 @@ export default function GitRoastClient() {
   const { pending } = useFormStatus();
 
   return (
-    <section className="w-full max-w-md mt-8">
-        <form action={formAction} className="relative flex items-center">
-            <Github className="absolute left-4 text-muted-foreground" />
-            <Input
-            type="text"
-            name="username"
-            placeholder="Enter GitHub username..."
-            required
-            className="w-full h-14 pl-12 pr-16 text-lg bg-white/5 border-white/10 rounded-full focus-visible:ring-primary/50 focus-visible:ring-offset-0 focus-visible:ring-2 backdrop-blur-sm"
-            aria-label="GitHub username"
-            />
+    <section className="w-full max-w-md md:max-w-xl lg:max-w-4xl">
+        <form action={formAction} className="relative flex flex-col sm:flex-row items-center gap-4">
+            <div className="relative w-full">
+                <Github className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                    type="text"
+                    name="username"
+                    placeholder="Enter GitHub username..."
+                    required
+                    className="w-full h-14 pl-12 pr-4 text-lg bg-white/5 border-white/10 rounded-full focus-visible:ring-primary/50 focus-visible:ring-offset-0 focus-visible:ring-2 backdrop-blur-sm"
+                    aria-label="GitHub username"
+                />
+            </div>
             <SubmitButton />
         </form>
 
-      <div className="flex items-center flex-wrap gap-2 mt-4 text-sm">
+      <div className="flex items-center flex-wrap gap-2 mt-4 text-sm justify-center sm:justify-start">
         <span className="text-muted-foreground">Try:</span>
         <form action={formAction}>
             <input type="hidden" name="username" value="torvalds" />
@@ -107,7 +108,8 @@ export default function GitRoastClient() {
 
 
       <div className="mt-8">
-        {(state.status === 'loading' || (pending && state.status !== 'success')) && <LoadingSkeleton />}
+        {pending && state.status !== 'success' && <LoadingSkeleton />}
+        
         {state.status === 'error' && (
           <Alert variant="destructive" className="max-w-4xl mx-auto bg-destructive/20 border-destructive/50 text-destructive-foreground">
             <AlertCircle className="h-4 w-4" />
@@ -115,7 +117,7 @@ export default function GitRoastClient() {
             <AlertDescription>{state.message}</AlertDescription>
           </Alert>
         )}
-        {state.status === 'success' && <ProfileCard result={state} />}
+        {state.status === 'success' && <ProfileCard key={state.user?.id} result={state} />}
       </div>
     </section>
   );

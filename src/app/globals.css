@@ -73,7 +73,6 @@
   body {
     @apply bg-background text-foreground;
     min-height: 100vh;
-    background: radial-gradient(ellipse 80% 50% at 50% -20%,rgba(120,119,198,0.3),hsla(0,0%,100%,0));
   }
   .dark body {
     background-color: #0b0918;
@@ -94,4 +93,59 @@
 
 .animate-count-up::after {
   content: counter(num);
+}
+
+@keyframes draw-circle {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.glow {
+    filter: drop-shadow(0 0 10px hsl(var(--primary)));
+}
+
+.progress-circle {
+  animation: draw-circle 1.5s ease-out forwards;
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: hsl(var(--primary)); }
+}
+
+.typewriter-text {
+  overflow: hidden;
+  border-right: .15em solid hsl(var(--primary));
+  white-space: nowrap;
+  margin: 0 auto;
+  letter-spacing: .1em;
+  animation:
+    typewriter 2.5s steps(30, end) forwards,
+    blink-caret .75s step-end infinite;
+}
+
+.typewriter-multiline p {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: .15em solid hsl(var(--primary));
+    width: 0;
+    animation: typewriter 2s steps(40, end);
+    animation-fill-mode: forwards;
+}
+
+.typewriter-multiline p:nth-child(2) {
+    animation-delay: 2s;
+}
+.typewriter-multiline p:nth-child(3) {
+    animation-delay: 4s;
+}
+.typewriter-multiline p:nth-child(4) {
+    animation-delay: 6s;
+    border-right: none;
 }

@@ -19,18 +19,21 @@ import { Trophy } from 'lucide-react';
 
 export function Leaderboard() {
   return (
-    <div className="w-full">
-       <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold tracking-tighter">Hall of Flame</h2>
-        <p className="text-muted-foreground text-lg mt-2">The top-roasted legends on GitHub.</p>
-       </div>
-        <Card className="w-full bg-black/20 backdrop-blur-lg border-purple-500/30">
+    <div className="w-full max-w-4xl">
+        <Card className="w-full bg-black/20 backdrop-blur-lg border-purple-500/30 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5 duration-500">
+        <CardHeader>
+            <CardTitle className='flex items-center gap-2 text-2xl'>
+                <Trophy className="w-6 h-6 text-primary" />
+                Hall of Flame
+            </CardTitle>
+            <CardDescription>The top-roasted legends on GitHub.</CardDescription>
+        </CardHeader>
         <CardContent className="p-0">
             <div className="overflow-x-auto">
                 <Table>
                 <TableHeader>
                     <TableRow className="hover:bg-transparent border-b-purple-500/30">
-                    <TableHead className="w-[50px] sm:w-auto">Rank</TableHead>
+                    <TableHead className="w-[50px]">Rank</TableHead>
                     <TableHead>User</TableHead>
                     <TableHead className="text-right">Roast Score</TableHead>
                     </TableRow>
@@ -54,8 +57,8 @@ export function Leaderboard() {
                             className="rounded-full border-2 border-primary/50"
                             />
                             <div>
-                                <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors whitespace-nowrap">{entry.username}</a>
-                                <p className="text-sm text-muted-foreground whitespace-nowrap">{entry.name}</p>
+                                <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors">{entry.username}</a>
+                                <p className="text-sm text-muted-foreground">{entry.name}</p>
                             </div>
                         </div>
                         </TableCell>
