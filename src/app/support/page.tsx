@@ -1,9 +1,13 @@
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Coffee, Heart, Gift, ArrowLeft } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Coffee, Heart, Gift, ArrowLeft, Copy, Check, Info, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { CopyToClipboard } from '@/components/CopyToClipboard';
 
 const PerkItem = ({ icon: Icon, text }: { icon: React.ElementType, text: string }) => (
   <div className="flex items-center gap-3">
@@ -16,7 +20,7 @@ export default function SupportPage() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 md:p-8 animate-in fade-in-0 duration-500">
         <div className="absolute top-6 left-6 z-20">
-            <Button asChild variant="ghost" size="icon" className="bg-white/5 backdrop-blur-sm border border-white/10 h-10 w-10">
+            <Button asChild variant="ghost" size="icon" className="bg-white/5 backdrop-blur-sm border-white/10 h-10 w-10">
                 <Link href="/" aria-label="Back to Home">
                     <ArrowLeft className="h-5 w-5" />
                 </Link>
@@ -36,21 +40,50 @@ export default function SupportPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6 md:p-8">
-            <div className="bg-white/5 p-6 rounded-2xl border border-white/10 text-center">
-                <h3 className='text-xl font-bold mb-4'>Scan to Support via UPI</h3>
+            <Tabs defaultValue="scan" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="scan">Scan QR Code</TabsTrigger>
+                <TabsTrigger value="copy">Copy UPI ID</TabsTrigger>
+              </TabsList>
+              <TabsContent value="scan" className="bg-white/5 p-6 rounded-2xl border border-white/10 mt-4 text-center">
+                <h3 className='text-xl font-bold mb-4'>Scan to Support</h3>
+                <p className="text-sm text-muted-foreground mb-4">Use any UPI app like Google Pay, PhonePe, or Paytm.</p>
                 <div className="flex justify-center">
                     <Image 
-                        src="https://picsum.photos/seed/qr-code/200/200" 
+                        src="https://picsum.photos/seed/qr-code/250/250" 
                         alt="UPI QR Code" 
-                        width={200} 
-                        height={200}
+                        width={250} 
+                        height={250}
                         className='rounded-lg border-4 border-primary'
                     />
                 </div>
-                <p className='mt-4 font-mono text-primary bg-background/50 px-4 py-2 rounded-lg border border-primary/20'>
-                    gitroasted@fam
-                </p>
-                <p className="text-sm text-muted-foreground mt-2">Powered by <span className='font-bold'>FamApp</span></p>
+                <div className="text-left mt-6 space-y-2 text-sm text-muted-foreground">
+                    <p>1. Open your favorite UPI app.</p>
+                    <p>2. Scan the QR code above.</p>
+                    <p>3. Enter any amount and confirm.</p>
+                </div>
+              </TabsContent>
+              <TabsContent value="copy" className="bg-white/5 p-6 rounded-2xl border border-white/10 mt-4 text-center">
+                 <h3 className='text-xl font-bold mb-4'>Copy UPI ID</h3>
+                  <p className="text-sm text-muted-foreground mb-4 flex items-center justify-center gap-2">
+                    For use in any UPI-enabled app.
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button><Info className="w-4 h-4" /></button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Use any UPI app to send a payment to this ID.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </p>
+                 <CopyToClipboard textToCopy='gitroasted@fam' />
+              </TabsContent>
+            </Tabs>
+            <div className="text-center text-xs text-muted-foreground mt-4 flex items-center justify-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-green-500"/>
+                <span>Payments are sent securely and directly to the developer via FamApp UPI.</span>
             </div>
 
             <div className="my-8">
