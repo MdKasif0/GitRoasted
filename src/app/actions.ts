@@ -6,7 +6,7 @@ import { calculateRoastScore } from '@/lib/scoring';
 import type { RoastResultState } from '@/lib/types';
 import { z } from 'zod';
 import { initializeFirebase } from '@/firebase';
-import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 // Initialize Firebase
 const { firestore: db } = initializeFirebase();
@@ -17,7 +17,7 @@ async function saveToLeaderboard(result: RoastResultState) {
     if (result.status !== 'success' || !result.user || !result.score) return;
 
     try {
-        const leaderboardRef = doc(db, 'leaderboard', result.user.id.toString());
+        const leaderboardRef = doc(db, 'leaderboard', result.user.login);
         await setDoc(leaderboardRef, {
             userId: result.user.id.toString(),
             username: result.user.login,
