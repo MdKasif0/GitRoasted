@@ -165,9 +165,13 @@ function getDiversityScore(repos: GitHubRepo[]): number {
   return (varietyScore / 50) * WEIGHTS.DIVERSITY;
 }
 
-// 6. Experience Score (75 points max)
+// 6. Experience Score (75 points max) - With fairness adjustment
 function getExperienceScore(user: GitHubUser): number {
     const ageInYears = differenceInYears(new Date(), new Date(user.created_at));
+    
+    // Fairness Adjustment: Scale score for accounts younger than 1 year.
+    const fairnessFactor = Math.min(1, ageInYears / 1.0);
+
     const ageScore = Math.min(40, ageInYears * 4);
     
     let completeness = 0;
@@ -179,12 +183,14 @@ function getExperienceScore(user: GitHubUser): number {
     if (user.twitter_username) completeness += 2;
     const completenessScore = Math.min(15, completeness);
     
-    // Early adopter bonus simplified
     const joinYear = new Date(user.created_at).getFullYear();
     const earlyAdopterScore = joinYear < 2012 ? 20 : joinYear < 2015 ? 10 : 0;
 
     const totalExperience = ageScore + completenessScore + earlyAdopterScore;
-    return (totalExperience / (40 + 15 + 20)) * WEIGHTS.EXPERIENCE;
+    
+    // Apply fairness adjustment
+    const adjustedTotal = (totalExperience / (40 + 15 + 20)) * WEIGHTS.EXPERIENCE;
+    return adjustedTotal * fairnessFactor;
 }
 
 // 7. Activity Score (50 points max)
