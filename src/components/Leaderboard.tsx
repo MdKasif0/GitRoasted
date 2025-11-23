@@ -26,6 +26,7 @@ import type { LeaderboardEntry } from '@/lib/types';
 import { Skeleton } from './ui/skeleton';
 import { AnimatedNumber } from './AnimatedNumber';
 import { Button } from './ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
 
 function LeaderboardSkeleton() {
     return (
@@ -94,30 +95,44 @@ export function Leaderboard() {
                     </TableHeader>
                     <TableBody>
                         {leaderboardData.map((entry, index) => (
-                        <TableRow key={entry.id} className="hover:bg-white/5 border-b-purple-500/10">
-                            <TableCell className="font-medium text-lg text-center">
-                               {getRankContent(index)}
-                            </TableCell>
-                            <TableCell>
-                            <div className="flex items-center gap-3">
-                                <Image
-                                src={entry.avatarUrl}
-                                alt={entry.username}
-                                width={40}
-                                height={40}
-                                className="rounded-full border-2 border-primary/50"
-                                />
-                                <div>
-                                    <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors">{entry.username}</a>
-                                    <p className="text-sm text-muted-foreground">{entry.name}</p>
-                                    {entry.roast && <p className="text-sm text-primary/80 italic mt-1">"{entry.roast}"</p>}
-                                </div>
-                            </div>
-                            </TableCell>
-                            <TableCell className="text-right font-bold text-primary text-lg">
-                                <AnimatedNumber value={entry.score} />
-                            </TableCell>
-                        </TableRow>
+                        <Collapsible asChild key={entry.id}>
+                          <>
+                            <TableRow className="border-b-purple-500/10">
+                                <TableCell className="font-medium text-lg text-center">
+                                   {getRankContent(index)}
+                                </TableCell>
+                                <TableCell>
+                                    <CollapsibleTrigger className="flex items-center gap-3 text-left w-full">
+                                        <Image
+                                        src={entry.avatarUrl}
+                                        alt={entry.username}
+                                        width={40}
+                                        height={40}
+                                        className="rounded-full border-2 border-primary/50"
+                                        />
+                                        <div>
+                                            <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors">{entry.username}</a>
+                                            <p className="text-sm text-muted-foreground">{entry.name}</p>
+                                        </div>
+                                    </CollapsibleTrigger>
+                                </TableCell>
+                                <TableCell className="text-right font-bold text-primary text-lg">
+                                    <AnimatedNumber value={entry.score} />
+                                </TableCell>
+                            </TableRow>
+                            {entry.roast && (
+                              <CollapsibleContent asChild>
+                                <tr>
+                                  <td colSpan={3} className="p-0">
+                                    <div className="bg-primary/10 p-3 text-center italic text-primary-foreground/80">
+                                        "{entry.roast}"
+                                    </div>
+                                  </td>
+                                </tr>
+                              </CollapsibleContent>
+                            )}
+                          </>
+                        </Collapsible>
                         ))}
                     </TableBody>
                     </Table>

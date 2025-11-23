@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { startOfMonth, startOfWeek } from 'date-fns';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 type TimeFilter = 'all' | 'month' | 'week';
 
@@ -177,27 +178,36 @@ export function LeaderboardClient() {
                 
                 <div className="space-y-2">
                     {listData.map((entry, index) => (
-                        <div key={entry.id} className="flex items-center p-3 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 text-lg">
-                            <div className="w-12 font-bold text-muted-foreground text-center">{index + 4}</div>
-                            <div className="flex items-center gap-4 flex-1 overflow-hidden">
-                                <Image
-                                    src={entry.avatarUrl}
-                                    alt={entry.username}
-                                    width={48}
-                                    height={48}
-                                    className="rounded-full border-2 border-primary/50 shrink-0"
-                                />
-                                <div className="truncate">
-                                     <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors truncate">{entry.name}</a>
-                                     <p className="text-sm text-muted-foreground truncate">@{entry.username}</p>
-                                     {entry.roast && <p className="text-sm text-primary/80 italic mt-1 truncate">"{entry.roast}"</p>}
-                                </div>
+                        <Collapsible key={entry.id} asChild>
+                            <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10">
+                                <CollapsibleTrigger className="flex items-center p-3 text-lg w-full">
+                                    <div className="w-12 font-bold text-muted-foreground text-center">{index + 4}</div>
+                                    <div className="flex items-center gap-4 flex-1 overflow-hidden text-left">
+                                        <Image
+                                            src={entry.avatarUrl}
+                                            alt={entry.username}
+                                            width={48}
+                                            height={48}
+                                            className="rounded-full border-2 border-primary/50 shrink-0"
+                                        />
+                                        <div className="truncate">
+                                             <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors truncate">{entry.name}</a>
+                                             <p className="text-sm text-muted-foreground truncate">@{entry.username}</p>
+                                        </div>
+                                    </div>
+                                     <div className="text-xl font-bold text-primary flex items-center gap-2 shrink-0">
+                                        <FlameIcon className="w-5 h-5" />
+                                        <AnimatedNumber value={entry.score} /> / 1000
+                                    </div>
+                                </CollapsibleTrigger>
+                                {entry.roast && (
+                                <CollapsibleContent>
+                                    <div className="border-t border-white/10 mx-4 my-2"></div>
+                                    <p className="text-sm text-primary/80 italic text-center px-4 pb-3">"{entry.roast}"</p>
+                                </CollapsibleContent>
+                                )}
                             </div>
-                             <div className="text-xl font-bold text-primary flex items-center gap-2 shrink-0">
-                                <FlameIcon className="w-5 h-5" />
-                                <AnimatedNumber value={entry.score} /> / 1000
-                            </div>
-                        </div>
+                        </Collapsible>
                     ))}
                 </div>
 
@@ -243,3 +253,4 @@ const FlameIcon = (props: React.SVGProps<SVGSVGElement>) => (
     
 
     
+
