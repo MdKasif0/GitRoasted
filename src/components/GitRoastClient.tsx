@@ -58,16 +58,14 @@ export default function GitRoastClient() {
   return (
     <section className="w-full max-w-md md:max-w-xl lg:max-w-4xl">
         <form action={handleFormAction} className="relative flex flex-col sm:flex-row items-center gap-4">
-            <div className="relative w-full">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                    <Github className="text-muted-foreground w-6 h-6" />
-                </div>
+            <div className="flex items-center w-full h-14 px-4 bg-white/5 border border-white/10 rounded-full focus-within:ring-2 focus-within:ring-primary/50 backdrop-blur-sm transition-all">
+                <Github className="text-muted-foreground w-6 h-6 mr-3 shrink-0" />
                 <Input
                     type="text"
                     name="username"
                     placeholder="Enter GitHub username..."
                     required
-                    className="w-full h-14 pl-12 pr-4 text-lg bg-white/5 border-white/10 rounded-full focus-visible:ring-primary/50 focus-visible:ring-offset-0 focus-visible:ring-2 backdrop-blur-sm"
+                    className="w-full h-auto p-0 text-lg bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0"
                     aria-label="GitHub username"
                 />
             </div>
