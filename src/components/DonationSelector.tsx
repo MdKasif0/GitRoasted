@@ -92,7 +92,7 @@ export function DonationSelector({ upiId, developerName }: DonationSelectorProps
         </p>
         
         {isMobile && (
-            <Button onClick={handlePayClick} size="lg" className="w-full h-14 text-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+            <Button onClick={handlePayClick} size="lg" className="w-full h-14 text-lg bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white">
                 Open UPI App
             </Button>
         )}
