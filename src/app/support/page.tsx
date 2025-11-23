@@ -8,6 +8,7 @@ import { Coffee, Heart, Gift, ArrowLeft, Copy, Check, Info, ShieldCheck } from '
 import Link from 'next/link';
 import Image from 'next/image';
 import { CopyToClipboard } from '@/components/CopyToClipboard';
+import { DonationSelector } from '@/components/DonationSelector';
 
 const PerkItem = ({ icon: Icon, text }: { icon: React.ElementType, text: string }) => (
   <div className="flex items-center gap-3">
@@ -17,6 +18,9 @@ const PerkItem = ({ icon: Icon, text }: { icon: React.ElementType, text: string 
 );
 
 export default function SupportPage() {
+  const upiId = '7856943103@fam';
+  const developerName = 'GitRoasted Dev';
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 md:p-8 animate-in fade-in-0 duration-500">
         <div className="absolute top-6 left-6 z-20">
@@ -40,7 +44,9 @@ export default function SupportPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6 md:p-8">
-            <Tabs defaultValue="scan" className="w-full">
+            <DonationSelector upiId={upiId} developerName={developerName} />
+
+            <Tabs defaultValue="scan" className="w-full mt-8">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="scan">Scan QR Code</TabsTrigger>
                 <TabsTrigger value="copy">Copy UPI ID</TabsTrigger>
@@ -78,7 +84,7 @@ export default function SupportPage() {
                       </Tooltip>
                     </TooltipProvider>
                   </p>
-                 <CopyToClipboard textToCopy='7856943103@fam' />
+                 <CopyToClipboard textToCopy={upiId} />
               </TabsContent>
             </Tabs>
             <div className="text-center text-xs text-muted-foreground mt-4 flex items-center justify-center gap-2">
