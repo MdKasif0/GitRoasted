@@ -42,7 +42,7 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.5.0",
     "embla-carousel-react": "^8.6.0",
-    "firebase": "^11.9.1",
+    "firebase": "^10.12.2",
     "genkit": "^1.20.0",
     "html-to-image": "^1.11.11",
     "lucide-react": "^0.475.0",
