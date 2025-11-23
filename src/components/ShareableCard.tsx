@@ -1,3 +1,4 @@
+
 // src/components/ShareableCard.tsx
 'use client';
 
@@ -26,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ShareableCardPreview } from './ShareableCardPreview';
 import { CustomizationPanel } from './CustomizationPanel';
 import { Share2 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ShareableCardDialogProps {
   result: RoastResultState;
@@ -39,6 +41,7 @@ export type LayoutStyle = 'compact' | 'balanced' | 'spacious';
 export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
   const { toast } = useToast();
   const cardRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const [format, setFormat] = useState<CardFormat>('instagram');
   const [theme, setTheme] = useState<CardTheme>('dark');
@@ -59,13 +62,22 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
         quality: 1,
         pixelRatio: 2, // Higher pixel ratio for better quality
       });
-      const link = document.createElement('a');
-      link.download = `gitroasted-card-${result.user?.login}.png`;
-      link.href = dataUrl;
-      link.click();
+
+      if (isMobile) {
+        // On mobile, open the image in a new tab for the user to save.
+        const newWindow = window.open();
+        newWindow?.document.write(`<img src="${dataUrl}" alt="GitRoasted Card" style="max-width: 100%; height: auto;" />`);
+      } else {
+        // On desktop, trigger a direct download.
+        const link = document.createElement('a');
+        link.download = `gitroasted-card-${result.user?.login}.png`;
+        link.href = dataUrl;
+        link.click();
+      }
+
       toast({
         title: 'Success!',
-        description: 'Your GitRoasted card has been downloaded.',
+        description: isMobile ? 'Card opened. You can now save the image.' : 'Your GitRoasted card has been downloaded.',
       });
     } catch (err) {
       console.error('Failed to download image', err);
@@ -75,7 +87,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
         description: 'Could not download the card. Please try again.',
       });
     }
-  }, [cardRef, result.user?.login, toast]);
+  }, [cardRef, result.user?.login, toast, isMobile]);
 
   const handleCopyToClipboard = useCallback(async () => {
     if (!cardRef.current) return;

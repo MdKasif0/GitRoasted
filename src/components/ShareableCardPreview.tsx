@@ -1,3 +1,4 @@
+
 // src/components/ShareableCardPreview.tsx
 import React, { forwardRef } from 'react';
 import Image from 'next/image';
@@ -46,8 +47,8 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
     }
 
     const { user, score, roast } = result;
+    const { width } = formatDimensions[format];
     const { className } = formatDimensions[format];
-    const scoreToDisplay = Math.round(score / 10);
 
     const isDark =
       theme === 'dark' ||
@@ -58,11 +59,15 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
     const mutedColor = isDark ? 'text-gray-400' : 'text-gray-500';
     const cardBgColor = isDark ? 'bg-black/20' : 'bg-white/20';
 
+    // Responsive font sizes based on card width
+    const baseFontSize = width / 60; // Adjust the denominator to fine-tune scaling
+
     return (
       <div
         ref={ref}
         style={{
-            width: '540px' // A fixed base width for previewing, aspect ratio will handle height
+            width: '540px', // A fixed base width for previewing, aspect ratio will handle height
+            fontSize: `${baseFontSize}px`,
         }}
         className={cn(
           'p-12 flex flex-col',
@@ -74,9 +79,9 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
             {showLogo && (
                 <div className="flex items-center gap-3">
                     <div className="relative">
-                        <FlameIcon className="w-10 h-10 text-primary" />
+                        <FlameIcon className="w-[2.5em] h-[2.5em] text-primary" />
                     </div>
-                    <span className={`text-3xl font-bold ${headingColor}`}>GitRoasted</span>
+                    <span className={`text-[2em] font-bold ${headingColor}`}>GitRoasted</span>
                 </div>
             )}
             <div className="flex-shrink-0">
@@ -85,31 +90,31 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
                     alt={user.login}
                     width={96}
                     height={96}
-                    className="rounded-full border-4 border-primary shadow-lg"
+                    className="rounded-full border-4 border-primary shadow-lg w-[6em] h-[6em]"
                 />
             </div>
         </header>
 
         <div className="flex-1 flex flex-col justify-center items-center text-center my-8">
-            <h1 className={`text-5xl font-bold ${headingColor}`}>{user.name || user.login}</h1>
-            <p className={`text-2xl ${mutedColor}`}>@{user.login}</p>
+            <h1 className={`text-[3.2em] font-bold ${headingColor}`}>{user.name || user.login}</h1>
+            <p className={`text-[1.5em] ${mutedColor}`}>@{user.login}</p>
             
             <div className="relative my-10">
-                <p className={`text-sm absolute -top-4 left-1/2 -translate-x-1/2 ${mutedColor} tracking-widest`}>ROAST SCORE</p>
-                <p className="text-9xl font-bold text-primary" style={{filter: 'drop-shadow(0 0 15px hsl(var(--primary)))'}}>
+                <p className={`text-[0.9em] absolute -top-4 left-1/2 -translate-x-1/2 ${mutedColor} tracking-widest`}>ROAST SCORE</p>
+                <p className="text-[6em] font-bold text-primary" style={{filter: 'drop-shadow(0 0 15px hsl(var(--primary)))'}}>
                     {score}
                 </p>
             </div>
 
             {showRoast && (
                 <div className={`w-full max-w-lg p-6 rounded-xl ${cardBgColor} backdrop-blur-sm border border-white/10`}>
-                    <p className={`italic ${textColor} text-xl leading-snug`}>"{roast}"</p>
+                    <p className={`italic ${textColor} text-[1.3em] leading-snug`}>"{roast}"</p>
                 </div>
             )}
         </div>
 
         {watermark && (
-            <footer className={`w-full text-center mt-auto ${mutedColor} text-lg`}>
+            <footer className={`w-full text-center mt-auto ${mutedColor} text-[1.1em]`}>
                 <p>Generated at GitRoasted.app</p>
             </footer>
         )}
