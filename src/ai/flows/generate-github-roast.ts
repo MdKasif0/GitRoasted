@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview Generates a humorous roast of a GitHub user based on their commit history.
+ * @fileOverview Generates a humorous roast of a GitHub user based on their commit history and profile data.
  *
  * - generateGitHubRoast - A function that generates the roast.
  * - GenerateGitHubRoastInput - The input type for the generateGitHubRoast function.
@@ -9,11 +9,16 @@
  */
 
 import {ai} from '@/ai/genkit';
+import type { GitHubUser, ScoreBreakdown } from '@/lib/types';
 import {z} from 'genkit';
 
 const GenerateGitHubRoastInputSchema = z.object({
-  username: z.string().describe('The GitHub username to roast.'),
-  commitHistory: z.string().describe('The commit history of the user.'),
+  user: z.custom<GitHubUser>(),
+  score: z.number(),
+  breakdown: z.custom<ScoreBreakdown>(),
+  commitHistory: z.string().describe('A summary of the recent commit messages.'),
+  totalStars: z.number(),
+  topLanguages: z.array(z.tuple([z.string(), z.number()])),
 });
 export type GenerateGitHubRoastInput = z.infer<typeof GenerateGitHubRoastInputSchema>;
 
@@ -30,12 +35,37 @@ const prompt = ai.definePrompt({
   name: 'generateGitHubRoastPrompt',
   input: {schema: GenerateGitHubRoastInputSchema},
   output: {schema: GenerateGitHubRoastOutputSchema},
-  prompt: `You are a roastmaster. Generate a humorous roast of the GitHub user based on their commit history.
+  prompt: `You are a savage but ultimately friendly roastmaster. Your job is to generate a humorous 2-3 line roast of a GitHub user based on their profile data and contribution stats.
 
-GitHub Username: {{{username}}}
-Commit History: {{{commitHistory}}}
+Follow this structure strictly:
+1.  **Line 1 (The Burn):** Start with a sharp but funny roast targeting their weakest metric from the score breakdown. Be specific. For example, if 'followerRatio' is low, call them a "follow-back farmer." If 'stars' are low, say something like "404 stars not found."
+2.  **Line 2 (The Compliment):** Immediately pivot to acknowledge something genuinely impressive from their profile (e.g., high commit count, interesting top language, long account age).
+3.  **Line 3 (The Uplift):** End with a short, genuine line of encouragement. Something like "Keep building, legend." or "Seriously, great work."
 
-Roast:
+Here is the data for the user:
+- Username: {{{user.login}}}
+- Name: {{{user.name}}}
+- Bio: {{{user.bio}}}
+- Followers: {{{user.followers}}}
+- Following: {{{user.following}}}
+- Public Repos: {{{user.public_repos}}}
+- Total Stars: {{{totalStars}}}
+- Account Created: {{{user.created_at}}}
+- Top Languages: {{#each topLanguages}}{{this.[0]}} ({{this.[1]}} repos){{#unless @last}}, {{/unless}}{{/each}}
+
+- Final Roast Score: {{{score}}} (out of 1000, lower is better for them, so a higher score is easier to roast)
+- Score Breakdown (points out of a possible total, lower points are weaker areas):
+  - Star Power: {{{breakdown.stars}}}
+  - Influence (Follower Ratio): {{{breakdown.followerRatio}}}
+  - Popularity (Follower Count): {{{breakdown.followerCount}}}
+  - Consistency (Contribution Frequency): {{{breakdown.contributionFrequency}}}
+  - Veteran Status (Account Age): {{{breakdown.accountAge}}}
+  - Work Ethic (Total Contributions): {{{breakdown.totalContributions}}}
+
+- Recent Commit History (for context):
+{{{commitHistory}}}
+
+Generate the roast now.
 `,
 });
 

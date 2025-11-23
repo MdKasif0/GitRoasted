@@ -20,7 +20,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
   try {
     const comprehensiveData = await fetchComprehensiveGitHubData(username);
 
-    const { user, events, totalStars } = comprehensiveData;
+    const { user, events, totalStars, topLanguages } = comprehensiveData;
 
     const { score, breakdown } = calculateRoastScore(user, events, totalStars);
 
@@ -31,19 +31,23 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
       .slice(0, 20) // Limit commit history sent to AI
       .join('\n');
 
-    if (commitHistory.length === 0) {
+    if (commitHistory.length === 0 && user.public_repos === 0) {
       return {
         status: 'success',
         ...comprehensiveData,
         score,
         breakdown,
-        roast: 'This user has no public commits to roast. Are they even a real developer? Or just a very, very good one who never makes mistakes in public? The mystery remains.'
+        roast: 'This user has no public activity to roast. Are they a ghost? A legend? Or just really good at keeping their chaotic code private? The world may never know.'
       };
     }
 
     const { roast } = await generateGitHubRoast({
-      username: user.login,
+      user,
+      score,
+      breakdown,
       commitHistory,
+      totalStars,
+      topLanguages,
     });
     
     return {
