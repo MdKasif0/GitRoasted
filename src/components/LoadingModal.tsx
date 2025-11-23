@@ -29,6 +29,12 @@ const stepIcons: Record<string, React.ElementType> = {
     'Generating Roast': Bot
 }
 
+// Easing function for more natural animation
+function easeInOutCubic(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+
 export function LoadingModal({ username }: LoadingModalProps) {
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
@@ -40,9 +46,7 @@ export function LoadingModal({ username }: LoadingModalProps) {
 
   useEffect(() => {
     let totalTime = 0;
-    const totalDuration = FETCH_STEPS.reduce((acc, step) => acc + step.estimatedTime, 0);
-
-    const stepIntervals = FETCH_STEPS.map((step, index) => {
+    const stepIntervals = FETCH_STEPS.map((step) => {
         const stepStartTime = totalTime;
         totalTime += step.estimatedTime;
         const stepEndTime = totalTime;
@@ -50,28 +54,45 @@ export function LoadingModal({ username }: LoadingModalProps) {
         return { ...step, startTime: stepStartTime, endTime: stepEndTime };
     });
 
+    const totalDuration = totalTime;
     let startTime = performance.now();
+    let animationFrameId: number;
 
     const animateProgress = (now: number) => {
         const elapsedTime = now - startTime;
         
-        const activeStep = stepIntervals.find(s => elapsedTime >= s.startTime && elapsedTime < s.endTime);
+        const activeStepIndex = stepIntervals.findIndex(s => elapsedTime >= s.startTime && elapsedTime < s.endTime);
+        const activeStep = activeStepIndex !== -1 ? stepIntervals[activeStepIndex] : null;
         
-        if(activeStep) {
-            const stepProgress = (elapsedTime - activeStep.startTime) / (activeStep.endTime - activeStep.startTime);
+        if (activeStep) {
+            const stepDuration = activeStep.endTime - activeStep.startTime;
+            const timeInStep = elapsedTime - activeStep.startTime;
+
+            // Apply easing to the progress within the step
+            let stepProgress = easeInOutCubic(timeInStep / stepDuration);
+
+            // Add some "realistic" hangs/jumps
+            if (stepProgress > 0.3 && stepProgress < 0.35) { // Pause briefly at ~30%
+                stepProgress = 0.3;
+            }
+             if (stepProgress > 0.7 && stepProgress < 0.75) { // Pause briefly at ~70%
+                stepProgress = 0.7;
+            }
+
             const overallProgress = activeStep.progressRange[0] + stepProgress * (activeStep.progressRange[1] - activeStep.progressRange[0]);
+
             setProgress(Math.min(overallProgress, 100));
             setCurrentStep(activeStep.id - 1);
         } else if (elapsedTime >= totalDuration) {
             setProgress(100);
-            setCurrentStep(FETCH_STEPS.length -1);
+            setCurrentStep(FETCH_STEPS.length - 1);
             return; // Stop animation
         }
         
-        requestAnimationFrame(animateProgress);
+        animationFrameId = requestAnimationFrame(animateProgress);
     };
 
-    const animationFrameId = requestAnimationFrame(animateProgress);
+    animationFrameId = requestAnimationFrame(animateProgress);
     return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
@@ -88,7 +109,7 @@ export function LoadingModal({ username }: LoadingModalProps) {
                 <FlameIcon className="w-6 h-6 text-primary" />
             </div>
             <h2 className="text-lg font-medium">
-                Fetching profile: <span className="text-primary font-bold">@{username}</span>
+                Roasting: <span className="text-primary font-bold">@{username}</span>
             </h2>
              <Button variant="ghost" size="icon" className="absolute top-4 right-4 text-gray-400 hover:text-white h-8 w-8">
                 <XIcon className="w-5 h-5" />
@@ -149,7 +170,7 @@ export function LoadingModal({ username }: LoadingModalProps) {
         </div>
 
         <footer className="text-center text-sm text-muted-foreground">
-            <p><span className='font-bold text-primary'>Fun Fact:</span> {funFact}</p>
+            <p><span className='font-bold text-primary'>Did you know?</span> {funFact}</p>
         </footer>
       </div>
     </div>
