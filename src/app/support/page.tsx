@@ -1,7 +1,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Coffee, Heart, Gift, ArrowLeft, Copy, Check, Info, ShieldCheck } from 'lucide-react';
@@ -88,7 +87,7 @@ export default function SupportPage() {
               </TabsContent>
             </Tabs>
             <div className="text-center text-xs text-muted-foreground mt-4 flex items-center justify-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-green-500"/>
+                <ShieldCheck className="w-5 h-5 text-green-500"/>
                 <span>Payments are sent securely and directly to the developer via FamApp UPI.</span>
             </div>
 
