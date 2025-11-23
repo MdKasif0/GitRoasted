@@ -47,7 +47,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
 
     const { user, events, repos, totalStars, topLanguages } = comprehensiveData;
 
-    const { score, breakdown, archetype } = calculateRoastScore(user, events, repos);
+    const { score, breakdown, archetype } = await calculateRoastScore(user, events, repos);
 
     const commitHistory = events
       .filter(e => e.type === 'PushEvent' && (e.payload as any).commits)

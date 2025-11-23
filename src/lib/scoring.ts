@@ -1,6 +1,6 @@
 
 
-import type { GitHubEvent, GitHubUser, GitHubRepo, ScoreBreakdown, DeveloperArchetype } from './types';
+import type { GitHubEvent, GitHubUser, GitHubRepo, ScoreBreakdown, DeveloperArchetype, ScoreCategory } from './types';
 import { differenceInYears, differenceInDays } from 'date-fns';
 
 // --- Scoring Weights ---
@@ -86,7 +86,7 @@ function calculateForkImpact(repos: GitHubRepo[]): number {
 }
 
 
-function getImpactScore(repos: GitHubRepo[]): { total: number; breakdown: { [key: string]: number } } {
+function getImpactScore(repos: GitHubRepo[]): ScoreCategory {
   const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
   const starScore = calculateStarScore(totalStars);
   const qualityScore = calculateRepoQuality(repos);
@@ -109,7 +109,7 @@ function getImpactScore(repos: GitHubRepo[]): { total: number; breakdown: { [key
 
 
 // 2. Consistency Score (200 points max)
-function getConsistencyScore(events: GitHubEvent[]): { total: number; breakdown: { [key: string]: number } } {
+function getConsistencyScore(events: GitHubEvent[]): ScoreCategory {
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
   const pushEvents = events.filter(e => e.type === 'PushEvent' && new Date(e.created_at) > oneYearAgo);
@@ -137,7 +137,7 @@ function getConsistencyScore(events: GitHubEvent[]): { total: number; breakdown:
 }
 
 // 3. Quality Score (150 points max)
-function getQualityScore(events: GitHubEvent[], repos: GitHubRepo[]): { total: number; breakdown: { [key: string]: number } } {
+function getQualityScore(events: GitHubEvent[], repos: GitHubRepo[]): ScoreCategory {
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
   
@@ -169,7 +169,7 @@ function getQualityScore(events: GitHubEvent[], repos: GitHubRepo[]): { total: n
 }
 
 // 4. Community Score (150 points max)
-function getCommunityScore(user: GitHubUser, repos: GitHubRepo[]): { total: number; breakdown: { [key: string]: number } } {
+function getCommunityScore(user: GitHubUser, repos: GitHubRepo[]): ScoreCategory {
   const followerScore = Math.min(50, (Math.log10(user.followers + 1) / 4) * 25 + (user.followers / (user.following + 1) / 2) * 25);
   
   const orgs = new Set(repos.filter(r => r.owner.type === 'Organization').map(r => r.owner.login));
@@ -198,7 +198,7 @@ function getCommunityScore(user: GitHubUser, repos: GitHubRepo[]): { total: numb
 }
 
 // 5. Diversity Score (100 points max)
-function getDiversityScore(repos: GitHubRepo[]): { total: number; breakdown: { [key: string]: number } } {
+function getDiversityScore(repos: GitHubRepo[]): ScoreCategory {
   const languages = new Set(repos.map(r => r.language).filter(Boolean));
   const varietyScore = Math.min(50, languages.size * 5);
   // Other scores are simplified
@@ -213,7 +213,7 @@ function getDiversityScore(repos: GitHubRepo[]): { total: number; breakdown: { [
 }
 
 // 6. Experience Score (75 points max) - With fairness adjustment
-function getExperienceScore(user: GitHubUser): { total: number; breakdown: { [key: string]: number } } {
+function getExperienceScore(user: GitHubUser): ScoreCategory {
     const ageInYears = differenceInYears(new Date(), new Date(user.created_at));
     
     // Fairness Adjustment: Scale score for accounts younger than 1 year.
@@ -250,7 +250,7 @@ function getExperienceScore(user: GitHubUser): { total: number; breakdown: { [ke
 }
 
 // 7. Activity Score (50 points max)
-function getActivityScore(events: GitHubEvent[]): { total: number; breakdown: { [key: string]: number } } {
+function getActivityScore(events: GitHubEvent[]): ScoreCategory {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const recentEvents = events.filter(e => new Date(e.created_at) > thirtyDaysAgo).length;
@@ -265,7 +265,7 @@ function getActivityScore(events: GitHubEvent[]): { total: number; breakdown: { 
 }
 
 // 8. Special Bonus (25 points max)
-function getSpecialBonus(repos: GitHubRepo[]): { total: number; breakdown: { [key: string]: number } } {
+function getSpecialBonus(repos: GitHubRepo[]): ScoreCategory {
     let bonus = 0;
     if (repos.some(r => r.stargazers_count >= 1000)) {
         bonus += 10;
@@ -285,8 +285,8 @@ function determineDeveloperArchetype(
     user: GitHubUser,
     repos: GitHubRepo[],
     events: GitHubEvent[],
-    totalStars: number
 ): DeveloperArchetype {
+    const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
     const hasHighImpact = breakdown.impact.total > 180;
     const hasHighConsistency = breakdown.consistency.total > 140;
     const hasHighCommunity = breakdown.community.total > 110;
@@ -294,12 +294,10 @@ function determineDeveloperArchetype(
     
     const avgStars = repos.length > 0 ? totalStars / repos.length : 0;
     
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
     const ninetyDaysAgo = new Date();
     ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
     const pushEventsLast90Days = events.filter(e => e.type === 'PushEvent' && new Date(e.created_at) > ninetyDaysAgo).length;
-    const isActiveContributor = pushEventsLast90Days > 50; // Simplified from your example
+    const isActiveContributor = pushEventsLast90Days > 50; 
 
     const orgs = new Set(repos.filter(r => r.owner.type === 'Organization').map(r => r.owner.login));
     const hasOrgInvolvement = orgs.size > 2;
@@ -368,20 +366,31 @@ function determineDeveloperArchetype(
  * Calculates the roast score based on various GitHub stats.
  * @returns An object containing the final score and a breakdown.
  */
-export function calculateRoastScore(
+export async function calculateRoastScore(
   user: GitHubUser,
   events: GitHubEvent[],
   repos: GitHubRepo[],
-): { score: number; breakdown: ScoreBreakdown, archetype: DeveloperArchetype; } {
+): Promise<{ score: number; breakdown: ScoreBreakdown, archetype: DeveloperArchetype; }> {
   
-  const impact = getImpactScore(repos);
-  const consistency = getConsistencyScore(events);
-  const quality = getQualityScore(events, repos);
-  const community = getCommunityScore(user, repos);
-  const diversity = getDiversityScore(repos);
-  const experience = getExperienceScore(user);
-  const activity = getActivityScore(events);
-  const specialBonus = getSpecialBonus(repos);
+  const [
+    impact,
+    consistency,
+    quality,
+    community,
+    diversity,
+    experience,
+    activity,
+    specialBonus,
+  ] = await Promise.all([
+    getImpactScore(repos),
+    getConsistencyScore(events),
+    getQualityScore(events, repos),
+    getCommunityScore(user, repos),
+    getDiversityScore(repos),
+    getExperienceScore(user),
+    getActivityScore(events),
+    getSpecialBonus(repos),
+  ]);
 
   const breakdown: ScoreBreakdown = {
     impact,
@@ -411,8 +420,7 @@ export function calculateRoastScore(
       return acc;
   }, {} as ScoreBreakdown);
   
-  const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
-  const archetype = determineDeveloperArchetype(roundedBreakdown, user, repos, events, totalStars);
+  const archetype = determineDeveloperArchetype(roundedBreakdown, user, repos, events);
 
   return {
     score: Math.round(1000 - seriousnessScore),
