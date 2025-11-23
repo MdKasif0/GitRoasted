@@ -87,7 +87,6 @@ export default function SupportPage() {
               </TabsContent>
             </Tabs>
             <div className="text-center text-xs text-muted-foreground mt-4 flex items-center justify-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-green-500"/>
                 <span>Payments are sent securely and directly to the developer via FamApp UPI.</span>
             </div>
 
