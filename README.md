@@ -2,7 +2,7 @@
 # GitRoasted: Savage AI Roasts for Your GitHub Profile
 
 <div align="center">
-  <img src="https://storage.googleapis.com/a-studio-images/public/sample-apps/gitroasted/og-image.png" alt="GitRoasted banner showing an example roast card" width="800">
+  <img src="public/app-icon.png" alt="GitRoasted banner showing an example roast card" width="800">
 </div>
 
 <div align="center">
