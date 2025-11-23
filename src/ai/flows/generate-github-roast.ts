@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -38,8 +39,8 @@ const prompt = ai.definePrompt({
   prompt: `You are a savage but ultimately friendly roastmaster. Your job is to generate a humorous 2-3 line roast of a GitHub user based on their profile data and contribution stats.
 
 Follow this structure strictly:
-1.  **Line 1 (The Burn):** Start with a sharp but funny roast targeting their weakest metric from the score breakdown. Be specific. For example, if 'followerRatio' is low, call them a "follow-back farmer." If 'stars' are low, say something like "404 stars not found."
-2.  **Line 2 (The Compliment):** Immediately pivot to acknowledge something genuinely impressive from their profile (e.g., high commit count, interesting top language, long account age).
+1.  **Line 1 (The Burn):** Start with a sharp but funny roast targeting their weakest metric from the score breakdown. Be specific. For example, if 'community' is low, mock their follower count. If 'impact' is low, say something like "404 stars not found." A low score in 'consistency' means they are probably ghosting their keyboard.
+2.  **Line 2 (The Compliment):** Immediately pivot to acknowledge something genuinely impressive from their profile (e.g., high commit count, interesting top language, long account age). Find their strongest score category in the breakdown.
 3.  **Line 3 (The Uplift):** End with a short, genuine line of encouragement. Something like "Keep building, legend." or "Seriously, great work."
 
 Here is the data for the user:
@@ -53,14 +54,15 @@ Here is the data for the user:
 - Account Created: {{{user.created_at}}}
 - Top Languages: {{#each topLanguages}}{{this.[0]}} ({{this.[1]}} repos){{#unless @last}}, {{/unless}}{{/each}}
 
-- Final Roast Score: {{{score}}} (out of 1000, lower is better for them, so a higher score is easier to roast)
-- Score Breakdown (points out of a possible total, lower points are weaker areas):
-  - Star Power: {{{breakdown.stars}}}
-  - Influence (Follower Ratio): {{{breakdown.followerRatio}}}
-  - Popularity (Follower Count): {{{breakdown.followerCount}}}
-  - Consistency (Contribution Frequency): {{{breakdown.contributionFrequency}}}
-  - Veteran Status (Account Age): {{{breakdown.accountAge}}}
-  - Work Ethic (Total Contributions): {{{breakdown.totalContributions}}}
+- Final Roast Score: {{{score}}} (out of 1000, a higher score is easier to roast because it means their profile has more flaws)
+- Score Breakdown (out of 1000 total seriousness points, lower points are weaker areas to target):
+  - Impact: {{{breakdown.impact}}}
+  - Consistency: {{{breakdown.consistency}}}
+  - Quality: {{{breakdown.quality}}}
+  - Community: {{{breakdown.community}}}
+  - Diversity: {{{breakdown.diversity}}}
+  - Experience: {{{breakdown.experience}}}
+  - Activity: {{{breakdown.activity}}}
 
 - Recent Commit History (for context):
 {{{commitHistory}}}

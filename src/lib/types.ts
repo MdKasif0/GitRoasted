@@ -1,3 +1,4 @@
+
 export interface GitHubUser {
   login: string;
   id: number;
@@ -107,12 +108,14 @@ export interface GitHubRepo {
 }
 
 export type ScoreBreakdown = {
-  stars: number;
-  followerRatio: number;
-  followerCount: number;
-  contributionFrequency: number;
-  accountAge: number;
-  totalContributions: number;
+  impact: number;
+  consistency: number;
+  quality: number;
+  community: number;
+  diversity: number;
+  experience: number;
+  activity: number;
+  specialBonus: number;
 };
 
 export type RoastResultState = {

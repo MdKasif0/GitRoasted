@@ -1,5 +1,6 @@
+
 import Image from 'next/image';
-import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf } from 'lucide-react';
+import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2 } from 'lucide-react';
 import React from 'react';
 import { differenceInYears } from 'date-fns';
 
@@ -10,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { ShareableCardDialog } from './ShareableCard';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Tooltip, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { FlameIcon } from './icons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { AnimatedNumber } from './AnimatedNumber';
@@ -22,12 +23,14 @@ interface ProfileCardProps {
 }
 
 const breakdownMeta: Record<keyof ScoreBreakdown, { label: string; icon: React.ElementType, description: string }> = {
-    stars: { label: 'Star Power', icon: Star, description: 'Points from total stars on repos.' },
-    followerRatio: { label: 'Influence', icon: Users, description: 'Points from followers to following ratio.' },
-    followerCount: { label: 'Popularity', icon: TrendingUp, description: 'Points from raw follower count.' },
-    contributionFrequency: { label: 'Consistency', icon: Calendar, description: 'Points from active contribution days in the last year.' },
-    accountAge: { label: 'Veteran Status', icon: Github, description: 'Points from account age.' },
-    totalContributions: { label: 'Work Ethic', icon: Zap, description: 'Points from total commit count.' },
+    impact: { label: 'Impact', icon: Package, description: 'Repository impact & stars' },
+    consistency: { label: 'Consistency', icon: Calendar, description: 'Contribution frequency & streaks' },
+    quality: { label: 'Quality', icon: GitCommit, description: 'Code quality indicators' },
+    community: { label: 'Community', icon: Heart, description: 'Social engagement & collaboration' },
+    diversity: { label: 'Diversity', icon: Code, description: 'Technology breadth' },
+    experience: { label: 'Experience', icon: Milestone, description: 'Account age & maturity' },
+    activity: { label: 'Activity', icon: Zap, description: 'Recent activity' },
+    specialBonus: { label: 'Special Bonus', icon: Sparkles, description: 'Exceptional achievements' },
 }
 
 const StatCard = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: string | number }) => (
@@ -41,7 +44,9 @@ const StatCard = ({ icon: Icon, label, value }: { icon: React.ElementType, label
 )
 
 const getScoreCelebration = (score: number) => {
-    const percentage = score / 10;
+    const invertedScore = 1000 - score; // Celebrate the "seriousness" score
+    const percentage = invertedScore / 10;
+    
     if (percentage >= 90) {
         return {
             badgeText: 'Git Legend!',
@@ -85,6 +90,7 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
   const totalContributions = events.filter(e => e.type === 'PushEvent').length;
   const roastLines = roast?.split('\n').filter(line => line.trim() !== '') || [];
   const celebration = getScoreCelebration(score);
+  const invertedScore = 1000 - score;
 
   return (
     <Card className="w-full max-w-4xl bg-black/20 backdrop-blur-lg border-purple-500/30 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5 duration-500">
@@ -153,9 +159,11 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
                             <TooltipProvider>
                                 <div className="space-y-4">
                                     {(Object.keys(breakdown) as Array<keyof ScoreBreakdown>).map((key) => {
+                                        if (key === 'specialBonus' && breakdown[key] === 0) return null;
                                         const meta = breakdownMeta[key];
                                         const value = breakdown[key];
-                                        const max = 100 / Object.keys(breakdown).length;
+                                        const maxPoints = { impact: 250, consistency: 200, quality: 150, community: 150, diversity: 100, experience: 75, activity: 50, specialBonus: 25 };
+                                        const max = maxPoints[key];
                                         const percentage = (value / max) * 100;
                                         return (
                                             <Tooltip key={key} delayDuration={100}>
@@ -163,7 +171,7 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
                                                     <div className="flex items-center gap-2 text-sm">
                                                         <meta.icon className="h-4 w-4 text-muted-foreground" />
                                                         <span className='flex-1 font-medium'>{meta.label}</span>
-                                                        <span className='text-primary font-bold'>{value} pts</span>
+                                                        <span className='text-primary font-bold'>{Math.round(value)} pts</span>
                                                     </div>
                                                     <Progress value={percentage} className="h-2 mt-1" indicatorClassName={percentage > 75 ? 'bg-green-500' : percentage > 40 ? 'bg-yellow-500' : 'bg-red-500'} />
                                                 </TooltipTrigger>
@@ -183,9 +191,9 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
                 <StatCard icon={Star} label="Stars Received" value={totalStars ?? 0} />
                 <StatCard icon={Users} label="Followers" value={user.followers} />
-                <StatCard icon={Users} label="Following" value={user.following} />
+                <StatCard icon={Users2} label="Following" value={user.following} />
                 <StatCard icon={Calendar} label="Account Age" value={`${accountAge} yrs`} />
-                <StatCard icon={Zap} label="Total Contributions" value={totalContributions} />
+                <StatCard icon={GitCommit} label="Total Contributions" value={totalContributions} />
                 {topLanguages && topLanguages.length > 0 && (
                   <div className="bg-white/5 p-4 rounded-lg transition-colors hover:bg-white/10 text-center col-span-2 sm:col-span-1">
                     <Languages className="mx-auto h-6 w-6 text-primary mb-2" />

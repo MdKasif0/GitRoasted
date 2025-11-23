@@ -1,3 +1,4 @@
+
 'use server';
 
 import { generateGitHubRoast } from '@/ai/flows/generate-github-roast';
@@ -44,9 +45,9 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
   try {
     const comprehensiveData = await fetchComprehensiveGitHubData(username);
 
-    const { user, events, totalStars, topLanguages } = comprehensiveData;
+    const { user, events, repos, totalStars, topLanguages } = comprehensiveData;
 
-    const { score, breakdown } = calculateRoastScore(user, events, totalStars);
+    const { score, breakdown } = calculateRoastScore(user, events, repos);
 
     const commitHistory = events
       .filter(e => e.type === 'PushEvent' && (e.payload as any).commits)
