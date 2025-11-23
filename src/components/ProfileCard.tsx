@@ -13,7 +13,6 @@ import { Progress } from './ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { FlameIcon } from './icons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
-import { Typewriter } from './Typewriter';
 import { AnimatedNumber } from './AnimatedNumber';
 import { ScoreCircle } from './ScoreCircle';
 
@@ -50,6 +49,7 @@ export function ProfileCard({ result }: ProfileCardProps) {
 
   const accountAge = differenceInYears(new Date(), new Date(user.created_at));
   const totalContributions = events.filter(e => e.type === 'PushEvent').length;
+  const roastLines = roast?.split('\n').filter(line => line.trim() !== '') || [];
 
   return (
     <Card className="w-full max-w-4xl bg-black/20 backdrop-blur-lg border-purple-500/30 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5 duration-500">
@@ -91,7 +91,9 @@ export function ProfileCard({ result }: ProfileCardProps) {
                 </CardHeader>
                 <CardContent>
                     <div className="text-lg leading-relaxed italic typewriter-multiline">
-                        <Typewriter text={roast || ''} />
+                        {roastLines.map((line, index) => (
+                          <p key={index}>{line}</p>
+                        ))}
                     </div>
                 </CardContent>
             </Card>

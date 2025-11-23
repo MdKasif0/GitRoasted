@@ -9,40 +9,22 @@ export function Typewriter({ text, speed = 50 }: { text: string, speed?: number 
   const lines = text.split('\n').filter(line => line.trim() !== '');
 
   useEffect(() => {
-    let i = 0;
-    let currentLine = 0;
-    let currentText = '';
-
+    let charIndex = 0;
     const type = () => {
-      if (currentLine >= lines.length) {
-        return;
-      }
-      
-      const line = lines[currentLine];
-
-      if (i < line.length) {
-        currentText += line.charAt(i);
-        setDisplayedText(currentText);
-        i++;
+      if (charIndex < text.length) {
+        setDisplayedText(text.substring(0, charIndex + 1));
+        charIndex++;
         setTimeout(type, speed);
-      } else {
-        // End of line, move to next line
-        currentText += '\n';
-        setDisplayedText(currentText);
-        currentLine++;
-        i = 0;
-        setTimeout(type, speed * 5); // Pause between lines
       }
     };
-
     type();
-
-  }, [text, speed, lines]);
+  }, [text, speed]);
 
   return (
     <div className="whitespace-pre-wrap">
-      {displayedText}
-      <span className="animate-ping">|</span>
+        {lines.map((line, index) => (
+            <p key={index}>{line}</p>
+        ))}
     </div>
   );
 }
