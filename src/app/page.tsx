@@ -14,26 +14,28 @@ function Header() {
   return (
     <header className="absolute top-0 left-0 right-0 z-10 p-4">
       <div className="container mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-2 sm:gap-8">
           <div className="flex items-center gap-2">
             <FlameIcon className="w-8 h-8 text-primary" />
             <h1 className="text-2xl font-bold">GitRoasted</h1>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             {navItems.map(item => (
-              <a key={item.name} href={item.href} className="text-muted-foreground hover:text-foreground transition-colors">{item.name}</a>
+              <a key={item.name} href={item.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">{item.name}</a>
             ))}
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="bg-white/5 border-white/10">
-            <Sun className="h-4 w-4 mr-2" /> / <Moon className="h-4 w-4 ml-2" />
+          <Button variant="outline" size="icon" className="bg-white/5 border-white/10 h-9 w-9 sm:h-8 sm:w-auto sm:px-3">
+            <Sun className="h-4 w-4 sm:mr-2" /> 
+            <span className="hidden sm:inline">/</span> 
+            <Moon className="h-4 w-4 sm:ml-2" />
           </Button>
           <Button variant="outline" size="sm" className="bg-white/5 border-white/10 hidden sm:flex">
-            <X className="h-4 w-4 mr-2" /> Random Profile
+            <X className="h-4 w-4 mr-2" /> Random
           </Button>
-          <Button variant="outline" size="sm" className="bg-white/5 border-white/10">
-            <Star className="h-4 w-4 mr-2 text-yellow-400" /> GitHub stars <span className="ml-2 font-bold">1.2k</span>
+          <Button variant="outline" size="sm" className="bg-white/5 border-white/10 hidden sm:flex">
+            <Star className="h-4 w-4 mr-2 text-yellow-400" /> GitHub <span className="ml-2 font-bold">1.2k</span>
           </Button>
         </div>
       </div>
@@ -81,12 +83,12 @@ function FloatingCards() {
 
 function StatsFooter() {
   return (
-    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-sm">
-      <div className="bg-black/20 backdrop-blur-md rounded-full border border-white/10 p-2 flex justify-around items-center text-sm">
+    <div className="w-full mt-16 lg:absolute lg:bottom-10 lg:left-1/2 lg:-translate-x-1/2 lg:max-w-sm">
+      <div className="bg-black/20 backdrop-blur-md rounded-full border border-white/10 p-2 flex flex-col sm:flex-row gap-4 sm:gap-0 justify-around items-center text-xs sm:text-sm">
         <p>Total Roasts: <span className="font-bold text-foreground">45,230+</span></p>
-        <div className="w-px h-6 bg-white/10" />
+        <div className="w-full sm:w-px sm:h-6 bg-white/10" />
         <p>Active Users: <span className="font-bold text-foreground">18,500+</span></p>
-        <div className="w-px h-6 bg-white/10" />
+        <div className="w-full sm:w-px sm:h-6 bg-white/10" />
         <p>GitHub Stars: <span className="font-bold text-foreground">1,245</span></p>
       </div>
     </div>
@@ -96,7 +98,7 @@ function StatsFooter() {
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
+    <div className="relative min-h-screen w-full overflow-x-hidden">
       <Header />
       <main className="container mx-auto pt-32 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -114,15 +116,16 @@ export default function Home() {
           <FloatingCards />
         </div>
       </main>
-      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+      <div className="hidden lg:flex absolute bottom-24 left-1/2 -translate-x-1/2 flex-col items-center gap-2 animate-bounce">
           <ArrowDown className="w-5 h-5 text-muted-foreground" />
           <span className="text-xs text-muted-foreground">Scroll for more</span>
       </div>
-      <StatsFooter />
+      
       <div className="container mx-auto py-20">
           <Leaderboard />
       </div>
-       <footer className="w-full text-center text-muted-foreground text-sm py-8">
+      <StatsFooter />
+       <footer className="w-full text-center text-muted-foreground text-sm py-8 mt-12 lg:mt-0">
         <p>Built with Next.js, Genkit, and a whole lot of 🔥</p>
       </footer>
     </div>

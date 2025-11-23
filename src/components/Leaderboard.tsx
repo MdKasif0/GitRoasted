@@ -26,43 +26,45 @@ export function Leaderboard() {
        </div>
         <Card className="w-full bg-black/20 backdrop-blur-lg border-purple-500/30">
         <CardContent className="p-0">
-            <Table>
-            <TableHeader>
-                <TableRow className="hover:bg-transparent border-b-purple-500/30">
-                <TableHead className="w-[50px]">Rank</TableHead>
-                <TableHead>User</TableHead>
-                <TableHead className="text-right">Roast Score</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {mockLeaderboardData.map((entry) => (
-                <TableRow key={entry.rank} className="hover:bg-white/5 border-b-purple-500/10">
-                    <TableCell className="font-medium text-lg text-center">
-                        {entry.rank === 1 && '🥇'}
-                        {entry.rank === 2 && '🥈'}
-                        {entry.rank === 3 && '🥉'}
-                        {entry.rank > 3 && entry.rank}
-                    </TableCell>
-                    <TableCell>
-                    <div className="flex items-center gap-3">
-                        <Image
-                        src={entry.avatarUrl}
-                        alt={entry.username}
-                        width={40}
-                        height={40}
-                        className="rounded-full border-2 border-primary/50"
-                        />
-                        <div>
-                            <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors">{entry.username}</a>
-                            <p className="text-sm text-muted-foreground">{entry.name}</p>
+            <div className="overflow-x-auto">
+                <Table>
+                <TableHeader>
+                    <TableRow className="hover:bg-transparent border-b-purple-500/30">
+                    <TableHead className="w-[50px] sm:w-auto">Rank</TableHead>
+                    <TableHead>User</TableHead>
+                    <TableHead className="text-right">Roast Score</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {mockLeaderboardData.map((entry) => (
+                    <TableRow key={entry.rank} className="hover:bg-white/5 border-b-purple-500/10">
+                        <TableCell className="font-medium text-lg text-center">
+                            {entry.rank === 1 && '🥇'}
+                            {entry.rank === 2 && '🥈'}
+                            {entry.rank === 3 && '🥉'}
+                            {entry.rank > 3 && entry.rank}
+                        </TableCell>
+                        <TableCell>
+                        <div className="flex items-center gap-3">
+                            <Image
+                            src={entry.avatarUrl}
+                            alt={entry.username}
+                            width={40}
+                            height={40}
+                            className="rounded-full border-2 border-primary/50"
+                            />
+                            <div>
+                                <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors whitespace-nowrap">{entry.username}</a>
+                                <p className="text-sm text-muted-foreground whitespace-nowrap">{entry.name}</p>
+                            </div>
                         </div>
-                    </div>
-                    </TableCell>
-                    <TableCell className="text-right font-bold text-primary text-lg">{entry.score}</TableCell>
-                </TableRow>
-                ))}
-            </TableBody>
-            </Table>
+                        </TableCell>
+                        <TableCell className="text-right font-bold text-primary text-lg">{entry.score}</TableCell>
+                    </TableRow>
+                    ))}
+                </TableBody>
+                </Table>
+            </div>
         </CardContent>
         </Card>
     </div>
