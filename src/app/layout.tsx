@@ -58,12 +58,14 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'black-translucent',
     title: title,
+    startupImage: '/app-icon.png',
   },
   viewport: {
     width: 'device-width',
     initialScale: 1,
     viewportFit: 'cover',
   },
+  themeColor: '#6366F1',
 };
 
 export default function RootLayout({
