@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { FirebaseProvider } from '@/firebase/provider';
 import { FirebaseAnalytics } from '@/components/FirebaseAnalytics';
+import { OfflineIndicator } from '@/components/OfflineIndicator';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -63,6 +64,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${inter.variable} font-sans antialiased`}>
         <FirebaseProvider>
+            <OfflineIndicator />
             {children}
         </FirebaseProvider>
         <Toaster />
