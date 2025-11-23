@@ -67,6 +67,9 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
     };
   } catch (error: any) {
     console.error('Error in getRoast action:', error);
+    if (error.message.includes('404')) {
+      return { status: 'error', message: `Could not find a GitHub user named "${username}". Check the spelling and try again.`, username };
+    }
     return { status: 'error', message: error.message || 'An unexpected error occurred. Please try again.', username };
   }
 }

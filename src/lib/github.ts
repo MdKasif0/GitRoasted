@@ -1,11 +1,17 @@
 import type { GitHubUser, GitHubEvent, GitHubRepo } from './types';
 
+// Cache revalidation time in seconds (5 minutes)
+const REVALIDATE_TIME = 300; 
+
 async function fetchGitHubApi<T>(endpoint: string, token: string): Promise<T> {
   const response = await fetch(`https://api.github.com${endpoint}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
+    next: {
+        revalidate: REVALIDATE_TIME
+    }
   });
 
   if (!response.ok) {

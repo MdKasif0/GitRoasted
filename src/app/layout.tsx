@@ -5,9 +5,50 @@ import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
+const title = 'GitRoasted | Savage AI Roasts for GitHub Profiles';
+const description = 'Get a savage but friendly AI-generated roast of any GitHub profile based on their stats, commit history, and more. How hard can you get roasted?';
+const url = 'https://gitroasted.app'; // Replace with your actual domain
+
 export const metadata: Metadata = {
-  title: 'GitRoasted',
-  description: 'Get roasted based on your GitHub activity.',
+  title: {
+    default: title,
+    template: '%s | GitRoasted',
+  },
+  description: description,
+  metadataBase: new URL(url),
+  openGraph: {
+    title: title,
+    description: description,
+    url: url,
+    siteName: 'GitRoasted',
+    images: [
+      {
+        url: '/og-image.png', // Path to your OG image in the `public` folder
+        width: 1200,
+        height: 630,
+        alt: 'GitRoasted social sharing image',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: title,
+    description: description,
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
