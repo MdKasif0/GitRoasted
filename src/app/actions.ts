@@ -95,7 +95,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
       return { status: 'error', message: `Could not find a GitHub user named "${username}". Check the spelling and try again.`, username };
     }
     if (error.message.includes('rate limit exceeded')) {
-        return { status: 'error', message: `Looks like we're popular! GitHub API rate limit exceeded. Please try again in a few minutes.`, username };
+        return { status: 'error', message: `Looks like we're popular! ${error.message}`, username };
     }
     // Fallback for other errors, like the token not being configured
     return { status: 'error', message: error.message || 'An unexpected error occurred. Please try again.', username };

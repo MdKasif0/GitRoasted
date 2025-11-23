@@ -24,11 +24,11 @@ async function fetchGitHubApi<T>(endpoint: string, token: string): Promise<DataC
 
     if (!response.ok) {
       if (response.status === 404) {
-        return { success: false, error: `GitHub resource not found at endpoint: ${endpoint}` };
+        return { success: false, error: `Could not find a GitHub user at endpoint: ${endpoint}` };
       }
       if (response.status === 403) {
           const rateLimitReset = response.headers.get('x-ratelimit-reset');
-          const resetTime = rateLimitReset ? new Date(parseInt(rateLimitReset, 10) * 1000).toLocaleTimeString() : 'unknown';
+          const resetTime = rateLimitReset ? new Date(parseInt(rateLimitReset, 10) * 1000).toLocaleTimeString() : 'later';
           return { success: false, error: `GitHub API rate limit exceeded. Please try again after ${resetTime}.` };
       }
       return { success: false, error: `Failed to fetch from GitHub API. Status: ${response.status}` };
