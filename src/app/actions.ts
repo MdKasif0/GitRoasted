@@ -15,12 +15,13 @@ const { firestore: db } = initializeFirebase();
 const usernameSchema = z.string().min(1, 'GitHub username cannot be empty.').max(39, 'GitHub username is too long.');
 
 async function saveToLeaderboard(result: RoastResultState) {
-    if (result.status !== 'success' || !result.user || !result.score) return;
+    if (result.status !== 'success' || !result.user || !result.score || !result.roast) return;
 
     try {
         const leaderboardRef = doc(db, 'leaderboard', result.user.login);
         // The leaderboard should show the "seriousness" score, not the roast score.
         const seriousnessScore = 1000 - result.score;
+        const oneLineRoast = result.roast.split('\n')[0];
 
         await setDoc(leaderboardRef, {
             userId: result.user.id.toString(),
@@ -28,6 +29,7 @@ async function saveToLeaderboard(result: RoastResultState) {
             name: result.user.name || result.user.login,
             avatarUrl: result.user.avatar_url,
             score: seriousnessScore,
+            roast: oneLineRoast,
             roastedAt: serverTimestamp()
         }, { merge: true });
     } catch (error) {

@@ -160,6 +160,7 @@ export interface LeaderboardEntry {
   avatarUrl: string;
   score: number;
   roastedAt: any; // Firestore Timestamp
+  roast: string;
 }
 
 export type StepStatus = 'pending' | 'active' | 'complete' | 'error' | 'skipped';

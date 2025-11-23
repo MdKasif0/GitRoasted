@@ -30,9 +30,13 @@
           "type": "string",
           "format": "date-time",
           "description": "The timestamp when the roast occurred."
+        },
+        "roast": {
+            "type": "string",
+            "description": "The one-line roast for the user."
         }
       },
-      "required": ["userId", "username", "score", "roastedAt", "avatarUrl"]
+      "required": ["userId", "username", "score", "roastedAt", "avatarUrl", "roast"]
     }
   },
   "auth": {

@@ -110,6 +110,7 @@ export function Leaderboard() {
                                 <div>
                                     <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors">{entry.username}</a>
                                     <p className="text-sm text-muted-foreground">{entry.name}</p>
+                                    {entry.roast && <p className="text-sm text-primary/80 italic mt-1">"{entry.roast}"</p>}
                                 </div>
                             </div>
                             </TableCell>

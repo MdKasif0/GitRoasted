@@ -56,6 +56,7 @@ const PodiumCard = ({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 
             />
             <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="text-xl font-bold hover:text-primary transition-colors">{entry.name}</a>
             <p className="text-muted-foreground">@{entry.username}</p>
+             {entry.roast && <p className="text-sm text-primary/80 italic mt-2 h-10">"{entry.roast}"</p>}
             <div className="mt-4 text-2xl font-bold text-primary flex items-center gap-1">
                 <FlameIcon className="w-5 h-5" />
                 <AnimatedNumber value={entry.score} /> / 1000
@@ -189,6 +190,7 @@ export function LeaderboardClient() {
                                 <div className="truncate">
                                      <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors truncate">{entry.name}</a>
                                      <p className="text-sm text-muted-foreground truncate">@{entry.username}</p>
+                                     {entry.roast && <p className="text-sm text-primary/80 italic mt-1 truncate">"{entry.roast}"</p>}
                                 </div>
                             </div>
                              <div className="text-xl font-bold text-primary flex items-center gap-2 shrink-0">
