@@ -1,11 +1,12 @@
 import Image from 'next/image';
-import { Github, Users, UserPlus, FileCode, Star } from 'lucide-react';
+import { Github, Users, UserPlus, FileCode, Star, Code, Languages } from 'lucide-react';
 
 import type { RoastResultState } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ShareableCardDialog } from './ShareableCard';
+import { Badge } from './ui/badge';
 
 interface ProfileCardProps {
   result: RoastResultState;
@@ -16,12 +17,12 @@ export function ProfileCard({ result }: ProfileCardProps) {
     return null;
   }
 
-  const { user, score, roast } = result;
+  const { user, score, roast, totalStars, topLanguages } = result;
 
   const stats = [
     { icon: FileCode, label: 'Repositories', value: user.public_repos },
+    { icon: Star, label: 'Total Stars', value: totalStars },
     { icon: Users, label: 'Followers', value: user.followers },
-    { icon: UserPlus, label: 'Following', value: user.following },
   ];
 
   return (
@@ -51,11 +52,24 @@ export function ProfileCard({ result }: ProfileCardProps) {
           {stats.map((stat) => (
             <div key={stat.label} className="bg-white/5 p-3 rounded-lg">
               <stat.icon className="mx-auto h-6 w-6 text-primary mb-1" />
-              <p className="text-2xl font-bold">{stat.value.toLocaleString()}</p>
+              <p className="text-2xl font-bold">{(stat.value ?? 0).toLocaleString()}</p>
               <p className="text-sm text-muted-foreground">{stat.label}</p>
             </div>
           ))}
         </div>
+
+        {topLanguages && topLanguages.length > 0 && (
+          <div className='mb-6'>
+            <h3 className="text-center text-lg font-semibold text-muted-foreground mb-3 flex items-center justify-center gap-2"><Languages /> Top Languages</h3>
+            <div className="flex flex-wrap justify-center gap-2">
+              {topLanguages.map(([language, count]) => (
+                <Badge key={language} variant="secondary" className="text-base">
+                  {language} <span className='ml-2 text-muted-foreground'>{count}</span>
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
         
         <Separator className="my-6 bg-purple-500/30" />
 

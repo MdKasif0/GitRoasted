@@ -58,13 +58,67 @@ export interface GitHubEvent {
   created_at: string;
 }
 
+export interface GitHubRepo {
+  id: number;
+  name: string;
+  full_name: string;
+  private: boolean;
+  html_url: string;
+  description: string | null;
+  fork: boolean;
+  url: string;
+  created_at: string;
+  updated_at: string;
+  pushed_at: string;
+  git_url: string;
+  ssh_url: string;
+  clone_url: string;
+  svn_url: string;
+  homepage: string | null;
+  size: number;
+  stargazers_count: number;
+  watchers_count: number;
+  language: string | null;
+  has_issues: boolean;
+  has_projects: boolean;
+  has_downloads: boolean;
+  has_wiki: boolean;
+  has_pages: boolean;
+  forks_count: number;
+  mirror_url: string | null;
+  archived: boolean;
+  disabled: boolean;
+  open_issues_count: number;
+  license: {
+    key: string;
+    name: string;
+    spdx_id: string;
+    url: string | null;
+    node_id: string;
+  } | null;
+  allow_forking: boolean;
+  is_template: boolean;
+  topics: string[];
+  visibility: 'public' | 'private' | 'internal';
+  forks: number;
+  open_issues: number;
+  watchers: number;
+  default_branch: string;
+}
+
+
 export type RoastResultState = {
   status: 'idle' | 'loading' | 'success' | 'error';
   user?: GitHubUser;
   score?: number;
   roast?: string;
   message?: string;
+  events?: GitHubEvent[];
+  repos?: GitHubRepo[];
+  totalStars?: number;
+  topLanguages?: [string, number][];
 };
+
 
 export interface LeaderboardEntry {
   rank: number;
