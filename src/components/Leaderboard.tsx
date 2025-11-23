@@ -10,14 +10,6 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { ArrowRight, Trophy } from 'lucide-react';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
@@ -30,32 +22,32 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collap
 
 function LeaderboardSkeleton() {
     return (
-        <Table>
-            <TableHeader>
-                <TableRow className="hover:bg-transparent border-b-purple-500/30">
-                    <TableHead className="w-[50px]">Rank</TableHead>
-                    <TableHead>User</TableHead>
-                    <TableHead className="text-right">Seriousness Score</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {Array.from({ length: 5 }).map((_, i) => (
-                     <TableRow key={i} className="hover:bg-white/5 border-b-purple-500/10">
-                        <TableCell><Skeleton className="h-6 w-6 rounded-full" /></TableCell>
-                        <TableCell>
-                            <div className="flex items-center gap-3">
-                                <Skeleton className="h-10 w-10 rounded-full" />
-                                <div>
-                                    <Skeleton className="h-4 w-24 mb-2" />
-                                    <Skeleton className="h-3 w-16" />
-                                </div>
-                            </div>
-                        </TableCell>
-                        <TableCell className="text-right"><Skeleton className="h-6 w-12 ml-auto" /></TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+        <div className="space-y-2">
+            <div className="flex items-center p-4">
+                <Skeleton className="h-6 w-12" />
+                <div className="flex items-center gap-3 ml-4">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-3 w-16" />
+                    </div>
+                </div>
+                <Skeleton className="h-6 w-12 ml-auto" />
+            </div>
+             {Array.from({ length: 4 }).map((_, i) => (
+                 <div key={i} className="flex items-center p-4">
+                    <Skeleton className="h-6 w-12" />
+                    <div className="flex items-center gap-3 ml-4">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="h-3 w-16" />
+                        </div>
+                    </div>
+                    <Skeleton className="h-6 w-12 ml-auto" />
+                </div>
+            ))}
+        </div>
     )
 }
 
@@ -85,57 +77,51 @@ export function Leaderboard() {
             <div className="overflow-x-auto">
                 {loading && <LeaderboardSkeleton />}
                 {!loading && leaderboardData && (
-                    <Table>
-                    <TableHeader>
-                        <TableRow className="hover:bg-transparent border-b-purple-500/30">
-                        <TableHead className="w-[50px]">Rank</TableHead>
-                        <TableHead>User</TableHead>
-                        <TableHead className="text-right">Seriousness Score</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
+                    <div className="divide-y divide-purple-500/10">
+                        {/* Header */}
+                        <div className="flex items-center p-4 font-medium text-muted-foreground">
+                            <div className="w-[50px] text-left pl-2">Rank</div>
+                            <div className="flex-1">User</div>
+                            <div className="text-right">Seriousness Score</div>
+                        </div>
+
                         {leaderboardData.map((entry, index) => (
-                        <Collapsible asChild key={entry.id} >
-                          <tbody className='border-b-purple-500/10 border-b last:border-b-0'>
-                            <TableRow className='border-b-0'>
-                                <TableCell className="font-medium text-lg text-center">
-                                   {getRankContent(index)}
-                                </TableCell>
-                                <TableCell>
-                                    <CollapsibleTrigger className="flex items-center gap-3 text-left w-full p-0">
-                                        <Image
-                                        src={entry.avatarUrl}
-                                        alt={entry.username}
-                                        width={40}
-                                        height={40}
-                                        className="rounded-full border-2 border-primary/50"
-                                        />
-                                        <div>
-                                            <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors">{entry.username}</a>
-                                            <p className="text-sm text-muted-foreground">{entry.name}</p>
+                            <Collapsible key={entry.id} asChild>
+                                <div className="flex flex-col">
+                                    <CollapsibleTrigger asChild>
+                                      <div className='flex items-center p-4 hover:bg-white/5 cursor-pointer'>
+                                        <div className="w-[50px] font-medium text-lg text-center">
+                                           {getRankContent(index)}
                                         </div>
+                                        <div className='flex-1 flex items-center gap-3'>
+                                            <Image
+                                            src={entry.avatarUrl}
+                                            alt={entry.username}
+                                            width={40}
+                                            height={40}
+                                            className="rounded-full border-2 border-primary/50"
+                                            />
+                                            <div>
+                                                <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors">{entry.username}</a>
+                                                <p className="text-sm text-muted-foreground">{entry.name}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right font-bold text-primary text-lg">
+                                            <AnimatedNumber value={entry.score} />
+                                        </div>
+                                      </div>
                                     </CollapsibleTrigger>
-                                </TableCell>
-                                <TableCell className="text-right font-bold text-primary text-lg">
-                                    <AnimatedNumber value={entry.score} />
-                                </TableCell>
-                            </TableRow>
-                            {entry.roast && (
-                              <CollapsibleContent asChild>
-                                <tr>
-                                  <td colSpan={3} className="p-0">
-                                    <div className="bg-primary/10 p-3 text-center italic text-primary-foreground/80">
-                                        "{entry.roast}"
-                                    </div>
-                                  </td>
-                                </tr>
-                              </CollapsibleContent>
-                            )}
-                          </tbody>
-                        </Collapsible>
+                                    {entry.roast && (
+                                      <CollapsibleContent asChild>
+                                          <div className="bg-primary/10 p-3 text-center italic text-primary-foreground/80">
+                                                "{entry.roast}"
+                                          </div>
+                                      </CollapsibleContent>
+                                    )}
+                                </div>
+                            </Collapsible>
                         ))}
-                    </TableBody>
-                    </Table>
+                    </div>
                 )}
                  {!loading && (!leaderboardData || leaderboardData.length === 0) && (
                     <div className="text-center p-8 text-muted-foreground">
