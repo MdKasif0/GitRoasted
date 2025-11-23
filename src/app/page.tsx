@@ -2,7 +2,7 @@ import GitRoastClient from "@/components/GitRoastClient";
 import { Leaderboard } from "@/components/Leaderboard";
 import { FlameIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, Github, Moon, Star, Sun, X, BookUser } from "lucide-react";
+import { ArrowDown, Github, Moon, Star, Sun, X, BookUser, Trophy } from "lucide-react";
 import Link from 'next/link';
 
 export default function Home() {
@@ -18,12 +18,20 @@ export default function Home() {
         <p className="text-muted-foreground mt-2 text-lg">
           Get a savage (but friendly) roast of any GitHub profile.
         </p>
-         <Button asChild variant="link" className="mt-2 text-primary">
-          <Link href="/how-it-works" className='flex items-center gap-1'>
-            <BookUser className="w-4 h-4" />
-            How it works
-          </Link>
-        </Button>
+         <div className="flex items-center justify-center gap-4 mt-2">
+            <Button asChild variant="link" className="text-primary">
+              <Link href="/how-it-works" className='flex items-center gap-1'>
+                <BookUser className="w-4 h-4" />
+                How it works
+              </Link>
+            </Button>
+             <Button asChild variant="link" className="text-primary">
+              <Link href="/leaderboard" className='flex items-center gap-1'>
+                <Trophy className="w-4 h-4" />
+                Leaderboard
+              </Link>
+            </Button>
+         </div>
       </header>
 
       <main className="w-full flex flex-col items-center gap-8">
