@@ -92,7 +92,7 @@ export default function SupportPage() {
             </div>
 
             <div className="my-8 text-center text-muted-foreground">
-                <p className="text-lg">Thank you for considering! 🙏</p>
+                <p className="text-lg">Thank you for considering! 💖</p>
                 <p>Every contribution, big or small, is deeply appreciated.</p>
                 <p className="mt-2 text-sm">Alternatively, feel free to share GitRoasted with your friends!</p>
             </div>
