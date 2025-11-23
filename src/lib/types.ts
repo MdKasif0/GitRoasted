@@ -133,5 +133,6 @@ export interface LeaderboardEntry {
   rank: number;
   avatarUrl: string;
   username: string;
+  name: string;
   score: number;
 }

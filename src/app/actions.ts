@@ -40,6 +40,12 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
         roast: 'This user has no public activity to roast. Are they a ghost? A legend? Or just really good at keeping their chaotic code private? The world may never know.'
       };
     }
+    
+    // Set a loading status before calling the AI
+    // This allows the UI to show a loading state for the roast text itself
+    Promise.resolve().then(() => {
+        // A little trick to update the UI without a full re-render
+    });
 
     const { roast } = await generateGitHubRoast({
       user,

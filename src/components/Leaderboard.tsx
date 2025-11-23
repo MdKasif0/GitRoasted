@@ -15,22 +15,22 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { mockLeaderboardData } from '@/lib/leaderboard-data';
-import { FlameIcon } from './icons';
+import { Trophy } from 'lucide-react';
 
 export function Leaderboard() {
   return (
-    <Card className="w-full max-w-4xl bg-black/20 backdrop-blur-lg border-purple-500/30 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5 duration-500">
+    <Card className="w-full max-w-2xl bg-black/20 backdrop-blur-lg border-purple-500/30 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5 duration-500">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-2xl">
-          <FlameIcon className="w-6 h-6 text-primary" />
-          Top Roasted
+          <Trophy className="w-6 h-6 text-primary" />
+          Hall of Flame
         </CardTitle>
-        <CardDescription>The hall of flame for GitHub's finest.</CardDescription>
+        <CardDescription>The top-roasted legends on GitHub.</CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent">
+            <TableRow className="hover:bg-transparent border-b-purple-500/30">
               <TableHead className="w-[50px]">Rank</TableHead>
               <TableHead>User</TableHead>
               <TableHead className="text-right">Roast Score</TableHead>
@@ -38,8 +38,13 @@ export function Leaderboard() {
           </TableHeader>
           <TableBody>
             {mockLeaderboardData.map((entry) => (
-              <TableRow key={entry.rank} className="hover:bg-white/5">
-                <TableCell className="font-medium text-lg">{entry.rank}</TableCell>
+              <TableRow key={entry.rank} className="hover:bg-white/5 border-b-purple-500/10">
+                <TableCell className="font-medium text-lg text-center">
+                    {entry.rank === 1 && '🥇'}
+                    {entry.rank === 2 && '🥈'}
+                    {entry.rank === 3 && '🥉'}
+                    {entry.rank > 3 && entry.rank}
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Image
@@ -49,7 +54,10 @@ export function Leaderboard() {
                       height={40}
                       className="rounded-full border-2 border-primary/50"
                     />
-                    <span className="font-medium">{entry.username}</span>
+                    <div>
+                        <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-medium hover:text-primary transition-colors">{entry.username}</a>
+                        <p className="text-sm text-muted-foreground">{entry.name}</p>
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell className="text-right font-bold text-primary text-lg">{entry.score}</TableCell>
