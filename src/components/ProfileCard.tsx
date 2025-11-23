@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download } from 'lucide-react';
+import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf } from 'lucide-react';
 import React from 'react';
 import { differenceInYears } from 'date-fns';
 
@@ -40,6 +40,40 @@ const StatCard = ({ icon: Icon, label, value }: { icon: React.ElementType, label
     </div>
 )
 
+const getScoreCelebration = (score: number) => {
+    const percentage = score / 10;
+    if (percentage >= 90) {
+        return {
+            badgeText: 'Git Legend!',
+            badgeIcon: <Trophy className="mr-1 h-4 w-4" />,
+            badgeClass: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
+            progressClass: 'stroke-yellow-400',
+        };
+    }
+    if (percentage >= 75) {
+        return {
+            badgeText: 'Star Developer!',
+            badgeIcon: <Sparkles className="mr-1 h-4 w-4" />,
+            badgeClass: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+            progressClass: 'stroke-purple-400',
+        };
+    }
+    if (percentage >= 50) {
+        return {
+            badgeText: 'Keep Building!',
+            badgeIcon: <Building className="mr-1 h-4 w-4" />,
+            badgeClass: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+            progressClass: 'stroke-blue-400',
+        };
+    }
+    return {
+        badgeText: 'Every Expert Started Here!',
+        badgeIcon: <Leaf className="mr-1 h-4 w-4" />,
+        badgeClass: 'bg-green-500/10 text-green-400 border-green-500/30',
+        progressClass: 'stroke-green-400',
+    };
+};
+
 export function ProfileCard({ result }: ProfileCardProps) {
   if (result.status !== 'success' || !result.user || !result.score || !result.breakdown || !result.events) {
     return null;
@@ -50,6 +84,7 @@ export function ProfileCard({ result }: ProfileCardProps) {
   const accountAge = differenceInYears(new Date(), new Date(user.created_at));
   const totalContributions = events.filter(e => e.type === 'PushEvent').length;
   const roastLines = roast?.split('\n').filter(line => line.trim() !== '') || [];
+  const celebration = getScoreCelebration(score);
 
   return (
     <Card className="w-full max-w-4xl bg-black/20 backdrop-blur-lg border-purple-500/30 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5 duration-500">
@@ -66,9 +101,13 @@ export function ProfileCard({ result }: ProfileCardProps) {
             />
             <h2 className="text-3xl font-bold mt-4">{user.name || user.login}</h2>
             <p className="text-lg text-muted-foreground">@{user.login}</p>
-            {user.bio && <p className="mt-2 text-foreground/80 text-sm max-w-xs">{user.bio}</p>}
-            
-            <ScoreCircle value={score} />
+             {celebration && (
+              <Badge className={`mt-3 text-base ${celebration.badgeClass}`}>
+                {celebration.badgeIcon}
+                {celebration.badgeText}
+              </Badge>
+            )}
+            <ScoreCircle value={score} indicatorClassName={celebration.progressClass} />
 
             <div className='w-full space-y-2 mt-4'>
                 <ShareableCardDialog result={result} />

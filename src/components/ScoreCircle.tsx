@@ -1,8 +1,9 @@
 // src/components/ScoreCircle.tsx
 'use client';
+import { cn } from '@/lib/utils';
 import { AnimatedNumber } from './AnimatedNumber';
 
-export function ScoreCircle({ value }: { value: number }) {
+export function ScoreCircle({ value, indicatorClassName }: { value: number, indicatorClassName?: string }) {
     const percentage = value / 10; // score is out of 1000, we want it out of 100
     const circumference = 2 * Math.PI * 52; // 2 * pi * radius
     const strokeDashoffset = circumference * (1 - percentage / 100);
@@ -23,7 +24,7 @@ export function ScoreCircle({ value }: { value: number }) {
                     cy="60"
                     r="52"
                     strokeWidth="10"
-                    className="stroke-primary progress-circle glow"
+                    className={cn("progress-circle glow", indicatorClassName || 'stroke-primary')}
                     fill="transparent"
                     strokeDasharray={circumference}
                     strokeDashoffset={circumference}
