@@ -139,3 +139,27 @@ export interface LeaderboardEntry {
   score: number;
   roastedAt: any; // Firestore Timestamp
 }
+
+export type StepStatus = 'pending' | 'active' | 'complete' | 'error' | 'skipped';
+
+export interface FetchProgress {
+  currentStep: number;
+  totalSteps: number;
+  percentage: number;
+  stepName: string;
+  stepStatus: StepStatus;
+  estimatedTimeRemaining: number;
+  dataCollected: {
+    profile: boolean;
+    repositories: boolean;
+    activity: boolean;
+    contributions: boolean;
+    organizations: boolean;
+    processing: boolean;
+  };
+  errors: Array<{
+    step: string;
+    message: string;
+    severity: 'warning' | 'error';
+  }>;
+}

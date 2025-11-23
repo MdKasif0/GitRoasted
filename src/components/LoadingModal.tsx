@@ -4,21 +4,13 @@
 import { useState, useEffect } from 'react';
 import { FlameIcon, XIcon } from './icons';
 import { Button } from './ui/button';
-import { Progress } from './ui/progress';
 import { cn } from '@/lib/utils';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Link as LinkIcon, BarChart, Bot, User, GitBranch } from 'lucide-react';
+import { FETCH_STEPS } from '@/lib/progress';
 
 interface LoadingModalProps {
   username: string;
 }
-
-const steps = [
-  'Fetching public data...',
-  'Analyzing repositories...',
-  'Counting stars & forks...',
-  'Calculating commit frequency...',
-  'Generating your roast...',
-];
 
 const funFacts = [
     'The most committed day on GitHub is Tuesday.',
@@ -27,6 +19,15 @@ const funFacts = [
     'Over 100 million developers use GitHub.',
     'The GitHub mascot is an Octocat named Mona.'
 ];
+
+const stepIcons: Record<string, React.ElementType> = {
+    'Fetching Profile': User,
+    'Analyzing Repositories': GitBranch,
+    'Checking Activity': BarChart,
+    'Calculating Contributions': BarChart,
+    'Loading Social Data': LinkIcon,
+    'Generating Roast': Bot
+}
 
 export function LoadingModal({ username }: LoadingModalProps) {
   const [progress, setProgress] = useState(0);
@@ -38,26 +39,45 @@ export function LoadingModal({ username }: LoadingModalProps) {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
+    let totalTime = 0;
+    const totalDuration = FETCH_STEPS.reduce((acc, step) => acc + step.estimatedTime, 0);
+
+    const stepIntervals = FETCH_STEPS.map((step, index) => {
+        const stepStartTime = totalTime;
+        totalTime += step.estimatedTime;
+        const stepEndTime = totalTime;
+
+        return { ...step, startTime: stepStartTime, endTime: stepEndTime };
+    });
+
+    let startTime = performance.now();
+
+    const animateProgress = (now: number) => {
+        const elapsedTime = now - startTime;
+        
+        const activeStep = stepIntervals.find(s => elapsedTime >= s.startTime && elapsedTime < s.endTime);
+        
+        if(activeStep) {
+            const stepProgress = (elapsedTime - activeStep.startTime) / (activeStep.endTime - activeStep.startTime);
+            const overallProgress = activeStep.progressRange[0] + stepProgress * (activeStep.progressRange[1] - activeStep.progressRange[0]);
+            setProgress(Math.min(overallProgress, 100));
+            setCurrentStep(activeStep.id - 1);
+        } else if (elapsedTime >= totalDuration) {
+            setProgress(100);
+            setCurrentStep(FETCH_STEPS.length -1);
+            return; // Stop animation
         }
-        return prev + 1;
-      });
-    }, 40); // Fast animation for a smooth progress feel
+        
+        requestAnimationFrame(animateProgress);
+    };
 
-    return () => clearInterval(interval);
+    const animationFrameId = requestAnimationFrame(animateProgress);
+    return () => cancelAnimationFrame(animationFrameId);
   }, []);
-
-  useEffect(() => {
-    const stepToShow = Math.floor(progress / (100 / steps.length));
-    setCurrentStep(stepToShow);
-  }, [progress]);
 
   const circumference = 2 * Math.PI * 52;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
+  const displayProgress = Math.floor(progress);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in-0">
@@ -100,29 +120,32 @@ export function LoadingModal({ username }: LoadingModalProps) {
                 </defs>
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <p className="text-5xl font-bold">{progress}%</p>
+                <p className="text-5xl font-bold">{displayProgress}%</p>
                 <p className="text-muted-foreground text-sm mt-1">Loading...</p>
             </div>
         </div>
 
         <div className="space-y-4 mb-8">
-            {steps.map((step, index) => (
-                <div key={index} className="flex items-center gap-4 text-lg">
-                    <div className="relative w-6 h-6 flex items-center justify-center">
-                       {index < currentStep && <CheckCircle2 className="w-6 h-6 text-green-500" />}
-                       {index === currentStep && (
-                           <div className="w-5 h-5 rounded-full bg-primary animate-pulse glow"></div>
-                       )}
-                       {index > currentStep && <div className="w-5 h-5 rounded-full bg-white/20 border-2 border-white/30"></div>}
-                       
-                       {index < steps.length -1 && <div className={cn("absolute h-full w-0.5 top-6 left-1/2 -translate-x-1/2", 
-                        index < currentStep ? "bg-green-500" : "bg-white/20"
-                       )}></div>}
+            {FETCH_STEPS.map((step, index) => {
+                const Icon = stepIcons[step.name] || FlameIcon;
+                return (
+                    <div key={index} className="flex items-center gap-4 text-lg">
+                        <div className="relative w-6 h-6 flex items-center justify-center">
+                        {index < currentStep && <CheckCircle2 className="w-6 h-6 text-green-500" />}
+                        {index === currentStep && (
+                            <div className="w-5 h-5 rounded-full bg-primary animate-pulse glow"></div>
+                        )}
+                        {index > currentStep && <div className="w-5 h-5 rounded-full bg-white/20 border-2 border-white/30"></div>}
+                        
+                        {index < FETCH_STEPS.length -1 && <div className={cn("absolute h-full w-0.5 top-6 left-1/2 -translate-x-1/2", 
+                            index < currentStep ? "bg-green-500" : "bg-white/20"
+                        )}></div>}
 
+                        </div>
+                        <span className={cn("font-medium", index > currentStep ? "text-muted-foreground/60" : "text-foreground")}>{step.name}</span>
                     </div>
-                    <span className={cn("font-medium", index > currentStep ? "text-muted-foreground/60" : "text-foreground")}>{step}</span>
-                </div>
-            ))}
+                )
+            })}
         </div>
 
         <footer className="text-center text-sm text-muted-foreground">
