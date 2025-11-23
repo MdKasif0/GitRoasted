@@ -1,4 +1,3 @@
-
 // src/components/ShareableCard.tsx
 'use client';
 
@@ -7,11 +6,7 @@ import * as htmlToImage from 'html-to-image';
 import {
   Copy,
   Download,
-  Instagram,
-  Laptop,
-  Smartphone,
-  Tablet,
-  Twitter,
+  Share2,
 } from 'lucide-react';
 
 import type { RoastResultState } from '@/lib/types';
@@ -26,8 +21,10 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { ShareableCardPreview } from './ShareableCardPreview';
 import { CustomizationPanel } from './CustomizationPanel';
-import { Share2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
+import { TwitterIcon } from './icons';
+
 
 interface ShareableCardDialogProps {
   result: RoastResultState;
@@ -91,6 +88,15 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
 
   const handleCopyToClipboard = useCallback(async () => {
     if (!cardRef.current) return;
+    if(navigator.share === undefined) {
+        toast({
+            variant: 'destructive',
+            title: 'Unsupported',
+            description: 'Your browser does not support copying images to the clipboard.',
+        });
+        return;
+    }
+
 
     try {
       const blob = await htmlToImage.toBlob(cardRef.current, { pixelRatio: 2 });
@@ -112,10 +118,50 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     }
   }, [cardRef, toast]);
 
+  const handleShare = useCallback(async () => {
+    if (navigator.share === undefined) {
+      toast({
+        variant: 'destructive',
+        title: 'Unsupported',
+        description: 'Your browser does not support the Web Share API.',
+      });
+      return;
+    }
+
+    try {
+       const blob = await htmlToImage.toBlob(cardRef.current!, { pixelRatio: 2 });
+       if(!blob) throw new Error('Could not create blob.');
+
+       const file = new File([blob], `gitroasted-card-${result.user?.login}.png`, { type: 'image/png' });
+
+       await navigator.share({
+        title: `My GitRoasted Card for ${result.user?.login}`,
+        text: `Check out my GitRoasted score! Can you beat it? #GitRoasted`,
+        files: [file]
+      });
+    } catch (err: any) {
+        if(err.name !== 'AbortError') {
+            console.error('Failed to share image', err);
+            toast({
+                variant: 'destructive',
+                title: 'Uh oh!',
+                description: 'Something went wrong while trying to share.',
+            });
+        }
+    }
+  }, [result.user?.login, toast]);
+
 
   if (result.status !== 'success' || !result.user) {
     return null;
   }
+
+  const formatOptions: { value: CardFormat; label: string }[] = [
+    { value: 'instagram', label: 'Instagram' },
+    { value: 'twitter', label: 'Twitter' },
+    { value: 'portrait', label: '3:4' },
+  ]
+
 
   return (
     <Dialog>
@@ -125,10 +171,55 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
             Share Your Card
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-6xl h-[90vh] flex flex-col p-0">
+      <DialogContent className={cn(
+        "p-0 overflow-hidden",
+        isMobile ? "max-w-[100vw] h-[100vh] sm:h-[90vh] sm:max-w-md rounded-none sm:rounded-lg" : "max-w-6xl h-[90vh]"
+      )}>
         <DialogHeader className="p-4 border-b">
           <DialogTitle>Share Your GitRoasted Card</DialogTitle>
         </DialogHeader>
+
+        {isMobile ? (
+          <div className="flex flex-col h-full bg-background p-4 gap-4">
+              <div className='flex items-center justify-center gap-2'>
+                {formatOptions.map(({value, label}) => (
+                    <Button key={value} onClick={() => setFormat(value)} variant={format === value ? 'default' : 'outline'} className={cn('rounded-full transition-all', format === value && 'bg-gradient-to-r from-orange-500 to-purple-500 text-white')}>
+                        {label}
+                    </Button>
+                ))}
+              </div>
+
+              <div className='flex-1 flex items-center justify-center'>
+                 <div
+                    style={{
+                        transform: `scale(0.6)`, // Smaller scale for mobile
+                        transformOrigin: 'center center',
+                    }}
+                    >
+                    <ShareableCardPreview
+                        ref={cardRef}
+                        result={result}
+                        format={format}
+                        theme={theme}
+                        backgroundStyle={backgroundStyle}
+                        layout={layout}
+                        showRoast={showRoast}
+                        showStats={showStats}
+                        showLogo={showLogo}
+                        watermark={watermark}
+                        customMessage={customMessage}
+                    />
+                </div>
+              </div>
+
+              <div className='flex flex-col gap-3'>
+                 <Button size="lg" onClick={handleDownload} className="w-full h-14 text-lg bg-gradient-to-r from-orange-500 via-pink-500 to-red-500 text-white">Download as PNG</Button>
+                 <Button size="lg" onClick={handleCopyToClipboard} className="w-full h-14 text-lg bg-purple-600 hover:bg-purple-700 text-white">Copy Image</Button>
+                 <Button size="lg" onClick={handleShare} variant="outline" className="w-full h-14 text-lg border-2">Share via...</Button>
+              </div>
+
+          </div>
+        ) : (
         <div className="grid md:grid-cols-[2fr_1fr] h-full overflow-hidden">
           {/* Preview Section */}
           <div className="flex items-center justify-center p-8 bg-muted/20 overflow-auto relative">
@@ -181,6 +272,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
             onCopyToClipboard={handleCopyToClipboard}
           />
         </div>
+        )}
       </DialogContent>
     </Dialog>
   );
