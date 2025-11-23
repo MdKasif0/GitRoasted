@@ -7,7 +7,7 @@
 
 <div align="center">
 
-**[View Live Demo](https://gitroasted.app)** • **[How It Works](#how-it-works)** • **[Tech Stack](#tech-stack)**
+**[View Live Demo](https://gitroasted.netlify.app/)** • **[How It Works](#how-it-works)** • **[Tech Stack](#tech-stack)**
 
 </div>
 
