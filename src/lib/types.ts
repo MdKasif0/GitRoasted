@@ -1,4 +1,5 @@
 
+import { LucideIcon } from "lucide-react";
 
 export interface GitHubUser {
   login: string;
@@ -177,3 +178,10 @@ export interface FetchProgress {
   }>;
 }
 
+export interface QuickWin {
+    icon: React.ElementType;
+    title: string;
+    description: string;
+    pointsGain: number;
+    actionUrl?: string;
+}
