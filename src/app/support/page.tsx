@@ -50,7 +50,7 @@ export default function SupportPage() {
                 <p className="text-sm text-muted-foreground mb-4">Use any UPI app like Google Pay, PhonePe, or Paytm.</p>
                 <div className="flex justify-center">
                     <Image 
-                        src="https://picsum.photos/seed/qr-code/250/250" 
+                        src="/fam-qrcode.png"
                         alt="UPI QR Code" 
                         width={250} 
                         height={250}
@@ -78,7 +78,7 @@ export default function SupportPage() {
                       </Tooltip>
                     </TooltipProvider>
                   </p>
-                 <CopyToClipboard textToCopy='gitroasted@fam' />
+                 <CopyToClipboard textToCopy='7856943103@fam' />
               </TabsContent>
             </Tabs>
             <div className="text-center text-xs text-muted-foreground mt-4 flex items-center justify-center gap-2">
