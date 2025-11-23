@@ -90,9 +90,15 @@ export function ProfileCard({ result }: ProfileCardProps) {
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-lg leading-relaxed italic typewriter-multiline">
+                    <div className="text-lg leading-relaxed italic space-y-2">
                         {roastLines.map((line, index) => (
-                          <p key={index}>{line}</p>
+                          <p 
+                            key={index}
+                            className="roast-line"
+                            style={{ animationDelay: `${index * 1.5}s` }}
+                          >
+                            {line}
+                          </p>
                         ))}
                     </div>
                 </CardContent>
