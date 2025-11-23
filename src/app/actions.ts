@@ -5,13 +5,11 @@ import { fetchComprehensiveGitHubData } from '@/lib/github';
 import { calculateRoastScore } from '@/lib/scoring';
 import type { RoastResultState } from '@/lib/types';
 import { z } from 'zod';
-import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { firebaseConfig } from '@/firebase/config';
+import { initializeFirebase } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 // Initialize Firebase
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const { firestore: db } = initializeFirebase();
 
 const usernameSchema = z.string().min(1, 'GitHub username cannot be empty.').max(39, 'GitHub username is too long.');
 
