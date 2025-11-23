@@ -1,3 +1,4 @@
+
 // src/components/ShareableCard.tsx
 'use client';
 
@@ -161,7 +162,8 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     { value: 'twitter', label: 'Twitter' },
     { value: 'portrait', label: '3:4' },
   ]
-
+  const shareUrl = "https://gitroasted.app";
+  const shareText = `I scored ${result.score}/1000 on GitRoasted! 🔥 ${result.leaderboardRoast} Check your GitHub profile:`;
 
   return (
     <Dialog>
@@ -270,6 +272,8 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
             setPreviewSize={setPreviewSize}
             onDownload={handleDownload}
             onCopyToClipboard={handleCopyToClipboard}
+            shareUrl={shareUrl}
+            shareText={shareText}
           />
         </div>
         )}

@@ -1,3 +1,4 @@
+
 // src/components/CustomizationPanel.tsx
 import React from 'react';
 import {
@@ -62,6 +63,8 @@ interface CustomizationPanelProps {
   setPreviewSize: (size: number) => void;
   onDownload: () => void;
   onCopyToClipboard: () => void;
+  shareUrl: string;
+  shareText: string;
 }
 
 const Section: React.FC<{ title: string; children: React.ReactNode, className?: string }> = ({
@@ -98,7 +101,26 @@ export function CustomizationPanel({
   setPreviewSize,
   onDownload,
   onCopyToClipboard,
+  shareUrl,
+  shareText,
 }: CustomizationPanelProps) {
+
+  const shareOnTwitter = () => {
+    const url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+    window.open(url, '_blank');
+  };
+
+  const shareOnFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+    window.open(url, '_blank');
+  };
+
+  const shareOnLinkedIn = () => {
+    const url = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent('Check out my GitRoasted score!')}&summary=${encodeURIComponent(shareText)}`;
+    window.open(url, '_blank');
+  };
+
+
   return (
     <div className="flex flex-col h-full bg-background border-l">
       <CardHeader>
@@ -205,9 +227,9 @@ export function CustomizationPanel({
         </Button>
         <div className="text-center text-sm text-muted-foreground pt-2">Share via:</div>
          <div className="flex justify-center gap-2">
-            <Button variant="ghost" size="icon"><TwitterIcon className="w-5 h-5" /></Button>
-            <Button variant="ghost" size="icon"><Facebook className="w-5 h-5" /></Button>
-            <Button variant="ghost" size="icon"><Linkedin className="w-5 h-5" /></Button>
+            <Button variant="ghost" size="icon" onClick={shareOnTwitter}><TwitterIcon className="w-5 h-5" /></Button>
+            <Button variant="ghost" size="icon" onClick={shareOnFacebook}><Facebook className="w-5 h-5" /></Button>
+            <Button variant="ghost" size="icon" onClick={shareOnLinkedIn}><Linkedin className="w-5 h-5" /></Button>
         </div>
       </div>
     </div>

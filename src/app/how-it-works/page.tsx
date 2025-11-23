@@ -65,9 +65,51 @@ const ScoringBar = ({ title, percentage, description, color }: { title: string, 
     </div>
 );
 
+const faqData = [
+    {
+      question: "Is my data safe?",
+      answer: "Yes, absolutely. GitRoasted only accesses publicly available data from GitHub profiles and does not require any special permissions or store your credentials."
+    },
+    {
+      question: "How often can I get roasted?",
+      answer: "To prevent API rate-limiting and ensure our service remains available to everyone, you can roast a specific user once every 5 minutes. The data is cached to ensure fast subsequent requests."
+    },
+    {
+      question: "What if I don't have a GitHub account?",
+      answer: "No problem! You can enter any public GitHub username to see their roast. Try some famous developers like 'torvalds' or 'gaearon'."
+    },
+    {
+      question: "Can I see other people's roasts?",
+      answer: "Yes! Check out the \"Hall of Flame\" leaderboard on the homepage to see the top-roasted developers."
+    }
+];
+
+const FaqJsonLd = () => {
+    const faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqData.map(item => ({
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": item.answer
+        }
+      }))
+    };
+    return (
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+    );
+};
+
+
 export default function HowItWorksPage() {
   return (
     <div className="min-h-screen p-4 sm:p-6 md:p-8 overflow-x-hidden">
+      <FaqJsonLd />
       <header className="max-w-5xl mx-auto text-center py-16">
         <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500 mb-4">
           How GitRoasted Works
@@ -143,30 +185,14 @@ export default function HowItWorksPage() {
        <section className="max-w-3xl mx-auto py-16">
         <h2 className="text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
          <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="item-1">
-            <AccordionTrigger className="text-lg font-semibold">Is my data safe?</AccordionTrigger>
-            <AccordionContent className="text-lg text-muted-foreground">
-              Yes, absolutely. GitRoasted only accesses publicly available data from GitHub profiles and does not require any special permissions or store your credentials.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger className="text-lg font-semibold">How often can I get roasted?</AccordionTrigger>
-            <AccordionContent className="text-lg text-muted-foreground">
-              To prevent API rate-limiting and ensure our service remains available to everyone, you can roast a specific user once every 5 minutes. The data is cached to ensure fast subsequent requests.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3">
-            <AccordionTrigger className="text-lg font-semibold">What if I don't have a GitHub account?</AccordionTrigger>
-            <AccordionContent className="text-lg text-muted-foreground">
-              No problem! You can enter any public GitHub username to see their roast. Try some famous developers like 'torvalds' or 'gaearon'.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-4">
-            <AccordionTrigger className="text-lg font-semibold">Can I see other people's roasts?</AccordionTrigger>
-            <AccordionContent className="text-lg text-muted-foreground">
-              Yes! Check out the "Hall of Flame" leaderboard on the homepage to see the top-roasted developers.
-            </AccordionContent>
-          </AccordionItem>
+          {faqData.map((item, index) => (
+            <AccordionItem value={`item-${index + 1}`} key={index}>
+              <AccordionTrigger className="text-lg font-semibold">{item.question}</AccordionTrigger>
+              <AccordionContent className="text-lg text-muted-foreground">
+                {item.answer}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
         </Accordion>
       </section>
 
