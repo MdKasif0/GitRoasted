@@ -4,32 +4,32 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 240 10% 3.9%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 210 40% 98%;
  
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 210 40% 98%;
  
     --primary: 33 100% 50%;
     --primary-foreground: 210 40% 98%;
  
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 289 68% 45%;
+    --secondary-foreground: 210 40% 98%;
  
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 289 68% 37%;
+    --muted-foreground: 215 20.2% 65.1%;
  
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 289 68% 37%;
+    --accent-foreground: 210 40% 98%;
  
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+ 
+    --border: 289 68% 20%;
+    --input: 235 50% 30%;
     --ring: 33 100% 50%;
  
     --radius: 0.5rem;
@@ -60,8 +60,8 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
  
-    --border: 289 68% 45%;
-    --input: 235 50% 40%;
+    --border: 289 68% 20%;
+    --input: 235 50% 30%;
     --ring: 33 100% 50%;
   }
 }
@@ -76,8 +76,8 @@
     background: radial-gradient(ellipse 80% 50% at 50% -20%,rgba(120,119,198,0.3),hsla(0,0%,100%,0));
   }
   .dark body {
-    background: #0f0f18;
-    background-image: radial-gradient(ellipse 80% 80% at 50% -20%,rgba(120,119,198,0.3),hsla(0,0%,100%,0));
+    background-color: #0b0918;
+    background-image: radial-gradient(at 27% 37%, hsla(273,81%,63%,0.15) 0px, transparent 50%), radial-gradient(at 77% 30%, hsla(202,68%,73%,0.15) 0px, transparent 50%), radial-gradient(at 50% 100%, hsla(303,81%,63%,0.15) 0px, transparent 50%);
   }
 }
 

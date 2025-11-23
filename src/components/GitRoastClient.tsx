@@ -23,20 +23,15 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending} size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-24">
+    <Button type="submit" disabled={pending} size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 shrink-0">
       {pending ? (
-        <>
-          <span className="animate-spin mr-2">
-            <FlameIcon className="w-4 h-4" />
+          <span className="animate-spin">
+            <FlameIcon className="w-5 h-5" />
           </span>
-          Roasting...
-        </>
       ) : (
-        <>
-          <Search className="mr-2 h-4 w-4" />
-          Roast
-        </>
+          <Search className="h-5 w-5" />
       )}
+       <span className="sr-only">Roast</span>
     </Button>
   );
 }
@@ -75,52 +70,38 @@ export default function GitRoastClient() {
   const [state, formAction] = useActionState(getRoast, initialState);
   const { pending } = useFormStatus();
 
-  const handleExampleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const username = e.currentTarget.value;
-    const form = e.currentTarget.closest('form');
-    if (form) {
-      const input = form.querySelector<HTMLInputElement>('input[name="username"]');
-      if (input) {
-        input.value = username;
-        form.requestSubmit();
-      }
-    }
-  };
-
-
   return (
-    <section className="w-full max-w-2xl">
-        <Card className="relative p-0 overflow-hidden bg-transparent border-none shadow-2xl shadow-purple-500/20">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-indigo-500/20 backdrop-blur-lg"></div>
-          <CardContent className="relative p-2">
-            <form action={formAction} className="relative flex items-center">
-                <Github className="absolute left-4 text-muted-foreground" />
-                <Input
-                type="text"
-                name="username"
-                placeholder="Enter GitHub username..."
-                required
-                className="w-full h-16 pl-12 pr-28 text-lg bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                aria-label="GitHub username"
-                />
-                <SubmitButton />
-            </form>
-          </CardContent>
-        </Card>
+    <section className="w-full max-w-md mt-8">
+        <form action={formAction} className="relative flex items-center">
+            <Github className="absolute left-4 text-muted-foreground" />
+            <Input
+            type="text"
+            name="username"
+            placeholder="Enter GitHub username..."
+            required
+            className="w-full h-14 pl-12 pr-16 text-lg bg-white/5 border-white/10 rounded-full focus-visible:ring-primary/50 focus-visible:ring-offset-0 focus-visible:ring-2 backdrop-blur-sm"
+            aria-label="GitHub username"
+            />
+            <SubmitButton />
+        </form>
 
-      <div className="flex items-center justify-center gap-2 mt-4 text-sm">
+      <div className="flex items-center flex-wrap gap-2 mt-4 text-sm">
         <span className="text-muted-foreground">Try:</span>
         <form action={formAction}>
             <input type="hidden" name="username" value="torvalds" />
-            <Button type="submit" variant="ghost" className="text-muted-foreground hover:text-primary" disabled={pending}>torvalds</Button>
+            <Button type="submit" variant="outline" size="sm" className="text-muted-foreground bg-white/5 border-white/10 h-auto px-3 py-1" disabled={pending}>torvalds</Button>
         </form>
         <form action={formAction}>
             <input type="hidden" name="username" value="gaearon" />
-            <Button type="submit" variant="ghost" className="text-muted-foreground hover:text-primary" disabled={pending}>gaearon</Button>
+            <Button type="submit" variant="outline" size="sm" className="text-muted-foreground bg-white/5 border-white/10 h-auto px-3 py-1" disabled={pending}>gaearon</Button>
         </form>
         <form action={formAction}>
             <input type="hidden" name="username" value="rauchg" />
-            <Button type="submit" variant="ghost" className="text-muted-foreground hover:text-primary" disabled={pending}>rauchg</Button>
+            <Button type="submit" variant="outline" size="sm" className="text-muted-foreground bg-white/5 border-white/10 h-auto px-3 py-1" disabled={pending}>rauchg</Button>
+        </form>
+        <form action={formAction}>
+            <input type="hidden" name="username" value="sindresorhus" />
+            <Button type="submit" variant="outline" size="sm" className="text-muted-foreground bg-white/5 border-white/10 h-auto px-3 py-1" disabled={pending}>sindresorhus</Button>
         </form>
       </div>
 
