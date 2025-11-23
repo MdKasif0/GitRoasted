@@ -97,21 +97,6 @@ export default function SupportPage() {
                 <p>Every contribution, big or small, is deeply appreciated.</p>
                 <p className="mt-2 text-sm">Alternatively, feel free to share GitRoasted with your friends!</p>
             </div>
-
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger className="text-lg font-semibold">Why support GitRoasted?</AccordionTrigger>
-                <AccordionContent className="text-lg text-muted-foreground">
-                  Your support helps cover server costs, API fees, and the time dedicated to developing new features and keeping the roasts fresh.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2">
-                <AccordionTrigger className="text-lg font-semibold">Is this a one-time or recurring payment?</AccordionTrigger>
-                <AccordionContent className="text-lg text-muted-foreground">
-                  This is a one-time contribution. There are no recurring subscriptions or hidden fees.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
         </CardContent>
       </Card>
     </div>
