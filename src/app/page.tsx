@@ -39,12 +39,6 @@ export default function Home() {
                 Leaderboard
               </Link>
             </Button>
-             <Button asChild variant="link" className="text-primary">
-              <Link href="/support" className='flex items-center gap-1'>
-                <Coffee className="w-4 h-4" />
-                Support Us
-              </Link>
-            </Button>
          </div>
       </header>
 
