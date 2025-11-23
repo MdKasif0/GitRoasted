@@ -35,7 +35,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
           <header className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
                 <FlameIcon className="w-8 h-8 text-primary" />
-                <h2 className="text-2xl font-bold text-white">GitRoast</h2>
+                <h2 className="text-2xl font-bold text-white">GitRoasted</h2>
             </div>
             <Image
                 src={result.user.avatar_url}

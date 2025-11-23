@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'GitRoast',
+  title: 'GitRoasted',
   description: 'Get roasted based on your GitHub activity.',
 };
 
