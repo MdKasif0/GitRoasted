@@ -24,7 +24,7 @@ export default function SupportPage() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 md:p-8 animate-in fade-in-0 duration-500">
         <div className="absolute top-6 left-6 z-20">
-            <Button asChild variant="ghost" size="icon" className="bg-white/5 backdrop-blur-sm border-white/10 h-10 w-10">
+            <Button asChild variant="ghost" size="icon" className="bg-white/5 backdrop-blur-sm border border-white/10 h-10 w-10">
                 <Link href="/" aria-label="Back to Home">
                     <ArrowLeft className="h-5 w-5" />
                 </Link>
@@ -57,7 +57,7 @@ export default function SupportPage() {
                 <div className="flex justify-center">
                     <Image 
                         src="/fam-qrcode.png"
-                        alt="UPI QR Code" 
+                        alt="FamApp UPI QR code for GitRoasted Dev" 
                         width={250} 
                         height={250}
                         className='rounded-lg border-4 border-primary'
