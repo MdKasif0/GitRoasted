@@ -15,21 +15,20 @@ const { firestore: db } = initializeFirebase();
 const usernameSchema = z.string().min(1, 'GitHub username cannot be empty.').max(39, 'GitHub username is too long.');
 
 async function saveToLeaderboard(result: RoastResultState) {
-    if (result.status !== 'success' || !result.user || !result.score || !result.roast) return;
+    if (result.status !== 'success' || !result.user || !result.score || !result.leaderboardRoast) return;
 
     try {
         const leaderboardRef = doc(db, 'leaderboard', result.user.login);
         // The leaderboard should show the "seriousness" score, not the roast score.
         const seriousnessScore = 1000 - result.score;
-        const oneLineRoast = result.roast.split('\n')[0];
-
+        
         await setDoc(leaderboardRef, {
             userId: result.user.id.toString(),
             username: result.user.login,
             name: result.user.name || result.user.login,
             avatarUrl: result.user.avatar_url,
             score: seriousnessScore,
-            roast: oneLineRoast,
+            roast: result.leaderboardRoast,
             roastedAt: serverTimestamp()
         }, { merge: true });
     } catch (error) {
@@ -69,11 +68,12 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
         score,
         breakdown,
         archetype,
-        roast: 'This user has no public activity to roast. Are they a ghost? A legend? Or just really good at keeping their chaotic code private? The world may never know.'
+        roast: 'This user has no public activity to roast. Are they a ghost? A legend? Or just really good at keeping their chaotic code private? The world may never know.',
+        leaderboardRoast: 'So private, they make ghosts look sociable.'
       };
     }
 
-    const { roast } = await generateGitHubRoast({
+    const { roast, leaderboardRoast } = await generateGitHubRoast({
       user,
       score,
       breakdown,
@@ -89,6 +89,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
       score,
       breakdown,
       roast,
+      leaderboardRoast,
       archetype
     };
 

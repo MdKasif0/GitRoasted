@@ -143,6 +143,7 @@ export type RoastResultState = {
   score?: number;
   breakdown?: ScoreBreakdown;
   roast?: string;
+  leaderboardRoast?: string;
   message?: string;
   events?: GitHubEvent[];
   repos?: GitHubRepo[];

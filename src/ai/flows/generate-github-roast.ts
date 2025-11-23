@@ -24,7 +24,8 @@ const GenerateGitHubRoastInputSchema = z.object({
 export type GenerateGitHubRoastInput = z.infer<typeof GenerateGitHubRoastInputSchema>;
 
 const GenerateGitHubRoastOutputSchema = z.object({
-  roast: z.string().describe('The AI-generated roast of the GitHub user.'),
+  roast: z.string().describe('The AI-generated 2-3 line roast of the GitHub user.'),
+  leaderboardRoast: z.string().describe('A separate, savage, one-line roast for the leaderboard.'),
 });
 export type GenerateGitHubRoastOutput = z.infer<typeof GenerateGitHubRoastOutputSchema>;
 
@@ -36,12 +37,18 @@ const prompt = ai.definePrompt({
   name: 'generateGitHubRoastPrompt',
   input: {schema: GenerateGitHubRoastInputSchema},
   output: {schema: GenerateGitHubRoastOutputSchema},
-  prompt: `You are a savage but ultimately friendly roastmaster. Your job is to generate a humorous 2-3 line roast of a GitHub user based on their profile data and contribution stats.
+  prompt: `You are a savage but ultimately friendly roastmaster. Your job is to generate a humorous roast of a GitHub user based on their profile data and contribution stats.
 
-Follow this structure strictly:
+You need to generate TWO things:
+1.  'roast': A 2-3 line roast.
+2.  'leaderboardRoast': A separate, single, savage one-line zinger for the leaderboard.
+
+Follow this structure for the main 'roast':
 1.  **Line 1 (The Burn):** Start with a sharp but funny roast targeting their weakest metric from the score breakdown. Be specific. For example, if 'community' is low, mock their follower count. If 'impact' is low, say something like "404 stars not found." A low score in 'consistency' means they are probably ghosting their keyboard.
 2.  **Line 2 (The Compliment):** Immediately pivot to acknowledge something genuinely impressive from their profile (e.g., high commit count, interesting top language, long account age). Find their strongest score category in the breakdown.
 3.  **Line 3 (The Uplift):** End with a short, genuine line of encouragement. Something like "Keep building, legend." or "Seriously, great work."
+
+For the 'leaderboardRoast', distill the main burn into a single, punchy, and hilarious line.
 
 Here is the data for the user:
 - Username: {{{user.login}}}
@@ -67,7 +74,7 @@ Here is the data for the user:
 - Recent Commit History (for context):
 {{{commitHistory}}}
 
-Generate the roast now.
+Generate the main 'roast' and the 'leaderboardRoast' now.
 `,
 });
 
