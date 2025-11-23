@@ -1,6 +1,6 @@
 
 
-import type { GitHubEvent, GitHubUser, GitHubRepo, ScoreBreakdown } from './types';
+import type { GitHubEvent, GitHubUser, GitHubRepo, ScoreBreakdown, DeveloperArchetype } from './types';
 import { differenceInYears, differenceInDays } from 'date-fns';
 
 // --- Scoring Weights ---
@@ -279,6 +279,91 @@ function getSpecialBonus(repos: GitHubRepo[]): { total: number; breakdown: { [ke
     };
 }
 
+
+function determineDeveloperArchetype(
+    breakdown: ScoreBreakdown,
+    user: GitHubUser,
+    repos: GitHubRepo[],
+    events: GitHubEvent[],
+    totalStars: number
+): DeveloperArchetype {
+    const hasHighImpact = breakdown.impact.total > 180;
+    const hasHighConsistency = breakdown.consistency.total > 140;
+    const hasHighCommunity = breakdown.community.total > 110;
+    const hasHighDiversity = breakdown.diversity.total > 70;
+    
+    const avgStars = repos.length > 0 ? totalStars / repos.length : 0;
+    
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+    const pushEventsLast90Days = events.filter(e => e.type === 'PushEvent' && new Date(e.created_at) > ninetyDaysAgo).length;
+    const isActiveContributor = pushEventsLast90Days > 50; // Simplified from your example
+
+    const orgs = new Set(repos.filter(r => r.owner.type === 'Organization').map(r => r.owner.login));
+    const hasOrgInvolvement = orgs.size > 2;
+
+    if (hasHighImpact && avgStars > 50 && repos.length < 30) {
+        return {
+            type: 'Project Maintainer',
+            description: 'You focus on building and maintaining quality projects with significant impact.',
+            characteristics: [
+                'Fewer repositories but highly polished',
+                'Strong community engagement around projects',
+                'Consistent maintenance and updates',
+            ]
+        };
+    }
+
+    if (hasHighDiversity && repos.length > 50) {
+        return {
+            type: 'Technology Explorer',
+            description: 'You love experimenting with different technologies and building diverse projects.',
+            characteristics: [
+                'Wide variety of programming languages',
+                'Many experimental or personal projects',
+                'Quick to adopt new technologies',
+            ]
+        };
+    }
+    
+    if (hasHighCommunity && hasOrgInvolvement) {
+        return {
+            type: 'Open Source Contributor',
+            description: 'You actively contribute to various projects and collaborate with the community.',
+            characteristics: [
+                'Regular contributions to external projects',
+                'Active in multiple organizations',
+                'Strong social engagement within GitHub',
+            ]
+        };
+    }
+    
+    if (hasHighConsistency && isActiveContributor) {
+        return {
+            type: 'Consistent Builder',
+            description: 'You maintain a steady development pace with regular, meaningful contributions.',
+            characteristics: [
+                'Demonstrates a strong daily contribution habit',
+                'Likely has long contribution streaks',
+                'Reliable and dedicated developer',
+            ]
+        };
+    }
+
+    return {
+        type: 'Rising Developer',
+        description: "You're building your presence on GitHub with growing skills and activity.",
+        characteristics: [
+            'Actively learning and growing',
+            'Building a portfolio of projects steadily',
+            'Shows great potential for future impact',
+        ]
+    };
+}
+
+
 /**
  * Calculates the roast score based on various GitHub stats.
  * @returns An object containing the final score and a breakdown.
@@ -287,7 +372,7 @@ export function calculateRoastScore(
   user: GitHubUser,
   events: GitHubEvent[],
   repos: GitHubRepo[],
-): { score: number; breakdown: ScoreBreakdown } {
+): { score: number; breakdown: ScoreBreakdown, archetype: DeveloperArchetype; } {
   
   const impact = getImpactScore(repos);
   const consistency = getConsistencyScore(events);
@@ -325,10 +410,13 @@ export function calculateRoastScore(
       };
       return acc;
   }, {} as ScoreBreakdown);
+  
+  const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+  const archetype = determineDeveloperArchetype(roundedBreakdown, user, repos, events, totalStars);
 
   return {
     score: Math.round(1000 - seriousnessScore),
     breakdown: roundedBreakdown,
+    archetype: archetype,
   };
 }
-

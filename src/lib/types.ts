@@ -1,4 +1,5 @@
 
+
 import { LucideIcon } from "lucide-react";
 
 export interface GitHubUser {
@@ -129,6 +130,12 @@ export type ScoreBreakdown = {
   specialBonus: ScoreCategory;
 };
 
+export type DeveloperArchetype = {
+  type: string;
+  description: string;
+  characteristics: string[];
+};
+
 export type RoastResultState = {
   status: 'idle' | 'loading' | 'success' | 'error';
   username?: string;
@@ -141,6 +148,7 @@ export type RoastResultState = {
   repos?: GitHubRepo[];
   totalStars?: number;
   topLanguages?: [string, number][];
+  archetype?: DeveloperArchetype;
 };
 
 

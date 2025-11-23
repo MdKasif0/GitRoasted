@@ -1,10 +1,10 @@
 
 import Image from 'next/image';
-import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag } from 'lucide-react';
+import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare } from 'lucide-react';
 import React from 'react';
 import { differenceInYears } from 'date-fns';
 
-import type { RoastResultState, ScoreBreakdown, ScoreCategory, QuickWin } from '@/lib/types';
+import type { RoastResultState, ScoreBreakdown, ScoreCategory, QuickWin, DeveloperArchetype } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -122,13 +122,40 @@ const getQuickWins = (result: RoastResultState): QuickWin[] => {
     return quickWins.sort((a, b) => b.pointsGain - a.pointsGain);
 }
 
+const ArchetypeCard = ({ archetype }: { archetype: DeveloperArchetype }) => (
+    <Card className="bg-background/50 border-purple-500/50 mt-6">
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+                <Users2 className="text-primary"/> Profile Analysis
+            </CardTitle>
+            <CardDescription>
+                 Based on your activity, you fit the <span className='font-bold text-primary'>{archetype.type}</span> archetype.
+            </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+             <p className='italic text-muted-foreground'>{archetype.description}</p>
+             <div className='space-y-2'>
+                <h4 className='font-semibold'>Common Traits:</h4>
+                <ul className='space-y-2'>
+                    {archetype.characteristics.map((trait, index) => (
+                        <li key={index} className='flex items-start gap-2 text-sm'>
+                            <CheckSquare className='w-4 h-4 mt-0.5 text-green-500 shrink-0' />
+                            <span>{trait}</span>
+                        </li>
+                    ))}
+                </ul>
+             </div>
+        </CardContent>
+    </Card>
+);
+
 
 function ProfileCardComponent({ result }: ProfileCardProps) {
   if (result.status !== 'success' || !result.user || !result.score || !result.breakdown || !result.events) {
     return null;
   }
 
-  const { user, score, roast, totalStars, topLanguages, breakdown, events } = result;
+  const { user, score, roast, totalStars, topLanguages, breakdown, events, archetype } = result;
 
   const accountAge = differenceInYears(new Date(), new Date(user.created_at));
   const totalContributions = events.filter(e => e.type === 'PushEvent').length;
@@ -193,6 +220,8 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
                     </div>
                 </CardContent>
             </Card>
+
+            {archetype && <ArchetypeCard archetype={archetype} />}
 
             {quickWins.length > 0 && (
                 <Card className="bg-background/50 border-purple-500/50 mt-6">

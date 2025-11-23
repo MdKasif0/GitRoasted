@@ -47,7 +47,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
 
     const { user, events, repos, totalStars, topLanguages } = comprehensiveData;
 
-    const { score, breakdown } = calculateRoastScore(user, events, repos);
+    const { score, breakdown, archetype } = calculateRoastScore(user, events, repos);
 
     const commitHistory = events
       .filter(e => e.type === 'PushEvent' && (e.payload as any).commits)
@@ -63,6 +63,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
         ...comprehensiveData,
         score,
         breakdown,
+        archetype,
         roast: 'This user has no public activity to roast. Are they a ghost? A legend? Or just really good at keeping their chaotic code private? The world may never know.'
       };
     }
@@ -83,6 +84,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
       score,
       breakdown,
       roast,
+      archetype
     };
 
     // Save to leaderboard, but don't wait for it

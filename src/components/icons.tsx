@@ -6,7 +6,7 @@ export function FlameIcon(props: SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -26,7 +26,7 @@ export function Trophy(props: SVGProps<SVGSVGElement>) {
             xmlns="http://www.w3.org/2000/svg"
             width="24"
             height="24"
-            viewBox="0 0 24 24"
+            viewBox="0 0 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -49,7 +49,7 @@ export function GithubIcon(props: SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -69,7 +69,7 @@ export function InstagramIcon(props: SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -90,7 +90,7 @@ export function TwitterIcon(props: SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -108,7 +108,7 @@ export const XIcon = (props: SVGProps<SVGSVGElement>) => (
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"
-    viewBox="0 0 24 24"
+    viewBox="0 0 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -128,7 +128,7 @@ export function BotMessageSquare(props: SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -152,7 +152,7 @@ export function GitCommitVertical(props: SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -174,7 +174,7 @@ export function BookUser(props: SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -195,7 +195,7 @@ export function BookOpen(props: SVGProps<SVGSVGElement>) {
         xmlns="http://www.w3.org/2000/svg"
         width="24"
         height="24"
-        viewBox="0 0 24 24"
+        viewBox="0 0 24"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
@@ -215,7 +215,7 @@ export function Tag(props: SVGProps<SVGSVGElement>) {
             xmlns="http://www.w3.org/2000/svg"
             width="24"
             height="24"
-            viewBox="0 0 24 24"
+            viewBox="0 0 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -226,4 +226,24 @@ export function Tag(props: SVGProps<SVGSVGElement>) {
             <circle cx="16" cy="8" r="1" />
         </svg>
     )
+}
+
+export function CheckSquare(props: SVGProps<SVGSVGElement>) {
+  return (
+      <svg
+          {...props}
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+      >
+          <polyline points="9 11 12 14 22 4" />
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+      </svg>
+  );
 }
