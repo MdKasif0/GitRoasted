@@ -1,3 +1,4 @@
+
 // src/app/leaderboard/LeaderboardClient.tsx
 'use client';
 import Image from 'next/image';
@@ -18,7 +19,7 @@ import {
 } from '@/components/ui/table';
 import { Crown, Search, Trophy } from 'lucide-react';
 import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, orderBy, limit, where, startOfMonth, startOfWeek } from 'firebase/firestore';
+import { collection, query, orderBy, limit, where } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import type { LeaderboardEntry } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,7 +28,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { sub, startOfMonth, startOfWeek } from 'date-fns';
+import { startOfMonth, startOfWeek } from 'date-fns';
 
 type TimeFilter = 'all' | 'month' | 'week';
 
@@ -36,7 +37,8 @@ const PodiumCard = ({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 
     return (
         <div className={cn(
             'relative flex flex-col items-center text-center p-6 bg-white/5 backdrop-blur-xl rounded-2xl border transition-all duration-300',
-            isFirst ? 'border-primary/60 shadow-primary/20 shadow-2xl md:scale-110 z-10' : 'border-white/10 md:mt-8'
+            isFirst ? 'border-primary/60 shadow-primary/20 shadow-2xl md:scale-110 z-10' : 'border-white/10',
+            !isFirst && 'md:mt-8'
         )}>
             <div className="absolute top-0 -translate-y-1/2 flex items-center justify-center w-12 h-12 text-2xl font-bold rounded-full bg-background border-2 border-white/10">{rank}</div>
              <Crown className={cn(
@@ -235,5 +237,7 @@ const FlameIcon = (props: React.SVGProps<SVGSVGElement>) => (
       <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
     </svg>
   );
+
+    
 
     
