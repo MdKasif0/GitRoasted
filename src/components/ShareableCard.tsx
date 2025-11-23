@@ -173,7 +173,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
       </DialogTrigger>
       <DialogContent className={cn(
         "p-0 overflow-hidden",
-        isMobile ? "max-w-[100vw] h-[100vh] sm:h-[90vh] sm:max-w-md rounded-none sm:rounded-lg" : "max-w-6xl h-[90vh]"
+        isMobile ? "max-w-[100vw] h-[100svh] sm:h-[90vh] sm:max-w-md rounded-none sm:rounded-lg" : "max-w-6xl h-[90vh]"
       )}>
         <DialogHeader className="p-4 border-b">
           <DialogTitle>Share Your GitRoasted Card</DialogTitle>
@@ -189,7 +189,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
                 ))}
               </div>
 
-              <div className='flex-1 flex items-center justify-center'>
+              <div className='flex-1 flex items-center justify-center overflow-hidden'>
                  <div
                     style={{
                         transform: `scale(0.6)`, // Smaller scale for mobile
@@ -212,7 +212,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
                 </div>
               </div>
 
-              <div className='flex flex-col gap-3'>
+              <div className='flex flex-col gap-3 mt-auto'>
                  <Button size="lg" onClick={handleDownload} className="w-full h-14 text-lg bg-gradient-to-r from-orange-500 via-pink-500 to-red-500 text-white">Download as PNG</Button>
                  <Button size="lg" onClick={handleCopyToClipboard} className="w-full h-14 text-lg bg-purple-600 hover:bg-purple-700 text-white">Copy Image</Button>
                  <Button size="lg" onClick={handleShare} variant="outline" className="w-full h-14 text-lg border-2">Share via...</Button>
