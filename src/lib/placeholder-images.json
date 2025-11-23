@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "github_avatar_placeholder",
+      "description": "Default placeholder for a GitHub user avatar",
+      "imageUrl": "https://images.unsplash.com/photo-1532456745301-b2c645d8b80d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhYnN0cmFjdCUyMGdlb21ldHJpY3xlbnwwfHx8fDE3NjM4NTM3OTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract geometric"
+    }
+  ]
 }
