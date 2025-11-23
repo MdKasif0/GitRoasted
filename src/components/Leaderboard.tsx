@@ -95,14 +95,14 @@ export function Leaderboard() {
                     </TableHeader>
                     <TableBody>
                         {leaderboardData.map((entry, index) => (
-                        <Collapsible asChild key={entry.id}>
-                          <>
-                            <TableRow className="border-b-purple-500/10">
+                        <Collapsible asChild key={entry.id} >
+                          <tbody className='border-b-purple-500/10 border-b last:border-b-0'>
+                            <TableRow className='border-b-0'>
                                 <TableCell className="font-medium text-lg text-center">
                                    {getRankContent(index)}
                                 </TableCell>
                                 <TableCell>
-                                    <CollapsibleTrigger className="flex items-center gap-3 text-left w-full">
+                                    <CollapsibleTrigger className="flex items-center gap-3 text-left w-full p-0">
                                         <Image
                                         src={entry.avatarUrl}
                                         alt={entry.username}
@@ -131,7 +131,7 @@ export function Leaderboard() {
                                 </tr>
                               </CollapsibleContent>
                             )}
-                          </>
+                          </tbody>
                         </Collapsible>
                         ))}
                     </TableBody>
