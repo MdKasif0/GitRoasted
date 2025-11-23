@@ -38,7 +38,7 @@ export function DonationSelector({ upiId, developerName }: DonationSelectorProps
     if(!isCustom) setIsCustom(true);
   }
 
-  const getUpiLink = () => {
+  const handlePayClick = () => {
     const finalAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
     if (isNaN(finalAmount) || finalAmount <= 0) {
         toast({
@@ -46,10 +46,12 @@ export function DonationSelector({ upiId, developerName }: DonationSelectorProps
             title: 'Invalid Amount',
             description: 'Please enter a valid amount to proceed.',
         });
-        return '#';
+        return;
     }
     const safeDevName = encodeURIComponent(developerName);
-    return `upi://pay?pa=${upiId}&pn=${safeDevName}&am=${finalAmount.toFixed(2)}&cu=INR&tn=Support%20for%20GitRoasted`;
+    const upiLink = `upi://pay?pa=${upiId}&pn=${safeDevName}&am=${finalAmount.toFixed(2)}&cu=INR&tn=Support%20for%20GitRoasted`;
+    
+    window.location.href = upiLink;
   };
 
   return (
@@ -90,10 +92,8 @@ export function DonationSelector({ upiId, developerName }: DonationSelectorProps
         </p>
         
         {isMobile && (
-            <Button asChild size="lg" className="w-full h-14 text-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white">
-                <a href={getUpiLink()}>
-                    Open UPI App
-                </a>
+            <Button onClick={handlePayClick} size="lg" className="w-full h-14 text-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                Open UPI App
             </Button>
         )}
     </div>
