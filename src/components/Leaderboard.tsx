@@ -1,12 +1,14 @@
 
 'use client';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import {
   Table,
@@ -16,13 +18,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Trophy } from 'lucide-react';
+import { ArrowRight, Trophy } from 'lucide-react';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import type { LeaderboardEntry } from '@/lib/types';
 import { Skeleton } from './ui/skeleton';
 import { AnimatedNumber } from './AnimatedNumber';
+import { Button } from './ui/button';
 
 function LeaderboardSkeleton() {
     return (
@@ -125,6 +128,14 @@ export function Leaderboard() {
                  )}
             </div>
         </CardContent>
+        <CardFooter className="flex justify-center p-4">
+            <Button asChild variant="ghost">
+                <Link href="/leaderboard">
+                    View All
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+            </Button>
+        </CardFooter>
         </Card>
     </div>
   );
