@@ -74,7 +74,7 @@ const getScoreCelebration = (score: number) => {
     };
 };
 
-export function ProfileCard({ result }: ProfileCardProps) {
+function ProfileCardComponent({ result }: ProfileCardProps) {
   if (result.status !== 'success' || !result.user || !result.score || !result.breakdown || !result.events) {
     return null;
   }
@@ -206,3 +206,5 @@ export function ProfileCard({ result }: ProfileCardProps) {
     </Card>
   );
 }
+
+export const ProfileCard = React.memo(ProfileCardComponent);
