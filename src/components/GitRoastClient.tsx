@@ -8,7 +8,7 @@ import { getRoast } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Github, Search } from 'lucide-react';
+import { Github, Loader2, Search } from 'lucide-react';
 import { ProfileCard } from './ProfileCard';
 import { Card, CardContent } from './ui/card';
 import { Skeleton } from './ui/skeleton';
@@ -25,16 +25,19 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending} size="lg" className="shrink-0">
+    <Button 
+        type="submit" 
+        disabled={pending} 
+        size="lg" 
+        className="shrink-0 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold hover:from-purple-700 hover:to-pink-600 transition-all duration-300 hover:scale-105"
+    >
       {pending ? (
-          <span className="animate-spin">
-            <FlameIcon className="w-5 h-5" />
+          <span className="flex items-center gap-2">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Roasting...
           </span>
       ) : (
-        <>
-          <FlameIcon className="w-5 h-5 mr-2" />
-          Roast!
-        </>
+        'Roast!'
       )}
        <span className="sr-only">Roast</span>
     </Button>
