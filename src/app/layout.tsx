@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     template: '%s | GitRoasted',
   },
   description: description,
+  manifest: '/manifest.json',
   metadataBase: new URL(url),
   openGraph: {
     title: title,
