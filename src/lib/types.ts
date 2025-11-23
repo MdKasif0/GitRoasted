@@ -106,11 +106,20 @@ export interface GitHubRepo {
   default_branch: string;
 }
 
+export type ScoreBreakdown = {
+  stars: number;
+  followerRatio: number;
+  followerCount: number;
+  contributionFrequency: number;
+  accountAge: number;
+  totalContributions: number;
+};
 
 export type RoastResultState = {
   status: 'idle' | 'loading' | 'success' | 'error';
   user?: GitHubUser;
   score?: number;
+  breakdown?: ScoreBreakdown;
   roast?: string;
   message?: string;
   events?: GitHubEvent[];

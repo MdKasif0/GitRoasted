@@ -20,9 +20,9 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
   try {
     const comprehensiveData = await fetchComprehensiveGitHubData(username);
 
-    const { user, events } = comprehensiveData;
+    const { user, events, totalStars } = comprehensiveData;
 
-    const score = calculateRoastScore(events);
+    const { score, breakdown } = calculateRoastScore(user, events, totalStars);
 
     const commitHistory = events
       .filter(e => e.type === 'PushEvent' && (e.payload as any).commits)
@@ -36,6 +36,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
         status: 'success',
         ...comprehensiveData,
         score,
+        breakdown,
         roast: 'This user has no public commits to roast. Are they even a real developer? Or just a very, very good one who never makes mistakes in public? The mystery remains.'
       };
     }
@@ -49,6 +50,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
       status: 'success',
       ...comprehensiveData,
       score,
+      breakdown,
       roast,
     };
   } catch (error: any) {

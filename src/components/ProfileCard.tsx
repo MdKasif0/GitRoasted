@@ -1,26 +1,37 @@
 import Image from 'next/image';
-import { Github, Users, UserPlus, FileCode, Star, Code, Languages } from 'lucide-react';
+import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap } from 'lucide-react';
 
-import type { RoastResultState } from '@/lib/types';
+import type { RoastResultState, ScoreBreakdown } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ShareableCardDialog } from './ShareableCard';
 import { Badge } from './ui/badge';
+import { Progress } from './ui/progress';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface ProfileCardProps {
   result: RoastResultState;
 }
 
+const breakdownMeta: Record<keyof ScoreBreakdown, { label: string; icon: React.ElementType, description: string }> = {
+    stars: { label: 'Star Power', icon: Star, description: 'Points from total stars on repos.' },
+    followerRatio: { label: 'Influence', icon: Users, description: 'Points from followers to following ratio.' },
+    followerCount: { label: 'Popularity', icon: TrendingUp, description: 'Points from raw follower count.' },
+    contributionFrequency: { label: 'Consistency', icon: Calendar, description: 'Points from active contribution days in the last year.' },
+    accountAge: { label: 'Veteran Status', icon: Github, description: 'Points from account age.' },
+    totalContributions: { label: 'Work Ethic', icon: Zap, description: 'Points from total commit count.' },
+}
+
 export function ProfileCard({ result }: ProfileCardProps) {
-  if (result.status !== 'success' || !result.user || result.roast === undefined || result.score === undefined) {
+  if (result.status !== 'success' || !result.user || !result.roast || !result.score || !result.breakdown) {
     return null;
   }
 
-  const { user, score, roast, totalStars, topLanguages } = result;
+  const { user, score, roast, totalStars, topLanguages, breakdown } = result;
 
   const stats = [
-    { icon: FileCode, label: 'Repositories', value: user.public_repos },
+    { icon: Star, label: 'Repositories', value: user.public_repos },
     { icon: Star, label: 'Total Stars', value: totalStars },
     { icon: Users, label: 'Followers', value: user.followers },
   ];
@@ -74,16 +85,50 @@ export function ProfileCard({ result }: ProfileCardProps) {
         <Separator className="my-6 bg-purple-500/30" />
 
         <div className="text-center">
-          <h3 className="text-xl font-semibold text-muted-foreground">Roast Score</h3>
-          <p className="text-7xl font-bold text-primary my-2">{score}</p>
-          <Card className="mt-4 bg-background/50 border-purple-500/50 text-left">
-            <CardHeader>
-              <CardTitle>The Roast</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-lg leading-relaxed italic">"{roast}"</p>
-            </CardContent>
-          </Card>
+            <h3 className="text-xl font-semibold text-muted-foreground">Roast Score</h3>
+            <p className="text-7xl font-bold text-primary my-2">{score}</p>
+            
+            <Card className="mt-4 bg-background/50 border-purple-500/50 text-left">
+                <CardHeader>
+                <CardTitle>The Roast</CardTitle>
+                </CardHeader>
+                <CardContent>
+                <p className="text-lg leading-relaxed italic">"{roast}"</p>
+                </CardContent>
+            </Card>
+
+            <Card className="mt-6 bg-transparent border-none text-left">
+                <CardHeader className="p-2">
+                    <CardTitle className='text-lg'>Score Breakdown</CardTitle>
+                    <CardDescription>How the sausage gets made.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-2">
+                    <TooltipProvider>
+                        <div className="space-y-4">
+                            {(Object.keys(breakdown) as Array<keyof ScoreBreakdown>).map((key) => {
+                                const meta = breakdownMeta[key];
+                                const value = breakdown[key];
+                                const max = 100 / Object.keys(breakdown).length;
+                                return (
+                                    <Tooltip key={key}>
+                                        <TooltipTrigger className='w-full text-left'>
+                                             <div className="flex items-center gap-2">
+                                                <meta.icon className="h-4 w-4 text-muted-foreground" />
+                                                <span className='flex-1 font-medium'>{meta.label}</span>
+                                                <span className='text-primary font-bold'>{value}</span>
+                                            </div>
+                                            <Progress value={(value / max) * 100} className="h-2 mt-1" />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>{meta.description}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                )
+                            })}
+                        </div>
+                    </TooltipProvider>
+                </CardContent>
+            </Card>
         </div>
 
         <div className="mt-6 flex justify-center">
