@@ -1,3 +1,4 @@
+
 import GitRoastClient from "@/components/GitRoastClient";
 import { Leaderboard } from "@/components/Leaderboard";
 import { FlameIcon } from "@/components/icons";
@@ -54,6 +55,14 @@ export default function Home() {
 
       <footer className="w-full max-w-4xl mt-12 text-center text-muted-foreground text-sm">
         <p>Built with Next.js, Genkit, and a whole lot of 🔥</p>
+        <div className="mt-2">
+          <Button asChild variant="link" className="text-primary">
+              <Link href="/support" className='flex items-center gap-1'>
+                <Coffee className="w-4 h-4" />
+                Support the Project
+              </Link>
+            </Button>
+        </div>
       </footer>
     </div>
   );
