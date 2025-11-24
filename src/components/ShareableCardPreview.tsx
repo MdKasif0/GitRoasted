@@ -173,8 +173,16 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
                 </div>
             )}
 
-            <div className="mt-auto flex items-center gap-2">
-                 {showLogo && <FlameIcon className="w-[1.2em] h-[1.2em] text-primary" />}
+            <div className="mt-auto flex items-center gap-3">
+                 {showLogo && (
+                    <Image
+                        src="/app-icon.png"
+                        alt="GitRoasted Logo"
+                        width={24}
+                        height={24}
+                        className="w-[1.5em] h-[1.5em]"
+                    />
+                 )}
                  {watermark && <p className="text-[1em] text-[hsl(var(--muted-foreground))]">GitRoasted.app</p>}
             </div>
 
