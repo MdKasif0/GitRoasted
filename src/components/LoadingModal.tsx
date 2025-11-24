@@ -65,7 +65,7 @@ export function LoadingModal({ username }: LoadingModalProps) {
         const activeStep = activeStepIndex !== -1 ? stepIntervals[activeStepIndex] : null;
         
         if (activeStep) {
-            const stepDuration = activeStep.endTime - activeStep.startTime;
+            const stepDuration = activeStep.endTime - active.startTime;
             const timeInStep = elapsedTime - activeStep.startTime;
 
             // Apply easing to the progress within the step
