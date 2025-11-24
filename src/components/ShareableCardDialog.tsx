@@ -92,27 +92,30 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
   const handleDownload = useCallback(async () => {
     if (!cardRef.current) return;
 
-    if (isMobile) {
-        // On mobile, the Web Share API is a better experience for "saving"
-        await handleShare();
-        return;
-    }
-
     try {
-      const dataUrl = await htmlToImage.toPng(cardRef.current, {
+      const blob = await htmlToImage.toBlob(cardRef.current, {
         quality: 1,
         pixelRatio: 2,
       });
 
+      if (!blob) {
+          throw new Error('Could not generate image blob.');
+      }
+
+      const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.download = `gitroasted-card-${result.user?.login}.png`;
-      link.href = dataUrl;
+      link.href = url;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
       
       toast({
         title: 'Success!',
-        description: 'Your GitRoasted card has been downloaded.',
+        description: 'Your GitRoasted card is downloading.',
       });
+
     } catch (err) {
       console.error('Failed to download image', err);
       toast({
@@ -121,7 +124,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
         description: 'Could not download the card. Please try again.',
       });
     }
-  }, [cardRef, result.user?.login, toast, isMobile, handleShare]);
+  }, [result.user?.login, toast]);
 
   const handleCopyToClipboard = useCallback(async () => {
     if (!cardRef.current) return;
@@ -218,7 +221,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
                     </RadioGroup>
                     <div className='flex gap-2'>
                         <Button onClick={handleDownload} className="w-full" variant="outline">
-                            <Download className="mr-2 h-4 w-4" /> Save
+                            <Download className="mr-2 h-4 w-4" /> {isMobile ? 'Save' : 'Download'}
                         </Button>
                         <Button onClick={handleCopyToClipboard} className="w-full" variant="outline">
                             <Copy className="mr-2 h-4 w-4" /> Copy
