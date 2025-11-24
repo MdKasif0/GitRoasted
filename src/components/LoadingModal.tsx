@@ -2,11 +2,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FlameIcon, XIcon } from './icons';
+import { XIcon } from './icons';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, Link as LinkIcon, BarChart, Bot, User, GitBranch } from 'lucide-react';
 import { FETCH_STEPS } from '@/lib/progress';
+import Image from 'next/image';
 
 interface LoadingModalProps {
   username: string;
@@ -105,9 +106,13 @@ export function LoadingModal({ username }: LoadingModalProps) {
       <div className="relative w-full max-w-md m-4 bg-gray-900/50 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl p-8 text-white">
         
         <header className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
-                <FlameIcon className="w-6 h-6 text-primary" />
-            </div>
+            <Image
+                src="/app-icon.png"
+                alt="GitRoasted Logo"
+                width={40}
+                height={40}
+                className="w-10 h-10"
+              />
             <h2 className="text-lg font-medium">
                 Roasting: <span className="text-primary font-bold">@{username}</span>
             </h2>
@@ -148,7 +153,7 @@ export function LoadingModal({ username }: LoadingModalProps) {
 
         <div className="space-y-4 mb-8">
             {FETCH_STEPS.map((step, index) => {
-                const Icon = stepIcons[step.name] || FlameIcon;
+                const Icon = stepIcons[step.name] || CheckCircle2;
                 return (
                     <div key={index} className="flex items-center gap-4 text-lg">
                         <div className="relative w-6 h-6 flex items-center justify-center">
