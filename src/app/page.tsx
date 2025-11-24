@@ -66,7 +66,7 @@ export default function Home() {
         <p>Built with Next.js, Genkit, and a whole lot of 🔥</p>
         <div className="mt-2">
            <p>
-            A project by <a href="https://x.com/rasultnt" target="_blank" rel="noopener noreferrer" className="font-semibold text-primary hover:underline">Rasul</a>.
+            <Link href="/support" className="font-semibold text-primary hover:underline">Support the Project</Link>
           </p>
         </div>
       </footer>
