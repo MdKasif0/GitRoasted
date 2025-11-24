@@ -17,7 +17,7 @@ const PerkItem = ({ icon: Icon, text }: { icon: React.ElementType, text: string 
 );
 
 export default function SupportPage() {
-  const upiId = '7856943103@fam';
+  const upiId = 'mdkasifuddin@fam';
   const developerName = 'GitRoasted Dev';
 
   return (
