@@ -269,8 +269,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
             setPreviewSize={setPreviewSize}
             onDownload={handleDownload}
             onCopyToClipboard={handleCopyToClipboard}
-            shareUrl={shareUrl}
-            shareText={shareText}
+            onShare={handleShare}
           />
         </div>
         )}

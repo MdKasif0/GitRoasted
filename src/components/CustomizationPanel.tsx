@@ -34,7 +34,8 @@ import {
   Type,
   LayoutGrid,
   LayoutPanelLeft,
-  LayoutTemplate
+  LayoutTemplate,
+  Share2
 } from 'lucide-react';
 import type { CardFormat, CardTheme, BackgroundStyle, LayoutStyle } from './ShareableCardDialog';
 import { ScrollArea } from './ui/scroll-area';
@@ -64,8 +65,7 @@ interface CustomizationPanelProps {
   setPreviewSize: (size: number) => void;
   onDownload: () => void;
   onCopyToClipboard: () => void;
-  shareUrl: string;
-  shareText: string;
+  onShare: () => void;
 }
 
 const Section: React.FC<{ title: string; children: React.ReactNode, className?: string }> = ({
@@ -100,25 +100,8 @@ export function CustomizationPanel({
   setPreviewSize,
   onDownload,
   onCopyToClipboard,
-  shareUrl,
-  shareText,
+  onShare,
 }: CustomizationPanelProps) {
-
-  const shareOnTwitter = () => {
-    const url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-    window.open(url, '_blank');
-  };
-
-  const shareOnFacebook = () => {
-    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-    window.open(url, '_blank');
-  };
-
-  const shareOnLinkedIn = () => {
-    const url = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent('Check out my GitRoasted score!')}&summary=${encodeURIComponent(shareText)}`;
-    window.open(url, '_blank');
-  };
-
 
   return (
     <div className="flex flex-col h-full bg-background border-l">
@@ -249,12 +232,9 @@ export function CustomizationPanel({
         <Button onClick={onCopyToClipboard} variant="secondary" className="w-full">
           <Copy className="mr-2 h-4 w-4" /> Copy to Clipboard
         </Button>
-        <div className="text-center text-sm text-muted-foreground pt-2">Share via:</div>
-         <div className="flex justify-center gap-2">
-            <Button variant="ghost" size="icon" onClick={shareOnTwitter}><TwitterIcon className="w-5 h-5" /></Button>
-            <Button variant="ghost" size="icon" onClick={shareOnFacebook}><Facebook className="w-5 h-5" /></Button>
-            <Button variant="ghost" size="icon" onClick={shareOnLinkedIn}><Linkedin className="w-5 h-5" /></Button>
-        </div>
+        <Button onClick={onShare} variant="secondary" className="w-full">
+          <Share2 className="mr-2 h-4 w-4" /> Share...
+        </Button>
       </div>
     </div>
   );
