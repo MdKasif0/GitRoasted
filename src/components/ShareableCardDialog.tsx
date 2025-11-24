@@ -7,6 +7,9 @@ import {
   Copy,
   Download,
   Share2,
+  Image as ImageIcon,
+  Instagram,
+  TwitterIcon,
 } from 'lucide-react';
 
 import type { RoastResultState } from '@/lib/types';
@@ -23,6 +26,8 @@ import { ShareableCardPreview } from './ShareableCardPreview';
 import { CustomizationPanel } from './CustomizationPanel';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { cn } from '@/lib/utils';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 
 interface ShareableCardDialogProps {
@@ -37,6 +42,7 @@ export type LayoutStyle = 'compact' | 'balanced' | 'spacious';
 export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
   const { toast } = useToast();
   const cardRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const [format, setFormat] = useState<CardFormat>('instagram');
   const [theme, setTheme] = useState<CardTheme>('dark');
@@ -47,7 +53,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
   const [showLogo, setShowLogo] = useState(true);
   const [watermark, setWatermark] = useState(true);
   const [customMessage, setCustomMessage] = useState('');
-  const [previewSize, setPreviewSize] = useState(60);
+  const [previewSize, setPreviewSize] = useState(isMobile ? 60 : 60);
 
   const handleDownload = useCallback(async () => {
     if (!cardRef.current) return;
@@ -55,15 +61,22 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     try {
       const dataUrl = await htmlToImage.toPng(cardRef.current, {
         quality: 1,
-        pixelRatio: 2, // Higher pixel ratio for better quality
+        pixelRatio: 2,
       });
-      const link = document.createElement('a');
-      link.download = `gitroasted-card-${result.user?.login}.png`;
-      link.href = dataUrl;
-      link.click();
+
+      if (isMobile) {
+          // On mobile, opening in a new tab is a common and effective pattern
+          window.open(dataUrl);
+      } else {
+          const link = document.createElement('a');
+          link.download = `gitroasted-card-${result.user?.login}.png`;
+          link.href = dataUrl;
+          link.click();
+      }
+      
       toast({
         title: 'Success!',
-        description: 'Your GitRoasted card has been downloaded.',
+        description: isMobile ? 'Card opened in a new tab.' : 'Your GitRoasted card has been downloaded.',
       });
     } catch (err) {
       console.error('Failed to download image', err);
@@ -73,7 +86,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
         description: 'Could not download the card. Please try again.',
       });
     }
-  }, [cardRef, result.user?.login, toast]);
+  }, [cardRef, result.user?.login, toast, isMobile]);
 
   const handleCopyToClipboard = useCallback(async () => {
     if (!cardRef.current) return;
@@ -144,6 +157,83 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     return null;
   }
 
+  // Mobile View
+  if (isMobile) {
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button size="lg" className="w-full hover:scale-105 transition-transform bg-gradient-to-r from-purple-600 to-pink-500">
+                    <Share2 className="mr-2 h-4 w-4" />
+                    Share Your Card
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[100vw] h-[100svh] p-0 overflow-hidden flex flex-col">
+                <DialogHeader className="p-4 border-b">
+                    <DialogTitle>Share Your Card</DialogTitle>
+                </DialogHeader>
+
+                <div className="flex-1 flex items-center justify-center p-4 bg-muted/20 overflow-auto">
+                    <div style={{ transform: `scale(0.6)`, transformOrigin: 'center' }}>
+                         <ShareableCardPreview
+                            ref={cardRef}
+                            result={result}
+                            format={format}
+                            theme={theme}
+                            backgroundStyle={backgroundStyle}
+                            layout={layout}
+                            showRoast={showRoast}
+                            showStats={showStats}
+                            showLogo={showLogo}
+                            watermark={watermark}
+                            customMessage={customMessage}
+                        />
+                    </div>
+                </div>
+
+                <div className="p-4 border-t bg-background space-y-4">
+                    <RadioGroup
+                        value={format}
+                        onValueChange={(value: string) => setFormat(value as CardFormat)}
+                        className="grid grid-cols-3 gap-2"
+                        >
+                        {[
+                            { value: 'instagram', label: 'Post' },
+                            { value: 'twitter', label: 'Card'},
+                            { value: 'portrait', label: 'Story'},
+                        ].map(({ value, label }) => (
+                            <Label
+                            key={value}
+                            htmlFor={`format-${value}`}
+                            className={`border-2 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer transition-colors ${
+                                format === value
+                                ? 'border-primary bg-primary/10'
+                                : 'border-border hover:border-primary/50'
+                            }`}
+                            >
+                            <RadioGroupItem value={value} id={`format-${value}`} className="sr-only" />
+                            <span className="text-sm font-semibold text-center">{label}</span>
+                            </Label>
+                        ))}
+                    </RadioGroup>
+                    <div className='flex gap-2'>
+                        <Button onClick={handleDownload} className="w-full" variant="outline">
+                            <Download className="mr-2 h-4 w-4" /> Download
+                        </Button>
+                        <Button onClick={handleCopyToClipboard} className="w-full" variant="outline">
+                            <Copy className="mr-2 h-4 w-4" /> Copy
+                        </Button>
+                        <Button onClick={handleShare} className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white">
+                            <Share2 className="mr-2 h-4 w-4" /> Share
+                        </Button>
+                    </div>
+                </div>
+
+            </DialogContent>
+        </Dialog>
+    )
+  }
+
+  // Desktop View
   return (
     <Dialog>
       <DialogTrigger asChild>
