@@ -138,14 +138,14 @@ export default function HowItWorksPage() {
             num="1"
             title="Enter GitHub Username"
             description="Simply input any public GitHub username to start the roasting process. We'll begin fetching their public data immediately, so make sure you've spelled it right!"
-            imageSrc="https://picsum.photos/seed/step1/1200/600"
+            imageSrc="/enter-github-username.png"
             imageAlt="Screenshot of entering a GitHub username"
         />
          <StepCard 
             num="2"
             title="Analyze & Fetch Data"
             description="Our engine dives deep into public commits, pull requests, issue comments, and more, gathering thousands of data points to understand coding habits and repository interactions."
-            imageSrc="https://picsum.photos/seed/step2/1200/600"
+            imageSrc="/fetch-data.png"
             imageAlt="Visualization of data analysis"
             reverse
         />
@@ -153,14 +153,14 @@ export default function HowItWorksPage() {
             num="3"
             title="Generate Your Roast"
             description="Using advanced AI, we craft a personalized, savage roast based on your unique coding habits and interactions. It's all in good fun!"
-            imageSrc="https://picsum.photos/seed/step3/1200/600"
+            imageSrc="/generate-your-roast.png"
             imageAlt="Example of an AI-generated roast"
         />
         <StepCard 
             num="4"
             title="Calculate Your Score"
             description="Your overall score is a weighted average based on your code quality, review impact, and community engagement. A lower score is better, but a higher score is more roastable!"
-            imageSrc="https://picsum.photos/seed/step4/1200/600"
+            imageSrc="/calculate-your-score.png"
             imageAlt="The final score card"
             reverse
         />
@@ -168,7 +168,7 @@ export default function HowItWorksPage() {
             num="5"
             title="Share Your Results"
             description="Flaunt your roast (or hide your shame) by sharing your custom card on social media or climbing the leaderboard. See how you stack up against the legends."
-            imageSrc="https://picsum.photos/seed/step5/1200/600"
+            imageSrc="/share-your-results.png"
             imageAlt="Sharing the result card"
         />
       </section>
