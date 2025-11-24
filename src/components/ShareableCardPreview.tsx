@@ -3,11 +3,8 @@ import React, { forwardRef } from 'react';
 import Image from 'next/image';
 import type { RoastResultState } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import type { CardFormat, BackgroundStyle, LayoutStyle, CardTheme } from './ShareableCard';
-import { FlameIcon, GithubIcon } from './icons';
-import { AnimatedNumber } from './AnimatedNumber';
-import { ScoreCircle } from './ScoreCircle';
-import { Star, Users, Users2, GitCommit, Languages, Package } from 'lucide-react';
+import type { CardFormat, BackgroundStyle, LayoutStyle, CardTheme } from './ShareableCardDialog';
+import { Star, Users, Package, Languages } from 'lucide-react';
 
 interface ShareableCardPreviewProps {
   result: RoastResultState;
@@ -76,7 +73,6 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
 
     const { user, score, roast, totalStars, topLanguages } = result;
     const { width, height } = formatDimensions[format];
-    const { className } = formatDimensions[format];
 
     const isDark =
       theme === 'dark' ||
@@ -234,6 +230,12 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
                     <StatItem icon={Package} label="Public Repos" value={user.public_repos} layout={layout} />
                     {topLanguages?.[0] && <StatItem icon={Languages} label="Top Language" value={topLanguages[0][0]} layout={layout} />}
                 </div>
+            )}
+
+            {customMessage && (
+                <p className={cn("text-[hsl(var(--muted-foreground))] text-center mt-4", layout === 'compact' && 'text-[0.9em]', layout === 'balanced' && 'text-[1em]')}>
+                    {customMessage}
+                </p>
             )}
 
             <div className={cn("flex items-center gap-3", layout !== 'spacious' && 'mt-auto')}>

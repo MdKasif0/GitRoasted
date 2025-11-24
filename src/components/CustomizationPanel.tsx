@@ -30,7 +30,6 @@ import {
   Copy,
   Download,
   Facebook,
-  Instagram,
   Linkedin,
   Share,
   Layout,
@@ -41,9 +40,9 @@ import {
   LayoutPanelLeft,
   LayoutTemplate
 } from 'lucide-react';
-import type { CardFormat, CardTheme, BackgroundStyle, LayoutStyle } from './ShareableCard';
+import type { CardFormat, CardTheme, BackgroundStyle, LayoutStyle } from './ShareableCardDialog';
 import { ScrollArea } from './ui/scroll-area';
-import { TwitterIcon } from './icons';
+import { TwitterIcon, Instagram as InstagramIcon } from './icons';
 
 
 interface CustomizationPanelProps {
@@ -141,7 +140,7 @@ export function CustomizationPanel({
               className="grid grid-cols-3 gap-2"
             >
               {[
-                { value: 'instagram', label: 'Instagram Post', icon: <Instagram className="w-6 h-6 mb-2" /> , dim: '1080x1080px' },
+                { value: 'instagram', label: 'Instagram Post', icon: <InstagramIcon className="w-6 h-6 mb-2" /> , dim: '1080x1080px' },
                 { value: 'twitter', label: 'Twitter Card', icon: <TwitterIcon className="w-6 h-6 mb-2" />, dim: '1200x675px' },
                 { value: 'portrait', label: '3:4 Portrait', icon: <div className="w-6 h-6 mb-2 font-bold text-xl border-2 rounded-sm flex items-center justify-center">3:4</div>, dim: '1080x1440px' },
               ].map(({ value, label, icon, dim }) => (

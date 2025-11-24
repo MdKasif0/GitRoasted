@@ -23,8 +23,6 @@ import { ShareableCardPreview } from './ShareableCardPreview';
 import { CustomizationPanel } from './CustomizationPanel';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { cn } from '@/lib/utils';
-import { TwitterIcon } from './icons';
-
 
 interface ShareableCardDialogProps {
   result: RoastResultState;
