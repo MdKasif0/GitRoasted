@@ -1,4 +1,3 @@
-
 // src/components/ShareableCard.tsx
 'use client';
 
@@ -22,7 +21,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { ShareableCardPreview } from './ShareableCardPreview';
 import { CustomizationPanel } from './CustomizationPanel';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 import { cn } from '@/lib/utils';
 import { TwitterIcon } from './icons';
 

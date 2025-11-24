@@ -1,4 +1,3 @@
-
 // src/components/CustomizationPanel.tsx
 import React from 'react';
 import {
