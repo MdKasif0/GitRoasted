@@ -241,11 +241,13 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
                                         <Icon className="w-5 h-5 text-primary" />
                                     </div>
                                     <div className="flex-1">
-                                        <div className='flex justify-between items-center'>
-                                            <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{win.title}</h4>
-                                            <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20">+{win.pointsGain} pts</Badge>
+                                        <div className='flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2'>
+                                            <div className='flex-1'>
+                                                <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{win.title}</h4>
+                                                <p className="text-sm text-muted-foreground mt-1">{win.description}</p>
+                                            </div>
+                                            <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20 shrink-0 self-start">+{win.pointsGain} pts</Badge>
                                         </div>
-                                        <p className="text-sm text-muted-foreground">{win.description}</p>
                                     </div>
                                 </a>
                             );
