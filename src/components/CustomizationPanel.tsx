@@ -229,11 +229,8 @@ export function CustomizationPanel({
         <Button onClick={onDownload} className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white">
           <Download className="mr-2 h-4 w-4" /> Download Card
         </Button>
-        <Button onClick={onCopyToClipboard} variant="secondary" className="w-full">
-          <Copy className="mr-2 h-4 w-4" /> Copy to Clipboard
-        </Button>
         <Button onClick={onShare} variant="secondary" className="w-full">
-          <Share2 className="mr-2 h-4 w-4" /> Share...
+          <Share2 className="mr-2 h-4 w-4" /> Share
         </Button>
       </div>
     </div>
