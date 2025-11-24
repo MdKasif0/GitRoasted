@@ -159,8 +159,6 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     { value: 'twitter', label: 'Twitter' },
     { value: 'portrait', label: '3:4' },
   ]
-  const shareUrl = "https://gitroasted.app";
-  const shareText = `I got a seriousness score of ${1000 - (result.score || 0)}/1000 on GitRoasted! 🔥 ${result.leaderboardRoast} Check your GitHub profile:`;
 
   return (
     <Dialog>
