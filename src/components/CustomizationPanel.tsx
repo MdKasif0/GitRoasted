@@ -33,6 +33,13 @@ import {
   Instagram,
   Linkedin,
   Share,
+  Layout,
+  Palette,
+  Image as ImageIcon,
+  Type,
+  LayoutGrid,
+  LayoutPanelLeft,
+  LayoutTemplate
 } from 'lucide-react';
 import type { CardFormat, CardTheme, BackgroundStyle, LayoutStyle } from './ShareableCard';
 import { ScrollArea } from './ui/scroll-area';
@@ -178,7 +185,32 @@ export function CustomizationPanel({
           </Section>
 
           <Section title="Layout">
-             <div className="flex items-center justify-between">
+            <RadioGroup
+              value={layout}
+              onValueChange={(value) => setLayout(value as LayoutStyle)}
+              className="grid grid-cols-3 gap-2"
+            >
+              {[
+                { value: 'compact', label: 'Compact', icon: <LayoutPanelLeft className="w-6 h-6 mb-1" />},
+                { value: 'balanced', label: 'Balanced', icon: <LayoutGrid className="w-6 h-6 mb-1" />},
+                { value: 'spacious', label: 'Spacious', icon: <LayoutTemplate className="w-6 h-6 mb-1" />},
+              ].map(({ value, label, icon }) => (
+                 <Label
+                  key={value}
+                  htmlFor={`layout-${value}`}
+                  className={`border-2 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer transition-colors ${
+                    layout === value
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <RadioGroupItem value={value} id={`layout-${value}`} className="sr-only" />
+                  {icon}
+                  <span className="text-xs font-semibold text-center">{label}</span>
+                </Label>
+              ))}
+            </RadioGroup>
+             <div className="flex items-center justify-between pt-4">
                 <Label htmlFor="show-roast">Show Roast</Label>
                 <Switch id="show-roast" checked={showRoast} onCheckedChange={setShowRoast} />
             </div>

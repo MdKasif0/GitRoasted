@@ -49,7 +49,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
   const [showLogo, setShowLogo] = useState(true);
   const [watermark, setWatermark] = useState(true);
   const [customMessage, setCustomMessage] = useState('');
-  const [previewSize, setPreviewSize] = useState(50);
+  const [previewSize, setPreviewSize] = useState(60);
 
   const handleDownload = useCallback(async () => {
     if (!cardRef.current) return;
@@ -88,7 +88,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
 
   const handleCopyToClipboard = useCallback(async () => {
     if (!cardRef.current) return;
-    if(navigator.share === undefined) {
+    if(navigator.clipboard === undefined || !navigator.clipboard.write) {
         toast({
             variant: 'destructive',
             title: 'Unsupported',
@@ -96,7 +96,6 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
         });
         return;
     }
-
 
     try {
       const blob = await htmlToImage.toBlob(cardRef.current, { pixelRatio: 2 });
@@ -162,7 +161,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     { value: 'portrait', label: '3:4' },
   ]
   const shareUrl = "https://gitroasted.app";
-  const shareText = `I scored ${result.score}/1000 on GitRoasted! 🔥 ${result.leaderboardRoast} Check your GitHub profile:`;
+  const shareText = `I got a seriousness score of ${1000 - (result.score || 0)}/1000 on GitRoasted! 🔥 ${result.leaderboardRoast} Check your GitHub profile:`;
 
   return (
     <Dialog>
@@ -174,7 +173,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
       </DialogTrigger>
       <DialogContent className={cn(
         "p-0 overflow-hidden",
-        isMobile ? "max-w-[100vw] h-[100svh] sm:h-[90vh] sm:max-w-md rounded-none sm:rounded-lg" : "max-w-6xl h-[90vh]"
+        isMobile ? "max-w-[100vw] h-[100svh] sm:h-[90svh] sm:max-w-md rounded-none sm:rounded-lg" : "max-w-6xl h-[90vh]"
       )}>
         <DialogHeader className="p-4 border-b">
           <DialogTitle>Share Your GitRoasted Card</DialogTitle>
@@ -221,7 +220,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
 
           </div>
         ) : (
-        <div className="grid md:grid-cols-[2fr_1fr] h-full overflow-hidden">
+        <div className="grid md:grid-cols-[2fr_1fr] h-[calc(100%-57px)] overflow-hidden">
           {/* Preview Section */}
           <div className="flex items-center justify-center p-8 bg-muted/20 overflow-auto relative">
              <div
