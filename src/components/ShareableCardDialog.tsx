@@ -1,10 +1,11 @@
-
 // src/components/ShareableCardDialog.tsx
 'use client';
 
 import React, { useCallback, useRef, useState } from 'react';
 import * as htmlToImage from 'html-to-image';
 import {
+  Copy,
+  Download,
   Share2,
 } from 'lucide-react';
 

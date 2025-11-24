@@ -9,7 +9,7 @@ import type { RoastResultState, ScoreBreakdown, ScoreCategory, QuickWin, Develop
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ShareableCardDialog } from './ShareableCard';
+import { ShareableCardDialog } from './ShareableCardDialog';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
