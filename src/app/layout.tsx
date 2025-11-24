@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 const title = 'GitRoasted | Savage AI Roasts for GitHub Profiles';
 const description = 'Get your GitHub profile analyzed with a savage roast! Calculate your developer score out of 1000, compete on the leaderboard, and share your results.';
-const url = 'https://gitroasted.app'; 
+const url = 'https://gitroasted.netlify.app'; 
 
 export const metadata: Metadata = {
   title: {

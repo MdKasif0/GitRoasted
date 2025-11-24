@@ -257,7 +257,7 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
                     layout === 'compact' && 'text-[0.9em]',
                     layout === 'balanced' && 'text-[1em]',
                     layout === 'spacious' && 'text-[1.1em]'
-                )}>GitRoasted.app</p>}
+                )}>gitroasted.netlify.app</p>}
             </div>
 
         </div>
