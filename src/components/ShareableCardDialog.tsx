@@ -55,71 +55,8 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
   const [customMessage, setCustomMessage] = useState('');
   const [previewSize, setPreviewSize] = useState(isMobile ? 60 : 60);
 
-  const handleDownload = useCallback(async () => {
-    if (!cardRef.current) return;
-
-    try {
-      const dataUrl = await htmlToImage.toPng(cardRef.current, {
-        quality: 1,
-        pixelRatio: 2,
-      });
-
-      if (isMobile) {
-          // On mobile, opening in a new tab is a common and effective pattern
-          window.open(dataUrl);
-      } else {
-          const link = document.createElement('a');
-          link.download = `gitroasted-card-${result.user?.login}.png`;
-          link.href = dataUrl;
-          link.click();
-      }
-      
-      toast({
-        title: 'Success!',
-        description: isMobile ? 'Card opened in a new tab.' : 'Your GitRoasted card has been downloaded.',
-      });
-    } catch (err) {
-      console.error('Failed to download image', err);
-      toast({
-        variant: 'destructive',
-        title: 'Uh oh!',
-        description: 'Could not download the card. Please try again.',
-      });
-    }
-  }, [cardRef, result.user?.login, toast, isMobile]);
-
-  const handleCopyToClipboard = useCallback(async () => {
-    if (!cardRef.current) return;
-    if(navigator.clipboard === undefined || !navigator.clipboard.write) {
-        toast({
-            variant: 'destructive',
-            title: 'Unsupported',
-            description: 'Your browser does not support copying images to the clipboard.',
-        });
-        return;
-    }
-
-    try {
-      const blob = await htmlToImage.toBlob(cardRef.current, { pixelRatio: 2 });
-      if (!blob) throw new Error('Could not create blob.');
-      await navigator.clipboard.write([
-        new ClipboardItem({ 'image/png': blob }),
-      ]);
-      toast({
-        title: 'Copied to Clipboard!',
-        description: 'You can now paste the card in any application.',
-      });
-    } catch (err) {
-      console.error('Failed to copy image', err);
-      toast({
-        variant: 'destructive',
-        title: 'Uh oh!',
-        description: 'Could not copy the card. Please try again.',
-      });
-    }
-  }, [cardRef, toast]);
-
   const handleShare = useCallback(async () => {
+    if (!cardRef.current) return;
     if (navigator.share === undefined) {
       toast({
         variant: 'destructive',
@@ -152,6 +89,70 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     }
   }, [result.user?.login, toast]);
 
+  const handleDownload = useCallback(async () => {
+    if (!cardRef.current) return;
+
+    if (isMobile) {
+        // On mobile, the Web Share API is a better experience for "saving"
+        await handleShare();
+        return;
+    }
+
+    try {
+      const dataUrl = await htmlToImage.toPng(cardRef.current, {
+        quality: 1,
+        pixelRatio: 2,
+      });
+
+      const link = document.createElement('a');
+      link.download = `gitroasted-card-${result.user?.login}.png`;
+      link.href = dataUrl;
+      link.click();
+      
+      toast({
+        title: 'Success!',
+        description: 'Your GitRoasted card has been downloaded.',
+      });
+    } catch (err) {
+      console.error('Failed to download image', err);
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh!',
+        description: 'Could not download the card. Please try again.',
+      });
+    }
+  }, [cardRef, result.user?.login, toast, isMobile, handleShare]);
+
+  const handleCopyToClipboard = useCallback(async () => {
+    if (!cardRef.current) return;
+    if(navigator.clipboard === undefined || !navigator.clipboard.write) {
+        toast({
+            variant: 'destructive',
+            title: 'Unsupported',
+            description: 'Your browser does not support copying images to the clipboard.',
+        });
+        return;
+    }
+
+    try {
+      const blob = await htmlToImage.toBlob(cardRef.current, { pixelRatio: 2 });
+      if (!blob) throw new Error('Could not create blob.');
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob }),
+      ]);
+      toast({
+        title: 'Copied to Clipboard!',
+        description: 'You can now paste the card in any application.',
+      });
+    } catch (err) {
+      console.error('Failed to copy image', err);
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh!',
+        description: 'Could not copy the card. Please try again.',
+      });
+    }
+  }, [cardRef, toast]);
 
   if (result.status !== 'success' || !result.user) {
     return null;
@@ -217,7 +218,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
                     </RadioGroup>
                     <div className='flex gap-2'>
                         <Button onClick={handleDownload} className="w-full" variant="outline">
-                            <Download className="mr-2 h-4 w-4" /> Download
+                            <Download className="mr-2 h-4 w-4" /> Save
                         </Button>
                         <Button onClick={handleCopyToClipboard} className="w-full" variant="outline">
                             <Copy className="mr-2 h-4 w-4" /> Copy
