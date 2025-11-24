@@ -1,5 +1,6 @@
 
 import GitRoastClient from "@/components/GitRoastClient";
+import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { Leaderboard } from "@/components/Leaderboard";
 import { FlameIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,7 @@ export default function Home() {
       <main className="w-full flex flex-col items-center gap-8">
         <GitRoastClient />
         <Leaderboard />
+        <HowItWorksSection />
       </main>
 
       <footer className="w-full max-w-4xl mt-12 text-center text-muted-foreground text-sm">
