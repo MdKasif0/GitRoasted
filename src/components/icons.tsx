@@ -289,3 +289,52 @@ export function IndianRupee(props: SVGProps<SVGSVGElement>) {
         </svg>
     );
 }
+
+
+export function Package(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M16.5 9.4a4.5 4.5 0 1 1-8 0 4.5 4.5 0 0 1 8 0z" />
+      <path d="M12 15H3l-1-5L2 4h14v4.5" />
+      <path d="m3 9 9 6 9-6" />
+      <path d="M6 9v10" />
+      <path d="M18 9v10" />
+    </svg>
+  );
+}
+
+
+export function Languages(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m5 8 6 6" />
+      <path d="m4 14 6-6 2-3" />
+      <path d="M2 5h12" />
+      <path d="M7 2h1" />
+      <path d="m22 22-5-10-5 10" />
+      <path d="M14 18h6" />
+    </svg>
+  );
+}

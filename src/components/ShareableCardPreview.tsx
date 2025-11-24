@@ -160,7 +160,7 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
 
             {showRoast && (
                 <div className="text-[1.1em] italic text-[hsl(var(--muted-foreground))] max-w-md">
-                   <p>"{roast}"</p>
+                   <p>"{result.leaderboardRoast}"</p>
                 </div>
             )}
             
