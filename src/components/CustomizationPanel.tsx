@@ -3,9 +3,6 @@ import React from 'react';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Tabs,
@@ -31,7 +28,6 @@ import {
   Download,
   Facebook,
   Linkedin,
-  Share,
   Layout,
   Palette,
   Image as ImageIcon,
@@ -88,8 +84,6 @@ export function CustomizationPanel({
   setFormat,
   theme,
   setTheme,
-  backgroundStyle,
-  setBackgroundStyle,
   layout,
   setLayout,
   showRoast,
@@ -128,11 +122,11 @@ export function CustomizationPanel({
 
   return (
     <div className="flex flex-col h-full bg-background border-l">
-      <CardHeader>
-        <CardTitle>Customize Your Card</CardTitle>
-      </CardHeader>
+      <div className="p-4 border-b">
+        <h2 className="text-xl font-bold text-foreground">Customize Your Card</h2>
+      </div>
       <ScrollArea className="flex-1">
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 p-4">
           <Section title="Format Selection">
             <RadioGroup
               value={format}

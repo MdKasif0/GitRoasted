@@ -1,11 +1,10 @@
+
 // src/components/ShareableCardDialog.tsx
 'use client';
 
 import React, { useCallback, useRef, useState } from 'react';
 import * as htmlToImage from 'html-to-image';
 import {
-  Copy,
-  Download,
   Share2,
 } from 'lucide-react';
 
@@ -23,6 +22,7 @@ import { ShareableCardPreview } from './ShareableCardPreview';
 import { CustomizationPanel } from './CustomizationPanel';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { cn } from '@/lib/utils';
+
 
 interface ShareableCardDialogProps {
   result: RoastResultState;
