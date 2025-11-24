@@ -28,12 +28,28 @@ const formatDimensions: Record<CardFormat, { width: number; height: number; clas
   portrait: { width: 1080, height: 1440, className: 'aspect-[3/4]' },
 };
 
-const StatItem = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: string | number }) => (
-    <div className="flex items-center gap-2 text-left">
-        <Icon className="w-[1.2em] h-[1.2em] text-primary shrink-0" />
+const StatItem = ({ icon: Icon, label, value, layout }: { icon: React.ElementType, label: string, value: string | number, layout: LayoutStyle }) => (
+    <div className={cn(
+        "flex items-center gap-2 text-left",
+        layout === 'compact' && 'gap-1',
+        layout === 'spacious' && 'gap-3'
+    )}>
+        <Icon className={cn(
+            "w-[1.2em] h-[1.2em] text-primary shrink-0",
+            layout === 'compact' && 'w-[1.1em] h-[1.1em]',
+            layout === 'spacious' && 'w-[1.3em] h-[1.3em]'
+        )} />
         <div>
-            <p className="text-[1.2em] font-bold leading-tight">{typeof value === 'number' ? value.toLocaleString() : value}</p>
-            <p className="text-[0.8em] text-muted-foreground leading-tight">{label}</p>
+            <p className={cn(
+                "text-[1.2em] font-bold leading-tight",
+                layout === 'compact' && 'text-[1.1em]',
+                layout === 'spacious' && 'text-[1.3em]'
+            )}>{typeof value === 'number' ? value.toLocaleString() : value}</p>
+            <p className={cn(
+                "text-[0.8em] text-muted-foreground leading-tight",
+                 layout === 'compact' && 'text-[0.75em]',
+                 layout === 'spacious' && 'text-[0.85em]'
+            )}>{label}</p>
         </div>
     </div>
 )
@@ -114,7 +130,12 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
           }}
         ></div>
         
-        <div className="z-10 w-full h-full flex flex-col items-center text-center p-[2em] bg-[hsl(var(--card))]/30 backdrop-blur-2xl border border-[hsl(var(--border))] rounded-3xl">
+        <div className={cn(
+            "z-10 w-full h-full flex flex-col items-center text-center p-[2em] bg-[hsl(var(--card))]/30 backdrop-blur-2xl border border-[hsl(var(--border))] rounded-3xl",
+            layout === 'compact' && 'p-[1.5em] justify-around',
+            layout === 'balanced' && 'p-[2em] justify-center',
+            layout === 'spacious' && 'p-[2.5em] justify-between'
+        )}>
 
             <div className="relative">
                  <Image
@@ -122,14 +143,36 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
                     alt={user.login}
                     width={96}
                     height={96}
-                    className="rounded-full border-4 border-primary shadow-lg w-[6em] h-[6em]"
+                    className={cn(
+                        "rounded-full border-4 border-primary shadow-lg",
+                        layout === 'compact' && 'w-[5em] h-[5em]',
+                        layout === 'balanced' && 'w-[6em] h-[6em]',
+                        layout === 'spacious' && 'w-[7em] h-[7em]'
+                    )}
                 />
             </div>
             
-            <h1 className={`text-[2.5em] font-bold mt-4 leading-none`}>{user.name || user.login}</h1>
-            <p className={`text-[1.2em] text-[hsl(var(--muted-foreground))]`}>@{user.login}</p>
+            <div>
+                <h1 className={cn(
+                    `font-bold leading-none`,
+                    layout === 'compact' && 'text-[2.2em] mt-2',
+                    layout === 'balanced' && 'text-[2.5em] mt-4',
+                    layout === 'spacious' && 'text-[2.8em] mt-2'
+                )}>{user.name || user.login}</h1>
+                <p className={cn(
+                    `text-[hsl(var(--muted-foreground))]`,
+                    layout === 'compact' && 'text-[1em]',
+                    layout === 'balanced' && 'text-[1.2em]',
+                    layout === 'spacious' && 'text-[1.4em]'
+                )}>@{user.login}</p>
+            </div>
             
-            <div className="relative my-6 w-[12em] h-[12em]">
+            <div className={cn(
+                "relative my-6",
+                layout === 'compact' && 'w-[10em] h-[10em] my-2',
+                layout === 'balanced' && 'w-[12em] h-[12em] my-6',
+                layout === 'spacious' && 'w-[14em] h-[14em] my-4'
+            )}>
                 <svg className="w-full h-full" viewBox="0 0 120 120">
                     <defs>
                         <linearGradient id="share-card-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -153,37 +196,66 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
                     />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <p className="text-[3.5em] font-bold text-primary">{Math.round(invertedScore)}</p>
-                    <p className="text-[1em] text-[hsl(var(--muted-foreground))] -mt-2">/ 1000</p>
+                    <p className={cn(
+                        "font-bold text-primary",
+                        layout === 'compact' && 'text-[3em]',
+                        layout === 'balanced' && 'text-[3.5em]',
+                        layout === 'spacious' && 'text-[4em]'
+                    )}>{Math.round(invertedScore)}</p>
+                    <p className={cn(
+                        "text-[hsl(var(--muted-foreground))] -mt-2",
+                         layout === 'compact' && 'text-[0.9em]',
+                         layout === 'balanced' && 'text-[1em]',
+                         layout === 'spacious' && 'text-[1.1em]'
+                    )}>/ 1000</p>
                 </div>
             </div>
 
             {showRoast && (
-                <div className="text-[1.1em] italic text-[hsl(var(--muted-foreground))] max-w-md">
+                <div className={cn(
+                    "italic text-[hsl(var(--muted-foreground))] max-w-md",
+                    layout === 'compact' && 'text-[1em]',
+                    layout === 'balanced' && 'text-[1.1em]',
+                    layout === 'spacious' && 'text-[1.2em]'
+                )}>
                    <p>"{result.leaderboardRoast}"</p>
                 </div>
             )}
             
             {showStats && (
-                <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-8">
-                    <StatItem icon={Star} label="Total Stars" value={totalStars ?? 0} />
-                    <StatItem icon={Users} label="Followers" value={user.followers} />
-                    <StatItem icon={Package} label="Public Repos" value={user.public_repos} />
-                    {topLanguages?.[0] && <StatItem icon={Languages} label="Top Language" value={topLanguages[0][0]} />}
+                <div className={cn(
+                    "grid grid-cols-2 mt-8",
+                    layout === 'compact' && 'gap-x-6 gap-y-2',
+                    layout === 'balanced' && 'gap-x-8 gap-y-4',
+                    layout === 'spacious' && 'gap-x-12 gap-y-6'
+                )}>
+                    <StatItem icon={Star} label="Total Stars" value={totalStars ?? 0} layout={layout} />
+                    <StatItem icon={Users} label="Followers" value={user.followers} layout={layout} />
+                    <StatItem icon={Package} label="Public Repos" value={user.public_repos} layout={layout} />
+                    {topLanguages?.[0] && <StatItem icon={Languages} label="Top Language" value={topLanguages[0][0]} layout={layout} />}
                 </div>
             )}
 
-            <div className="mt-auto flex items-center gap-3">
+            <div className={cn("flex items-center gap-3", layout !== 'spacious' && 'mt-auto')}>
                  {showLogo && (
                     <Image
                         src="/app-icon.png"
                         alt="GitRoasted Logo"
                         width={24}
                         height={24}
-                        className="w-[1.5em] h-[1.5em]"
+                        className={cn(
+                            "w-[1.5em] h-[1.5em]",
+                            layout === 'compact' && 'w-[1.2em] h-[1.2em]',
+                            layout === 'spacious' && 'w-[1.8em] h-[1.8em]'
+                        )}
                     />
                  )}
-                 {watermark && <p className="text-[1em] text-[hsl(var(--muted-foreground))]">GitRoasted.app</p>}
+                 {watermark && <p className={cn(
+                    "text-[hsl(var(--muted-foreground))]",
+                    layout === 'compact' && 'text-[0.9em]',
+                    layout === 'balanced' && 'text-[1em]',
+                    layout === 'spacious' && 'text-[1.1em]'
+                )}>GitRoasted.app</p>}
             </div>
 
         </div>
