@@ -37,7 +37,6 @@ export type LayoutStyle = 'compact' | 'balanced' | 'spacious';
 export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
   const { toast } = useToast();
   const cardRef = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobile();
 
   const [format, setFormat] = useState<CardFormat>('instagram');
   const [theme, setTheme] = useState<CardTheme>('dark');
@@ -58,22 +57,13 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
         quality: 1,
         pixelRatio: 2, // Higher pixel ratio for better quality
       });
-
-      if (isMobile) {
-        // On mobile, open the image in a new tab for the user to save.
-        const newWindow = window.open();
-        newWindow?.document.write(`<img src="${dataUrl}" alt="GitRoasted Card" style="max-width: 100%; height: auto;" />`);
-      } else {
-        // On desktop, trigger a direct download.
-        const link = document.createElement('a');
-        link.download = `gitroasted-card-${result.user?.login}.png`;
-        link.href = dataUrl;
-        link.click();
-      }
-
+      const link = document.createElement('a');
+      link.download = `gitroasted-card-${result.user?.login}.png`;
+      link.href = dataUrl;
+      link.click();
       toast({
         title: 'Success!',
-        description: isMobile ? 'Card opened. You can now save the image.' : 'Your GitRoasted card has been downloaded.',
+        description: 'Your GitRoasted card has been downloaded.',
       });
     } catch (err) {
       console.error('Failed to download image', err);
@@ -83,7 +73,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
         description: 'Could not download the card. Please try again.',
       });
     }
-  }, [cardRef, result.user?.login, toast, isMobile]);
+  }, [cardRef, result.user?.login, toast]);
 
   const handleCopyToClipboard = useCallback(async () => {
     if (!cardRef.current) return;
@@ -154,12 +144,6 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     return null;
   }
 
-  const formatOptions: { value: CardFormat; label: string }[] = [
-    { value: 'instagram', label: 'Instagram' },
-    { value: 'twitter', label: 'Twitter' },
-    { value: 'portrait', label: '3:4' },
-  ]
-
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -168,55 +152,11 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
             Share Your Card
         </Button>
       </DialogTrigger>
-      <DialogContent className={cn(
-        "p-0 overflow-hidden",
-        isMobile ? "max-w-[100vw] h-[100svh] sm:h-[90svh] sm:max-w-md rounded-none sm:rounded-lg" : "max-w-6xl h-[90vh]"
-      )}>
+      <DialogContent className="max-w-6xl h-[90vh] p-0 overflow-hidden">
         <DialogHeader className="p-4 border-b">
           <DialogTitle>Share Your GitRoasted Card</DialogTitle>
         </DialogHeader>
 
-        {isMobile ? (
-          <div className="flex flex-col h-full bg-background p-4 gap-4">
-              <div className='flex items-center justify-center gap-2'>
-                {formatOptions.map(({value, label}) => (
-                    <Button key={value} onClick={() => setFormat(value)} variant={format === value ? 'default' : 'outline'} className={cn('rounded-full transition-all', format === value && 'bg-gradient-to-r from-orange-500 to-purple-500 text-white')}>
-                        {label}
-                    </Button>
-                ))}
-              </div>
-
-              <div className='flex-1 flex items-center justify-center overflow-hidden'>
-                 <div
-                    style={{
-                        transform: `scale(0.6)`, // Smaller scale for mobile
-                        transformOrigin: 'center center',
-                    }}
-                    >
-                    <ShareableCardPreview
-                        ref={cardRef}
-                        result={result}
-                        format={format}
-                        theme={theme}
-                        backgroundStyle={backgroundStyle}
-                        layout={layout}
-                        showRoast={showRoast}
-                        showStats={showStats}
-                        showLogo={showLogo}
-                        watermark={watermark}
-                        customMessage={customMessage}
-                    />
-                </div>
-              </div>
-
-              <div className='flex flex-col gap-3 mt-auto'>
-                 <Button size="lg" onClick={handleDownload} className="w-full h-14 text-lg bg-gradient-to-r from-orange-500 via-pink-500 to-red-500 text-white">Download as PNG</Button>
-                 <Button size="lg" onClick={handleCopyToClipboard} className="w-full h-14 text-lg bg-purple-600 hover:bg-purple-700 text-white">Copy Image</Button>
-                 <Button size="lg" onClick={handleShare} variant="outline" className="w-full h-14 text-lg border-2">Share via...</Button>
-              </div>
-
-          </div>
-        ) : (
         <div className="grid md:grid-cols-[2fr_1fr] h-[calc(100%-57px)] overflow-hidden">
           {/* Preview Section */}
           <div className="flex items-center justify-center p-8 bg-muted/20 overflow-auto relative">
@@ -270,7 +210,6 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
             onShare={handleShare}
           />
         </div>
-        )}
       </DialogContent>
     </Dialog>
   );
