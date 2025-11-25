@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { ArrowLeft, Crown, RefreshCw, Search, Trophy } from 'lucide-react';
-import { collection, query, orderBy, limit, where, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, limit, where, getDocs, Timestamp } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import type { LeaderboardEntry } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -26,7 +26,7 @@ import Link from 'next/link';
 
 type TimeFilter = 'all' | 'month' | 'week';
 
-const CACHE_KEY = 'gitroasted_leaderboard';
+const CACHE_KEY_PREFIX = 'gitroasted_leaderboard';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 const PodiumCard = ({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 }) => {
@@ -98,11 +98,12 @@ export function LeaderboardClient() {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const getLeaderboard = useCallback(async (forceRefresh = false) => {
+  const getLeaderboard = useCallback(async (filter: TimeFilter, forceRefresh = false) => {
     setLoading(true);
+    const cacheKey = `${CACHE_KEY_PREFIX}_${filter}`;
 
     if (!forceRefresh) {
-        const cached = localStorage.getItem(CACHE_KEY);
+        const cached = localStorage.getItem(cacheKey);
         if (cached) {
             const { data, timestamp } = JSON.parse(cached);
             if (Date.now() - timestamp < CACHE_DURATION) {
@@ -116,30 +117,39 @@ export function LeaderboardClient() {
 
     if (!firestore) return;
 
-    let q = query(collection(firestore, 'leaderboard'), orderBy('score', 'desc'), limit(100));
-    const snapshot = await getDocs(q);
-    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as LeaderboardEntry[];
+    let baseQuery = query(collection(firestore, 'leaderboard'), orderBy('score', 'desc'), limit(100));
+    
+    if (filter === 'month') {
+        baseQuery = query(baseQuery, where('roastedAt', '>=', startOfMonth(new Date())));
+    } else if (filter === 'week') {
+        baseQuery = query(baseQuery, where('roastedAt', '>=', startOfWeek(new Date())));
+    }
+
+    const snapshot = await getDocs(baseQuery);
+    const data = snapshot.docs.map(doc => {
+        const docData = doc.data();
+        return {
+            id: doc.id,
+            ...docData,
+            // Convert Firestore Timestamp to JS Date for serialization
+            roastedAt: docData.roastedAt instanceof Timestamp ? docData.roastedAt.toDate() : docData.roastedAt,
+        } as LeaderboardEntry
+    });
     
     const now = new Date();
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: now.getTime() }));
+    localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: now.getTime() }));
     setLeaderboardData(data);
     setLastUpdated(now);
     setLoading(false);
   }, [firestore]);
 
   useEffect(() => {
-    getLeaderboard();
-  }, [getLeaderboard]);
+    getLeaderboard(timeFilter);
+  }, [getLeaderboard, timeFilter]);
 
 
   const filteredData = useMemo(() => {
       let data = leaderboardData;
-
-      if (timeFilter === 'month') {
-          data = data.filter(entry => entry.roastedAt && entry.roastedAt.toDate() >= startOfMonth(new Date()));
-      } else if (timeFilter === 'week') {
-          data = data.filter(entry => entry.roastedAt && entry.roastedAt.toDate() >= startOfWeek(new Date()));
-      }
       
       if (!searchTerm) return data;
 
@@ -147,7 +157,7 @@ export function LeaderboardClient() {
         entry.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (entry.name && entry.name.toLowerCase().includes(searchTerm.toLowerCase()))
       );
-  }, [leaderboardData, searchTerm, timeFilter])
+  }, [leaderboardData, searchTerm])
 
 
   const podiumData = filteredData.slice(0, 3);
@@ -207,7 +217,7 @@ export function LeaderboardClient() {
         </div>
         
         <div className="flex justify-center items-center gap-4 mb-8 text-sm">
-            <Button variant="outline" size="sm" onClick={() => getLeaderboard(true)} disabled={loading}>
+            <Button variant="outline" size="sm" onClick={() => getLeaderboard(timeFilter, true)} disabled={loading}>
                 <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
                 Refresh
             </Button>
