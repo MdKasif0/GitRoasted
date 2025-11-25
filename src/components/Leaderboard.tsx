@@ -11,30 +11,17 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { ArrowRight, Trophy } from 'lucide-react';
-import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
 import type { LeaderboardEntry } from '@/lib/types';
 import { Skeleton } from './ui/skeleton';
 import { AnimatedNumber } from './AnimatedNumber';
 import { Button } from './ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible';
+import { useLeaderboard } from '@/context/LeaderboardContext';
 
 function LeaderboardSkeleton() {
     return (
         <div className="space-y-2">
-            <div className="flex items-center p-4">
-                <Skeleton className="h-6 w-12" />
-                <div className="flex items-center gap-3 ml-4">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-24" />
-                        <Skeleton className="h-3 w-16" />
-                    </div>
-                </div>
-                <Skeleton className="h-6 w-12 ml-auto" />
-            </div>
-             {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 5 }).map((_, i) => (
                  <div key={i} className="flex items-center p-4">
                     <Skeleton className="h-6 w-12" />
                     <div className="flex items-center gap-3 ml-4">
@@ -44,7 +31,7 @@ function LeaderboardSkeleton() {
                             <Skeleton className="h-3 w-16" />
                         </div>
                     </div>
-                    <Skeleton className="h-6 w-12 ml-auto" />
+                    <Skeleton className="h-6 w-20 ml-auto" />
                 </div>
             ))}
         </div>
@@ -52,9 +39,8 @@ function LeaderboardSkeleton() {
 }
 
 export function Leaderboard() {
-  const firestore = useFirestore();
-  const leaderboardQuery = firestore ? query(collection(firestore, 'leaderboard'), orderBy('score', 'desc'), limit(10)) : null;
-  const { data: leaderboardData, loading } = useCollection<LeaderboardEntry>(leaderboardQuery, { listen: false });
+  const { leaderboard, loading } = useLeaderboard();
+  const leaderboardData = leaderboard.slice(0, 10);
 
   const getRankContent = (rank: number) => {
     if (rank === 0) return '🥇';
@@ -86,7 +72,7 @@ export function Leaderboard() {
                         </div>
 
                         {leaderboardData.map((entry, index) => (
-                            <Collapsible key={entry.id}>
+                            <Collapsible key={entry.username}>
                                 <div className="flex flex-col">
                                     <CollapsibleTrigger asChild>
                                       <div className='flex items-center p-4 hover:bg-white/5 cursor-pointer'>

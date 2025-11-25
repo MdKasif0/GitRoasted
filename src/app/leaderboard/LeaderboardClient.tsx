@@ -1,5 +1,4 @@
 
-// src/app/leaderboard/LeaderboardClient.tsx
 'use client';
 import Image from 'next/image';
 import {
@@ -10,8 +9,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { ArrowLeft, Crown, RefreshCw, Search, Trophy } from 'lucide-react';
-import { collection, query, orderBy, limit, where, getDocs, Timestamp } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
 import type { LeaderboardEntry } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnimatedNumber } from '@/components/AnimatedNumber';
@@ -19,15 +16,13 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { startOfMonth, startOfWeek, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { FlameIcon } from '@/components/icons';
 import Link from 'next/link';
+import { useLeaderboard } from '@/context/LeaderboardContext';
 
 type TimeFilter = 'all' | 'month' | 'week';
-
-const CACHE_KEY_PREFIX = 'gitroasted_leaderboard';
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 const PodiumCard = ({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 }) => {
     const isFirst = rank === 1;
@@ -91,73 +86,21 @@ function LeaderboardSkeleton() {
 }
 
 export function LeaderboardClient() {
-  const firestore = useFirestore();
+  const { leaderboard, loading, lastUpdated, refreshLeaderboard, filterLeaderboard } = useLeaderboard();
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const getLeaderboard = useCallback(async (filter: TimeFilter, forceRefresh = false) => {
-    setLoading(true);
-    const cacheKey = `${CACHE_KEY_PREFIX}_${filter}`;
-
-    if (!forceRefresh) {
-        const cached = localStorage.getItem(cacheKey);
-        if (cached) {
-            const { data, timestamp } = JSON.parse(cached);
-            if (Date.now() - timestamp < CACHE_DURATION) {
-                setLeaderboardData(data);
-                setLastUpdated(new Date(timestamp));
-                setLoading(false);
-                return;
-            }
-        }
-    }
-
-    if (!firestore) return;
-
-    let baseQuery = query(collection(firestore, 'leaderboard'), orderBy('score', 'desc'), limit(100));
-    
-    if (filter === 'month') {
-        baseQuery = query(baseQuery, where('roastedAt', '>=', startOfMonth(new Date())));
-    } else if (filter === 'week') {
-        baseQuery = query(baseQuery, where('roastedAt', '>=', startOfWeek(new Date())));
-    }
-
-    const snapshot = await getDocs(baseQuery);
-    const data = snapshot.docs.map(doc => {
-        const docData = doc.data();
-        return {
-            id: doc.id,
-            ...docData,
-            // Convert Firestore Timestamp to JS Date for serialization
-            roastedAt: docData.roastedAt instanceof Timestamp ? docData.roastedAt.toDate() : docData.roastedAt,
-        } as LeaderboardEntry
-    });
-    
-    const now = new Date();
-    localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: now.getTime() }));
-    setLeaderboardData(data);
-    setLastUpdated(now);
-    setLoading(false);
-  }, [firestore]);
+  const handleRefresh = () => {
+    refreshLeaderboard(timeFilter, true);
+  }
 
   useEffect(() => {
-    getLeaderboard(timeFilter);
-  }, [getLeaderboard, timeFilter]);
-
+    refreshLeaderboard(timeFilter);
+  }, [timeFilter, refreshLeaderboard]);
 
   const filteredData = useMemo(() => {
-      let data = leaderboardData;
-      
-      if (!searchTerm) return data;
-
-      return data.filter(entry => 
-        entry.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (entry.name && entry.name.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
-  }, [leaderboardData, searchTerm])
+      return filterLeaderboard(timeFilter, searchTerm);
+  }, [leaderboard, timeFilter, searchTerm, filterLeaderboard]);
 
 
   const podiumData = filteredData.slice(0, 3);
@@ -217,7 +160,7 @@ export function LeaderboardClient() {
         </div>
         
         <div className="flex justify-center items-center gap-4 mb-8 text-sm">
-            <Button variant="outline" size="sm" onClick={() => getLeaderboard(timeFilter, true)} disabled={loading}>
+            <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
                 <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
                 Refresh
             </Button>
@@ -238,17 +181,17 @@ export function LeaderboardClient() {
                         {podiumDisplayOrder.map((entry, index) => {
                             let rank: 1 | 2 | 3;
                             const sortedPodium = [...podiumData].sort((a,b) => b.score - a.score);
-                            const originalIndex = sortedPodium.findIndex(p => p.id === entry.id);
+                            const originalIndex = sortedPodium.findIndex(p => p.username === entry.username);
                             rank = (originalIndex + 1) as 1 | 2 | 3;
                            
-                            return <PodiumCard key={entry.id} entry={entry} rank={rank} />
+                            return <PodiumCard key={entry.username} entry={entry} rank={rank} />
                         })}
                     </div>
                 )}
                 
                 <div className="space-y-2">
                     {listData.map((entry, index) => (
-                        <Collapsible key={entry.id}>
+                        <Collapsible key={entry.username}>
                             <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10">
                                 <CollapsibleTrigger className="flex items-center p-3 text-lg w-full">
                                     <div className="w-12 font-bold text-muted-foreground text-center">{index + 4}</div>

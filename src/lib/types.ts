@@ -1,5 +1,6 @@
 
 
+
 import { LucideIcon } from "lucide-react";
 
 export interface GitHubUser {
@@ -150,6 +151,7 @@ export type RoastResultState = {
   totalStars?: number;
   topLanguages?: [string, number][];
   archetype?: DeveloperArchetype;
+  newLeaderboardEntry?: LeaderboardEntry | null;
 };
 
 
@@ -160,7 +162,7 @@ export interface LeaderboardEntry {
   name: string;
   avatarUrl: string;
   score: number;
-  roastedAt: any; // Firestore Timestamp
+  roastedAt: any; // Firestore Timestamp or Date
   roast: string;
 }
 

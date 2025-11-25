@@ -16,6 +16,7 @@ import { AlertCircle } from 'lucide-react';
 import type { RoastResultState } from '@/lib/types';
 import { FlameIcon } from './icons';
 import { LoadingModal } from './LoadingModal';
+import { useLeaderboard } from '@/context/LeaderboardContext';
 
 const initialState: RoastResultState = {
   status: 'idle',
@@ -48,12 +49,19 @@ function SubmitButton() {
 export default function GitRoastClient() {
   const [state, formAction, isPending] = useActionState(getRoast, initialState);
   const [username, setUsername] = useState('');
+  const { addUser } = useLeaderboard();
   
   const handleFormAction = (payload: FormData) => {
     const user = payload.get('username') as string;
     setUsername(user);
     formAction(payload);
   }
+
+  useEffect(() => {
+    if (state.status === 'success' && state.newLeaderboardEntry) {
+        addUser(state.newLeaderboardEntry);
+    }
+  }, [state, addUser])
 
   return (
     <section className="w-full max-w-md md:max-w-xl lg:max-w-4xl">

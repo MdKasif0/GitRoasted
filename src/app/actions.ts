@@ -4,10 +4,11 @@
 import { generateGitHubRoast } from '@/ai/flows/generate-github-roast';
 import { fetchComprehensiveGitHubData } from '@/lib/github';
 import { calculateRoastScore } from '@/lib/scoring';
-import type { RoastResultState } from '@/lib/types';
+import type { RoastResultState, LeaderboardEntry } from '@/lib/types';
 import { z } from 'zod';
 import { initializeFirebase } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { revalidateTag } from 'next/cache';
 
 // Initialize Firebase
 const { firestore: db } = initializeFirebase();
@@ -15,25 +16,34 @@ const { firestore: db } = initializeFirebase();
 const usernameSchema = z.string().min(1, 'GitHub username cannot be empty.').max(39, 'GitHub username is too long.');
 
 async function saveToLeaderboard(result: RoastResultState) {
-    if (result.status !== 'success' || !result.user || !result.score || !result.leaderboardRoast) return;
+    if (result.status !== 'success' || !result.user || !result.score || !result.leaderboardRoast) return null;
 
     try {
         const leaderboardRef = doc(db, 'leaderboard', result.user.login);
-        // The leaderboard should show the "seriousness" score, not the roast score.
         const seriousnessScore = 1000 - result.score;
         
-        await setDoc(leaderboardRef, {
+        const entry: Omit<LeaderboardEntry, 'roastedAt'> = {
             userId: result.user.id.toString(),
             username: result.user.login,
             name: result.user.name || result.user.login,
             avatarUrl: result.user.avatar_url,
             score: seriousnessScore,
             roast: result.leaderboardRoast,
+        };
+        
+        await setDoc(leaderboardRef, {
+            ...entry,
             roastedAt: serverTimestamp()
         }, { merge: true });
+
+        revalidateTag('leaderboard');
+
+        // Return the entry for optimistic updates, adding a client-side timestamp
+        return { ...entry, roastedAt: new Date() } as LeaderboardEntry;
     } catch (error) {
         console.error("Error writing to leaderboard: ", error);
-        // Silently fail on leaderboard writes for now
+        // Silently fail on leaderboard writes for now, but don't return an entry
+        return null;
     }
 }
 
@@ -61,7 +71,7 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
       .join('\n');
       
     if (commitHistory.length === 0 && user.public_repos === 0) {
-      return {
+      const result: RoastResultState = {
         status: 'success',
         username,
         ...comprehensiveData,
@@ -69,8 +79,11 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
         breakdown,
         archetype,
         roast: 'This user has no public activity to roast. Are they a ghost? A legend? Or just really good at keeping their chaotic code private? The world may never know.',
-        leaderboardRoast: 'So private, they make ghosts look sociable.'
+        leaderboardRoast: 'So private, they make ghosts look sociable.',
       };
+      
+      const newLeaderboardEntry = await saveToLeaderboard(result);
+      return { ...result, newLeaderboardEntry };
     }
 
     const { roast, leaderboardRoast } = await generateGitHubRoast({
@@ -92,21 +105,18 @@ export async function getRoast(prevState: RoastResultState, formData: FormData):
       leaderboardRoast,
       archetype
     };
-
-    // Save to leaderboard, but don't wait for it
-    saveToLeaderboard(result);
     
-    return result;
+    const newLeaderboardEntry = await saveToLeaderboard(result);
+    
+    return { ...result, newLeaderboardEntry };
   } catch (error: any) {
     console.error('Error in getRoast action:', error);
-    // User-facing errors are now more specific based on the fetch result
     if (error.message.includes('Could not find a GitHub user')) {
       return { status: 'error', message: `Could not find a GitHub user named "${username}". Check the spelling and try again.`, username };
     }
     if (error.message.includes('rate limit exceeded')) {
         return { status: 'error', message: `Looks like we're popular! ${error.message}`, username };
     }
-    // Fallback for other errors, like the token not being configured
     return { status: 'error', message: error.message || 'An unexpected error occurred. Please try again.', username };
   }
 }
