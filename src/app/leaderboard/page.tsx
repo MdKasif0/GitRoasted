@@ -4,6 +4,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { YourStatsCard } from '@/components/YourStatsCard';
+import { RecentAdditionsCard } from '@/components/RecentAdditionsCard';
 
 export const metadata: Metadata = {
   title: 'Leaderboard | Hall of Flame',
@@ -23,8 +25,15 @@ export default function LeaderboardPage() {
                 </Link>
             </Button>
         </div>
-      <LeaderboardClient />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <LeaderboardClient />
+        </div>
+        <div className="hidden lg:block space-y-8">
+          <YourStatsCard />
+          <RecentAdditionsCard />
+        </div>
+      </div>
     </div>
   );
 }
-
