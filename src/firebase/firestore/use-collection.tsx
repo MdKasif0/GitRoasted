@@ -1,3 +1,4 @@
+
 // src/firebase/firestore/use-collection.tsx
 'use client';
 
@@ -11,7 +12,7 @@ interface UseCollectionOptions {
 
 export function useCollection<T extends DocumentData>(
   query: Query<T> | null,
-  options: UseCollectionOptions = { listen: true }
+  options: UseCollectionOptions = { listen: false }
 ) {
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(true);

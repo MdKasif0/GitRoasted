@@ -54,7 +54,7 @@ function LeaderboardSkeleton() {
 export function Leaderboard() {
   const firestore = useFirestore();
   const leaderboardQuery = firestore ? query(collection(firestore, 'leaderboard'), orderBy('score', 'desc'), limit(10)) : null;
-  const { data: leaderboardData, loading } = useCollection<LeaderboardEntry>(leaderboardQuery);
+  const { data: leaderboardData, loading } = useCollection<LeaderboardEntry>(leaderboardQuery, { listen: false });
 
   const getRankContent = (rank: number) => {
     if (rank === 0) return '🥇';
