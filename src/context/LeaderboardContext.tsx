@@ -47,9 +47,11 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
 
   const refreshLeaderboard = useCallback(async (filter: TimeFilter, force = false) => {
     setLoading(true);
-    const cacheKey = `${CACHE_KEY_PREFIX}_${filter}`;
+    const cacheKey = `${CACHE_KEY_PREFIX}_all`; // Always use the 'all' cache
 
-    if (!force) {
+    if (force) {
+        localStorage.removeItem(cacheKey);
+    } else {
         const cached = localStorage.getItem(cacheKey);
         if (cached) {
             const { data, timestamp } = JSON.parse(cached);
@@ -87,14 +89,12 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
       
       const top100 = updatedList.slice(0, 100);
 
-      // Update all caches with the new data
-      (['all', 'month', 'week'] as TimeFilter[]).forEach(filter => {
-          const cacheKey = `${CACHE_KEY_PREFIX}_${filter}`;
-          localStorage.setItem(cacheKey, JSON.stringify({
-              data: top100,
-              timestamp: Date.now()
-          }));
-      });
+      // Update the main cache with the new data
+      const cacheKey = `${CACHE_KEY_PREFIX}_all`;
+      localStorage.setItem(cacheKey, JSON.stringify({
+          data: top100,
+          timestamp: Date.now()
+      }));
 
       return top100;
     });
