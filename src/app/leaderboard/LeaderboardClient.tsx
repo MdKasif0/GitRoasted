@@ -27,31 +27,44 @@ type TimeFilter = 'all' | 'month' | 'week';
 const PodiumCard = ({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 }) => {
     const isFirst = rank === 1;
     return (
-        <div className={cn(
-            'relative flex flex-col items-center text-center p-4 rounded-2xl border transition-all duration-300 bg-white/5 backdrop-blur-xl',
-            isFirst ? 'border-primary/60 shadow-primary/20 shadow-2xl z-10 scale-105' : 'border-white/10 scale-95 mt-6',
-        )}>
-            <div className={cn('absolute top-2 left-2 flex items-center justify-center w-8 h-8 text-lg font-bold rounded-full bg-background/50 border-2', isFirst ? 'border-primary' : 'border-white/10')}>{rank}</div>
-            <Crown className={cn(
-                'absolute top-2 right-2 w-6 h-6',
-                isFirst ? 'text-primary' : 'text-white/30'
-            )} />
-            <Image
-                src={entry.avatarUrl}
-                alt={entry.username}
-                width={isFirst ? 80 : 64}
-                height={isFirst ? 80 : 64}
-                className={cn('rounded-full border-4 shadow-lg mb-2 mx-auto',
-                    isFirst ? 'border-primary' : 'border-white/20'
+        <Collapsible>
+            <div className={cn(
+                'relative flex flex-col items-center text-center p-4 rounded-2xl border transition-all duration-300 bg-white/5 backdrop-blur-xl',
+                isFirst ? 'border-primary/60 shadow-primary/20 shadow-2xl z-10 scale-105' : 'border-white/10 scale-95 mt-6',
+            )}>
+                <CollapsibleTrigger asChild>
+                    <div className='w-full cursor-pointer'>
+                        <div className={cn('absolute top-2 left-2 flex items-center justify-center w-8 h-8 text-lg font-bold rounded-full bg-background/50 border-2', isFirst ? 'border-primary' : 'border-white/10')}>{rank}</div>
+                        <Crown className={cn(
+                            'absolute top-2 right-2 w-6 h-6',
+                            isFirst ? 'text-primary' : 'text-white/30'
+                        )} />
+                        <Image
+                            src={entry.avatarUrl}
+                            alt={entry.username}
+                            width={isFirst ? 80 : 64}
+                            height={isFirst ? 80 : 64}
+                            className={cn('rounded-full border-4 shadow-lg mb-2 mx-auto',
+                                isFirst ? 'border-primary' : 'border-white/20'
+                            )}
+                        />
+                        <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="text-base font-bold hover:text-primary transition-colors truncate w-full">{entry.name}</a>
+                        <p className="text-sm text-muted-foreground">@{entry.username}</p>
+                        <div className="mt-2 text-lg font-bold text-primary flex items-center justify-center gap-1">
+                            <FlameIcon className="w-4 h-4" />
+                            <AnimatedNumber value={entry.score} /> / 1000
+                        </div>
+                    </div>
+                </CollapsibleTrigger>
+                {entry.roast && (
+                  <CollapsibleContent>
+                      <div className="bg-background/50 border-t border-purple-500/20 p-3 mt-3 -mb-2 rounded-b-lg">
+                        <p className="text-center italic text-primary/90 text-sm">"{entry.roast}"</p>
+                      </div>
+                  </CollapsibleContent>
                 )}
-            />
-            <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="text-base font-bold hover:text-primary transition-colors truncate w-full">{entry.name}</a>
-            <p className="text-sm text-muted-foreground">@{entry.username}</p>
-            <div className="mt-2 text-lg font-bold text-primary flex items-center justify-center gap-1">
-                <FlameIcon className="w-4 h-4" />
-                <AnimatedNumber value={entry.score} /> / 1000
             </div>
-        </div>
+        </Collapsible>
     )
 }
 
@@ -176,28 +189,37 @@ export function LeaderboardClient() {
                 
                 <div className="space-y-2">
                     {listData.map((entry, index) => (
-                        <div key={entry.username}>
-                            <div className="flex items-center p-3 text-lg w-full bg-white/5 backdrop-blur-xl rounded-xl border border-white/10">
-                                <div className="w-12 font-bold text-muted-foreground text-center">{index + 4}</div>
-                                <div className="flex items-center gap-4 flex-1 overflow-hidden text-left">
-                                    <Image
-                                        src={entry.avatarUrl}
-                                        alt={entry.username}
-                                        width={48}
-                                        height={48}
-                                        className="rounded-full border-2 border-primary/50 shrink-0"
-                                    />
-                                    <div className="truncate">
-                                         <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors truncate text-base">{entry.name}</a>
-                                         <p className="text-sm text-muted-foreground truncate">@{entry.username}</p>
+                        <Collapsible key={entry.username}>
+                            <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10">
+                                <CollapsibleTrigger className="flex items-center p-3 text-lg w-full">
+                                    <div className="w-12 font-bold text-muted-foreground text-center">{index + 4}</div>
+                                    <div className="flex items-center gap-4 flex-1 overflow-hidden text-left">
+                                        <Image
+                                            src={entry.avatarUrl}
+                                            alt={entry.username}
+                                            width={48}
+                                            height={48}
+                                            className="rounded-full border-2 border-primary/50 shrink-0"
+                                        />
+                                        <div className="truncate">
+                                             <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors truncate text-base">{entry.name}</a>
+                                             <p className="text-sm text-muted-foreground truncate">@{entry.username}</p>
+                                        </div>
                                     </div>
-                                </div>
-                                 <div className="text-lg font-bold text-primary flex items-center gap-2 shrink-0">
-                                    <FlameIcon className="w-4 h-4" />
-                                    <AnimatedNumber value={entry.score} />
-                                </div>
+                                     <div className="text-lg font-bold text-primary flex items-center gap-2 shrink-0">
+                                        <FlameIcon className="w-4 h-4" />
+                                        <AnimatedNumber value={entry.score} />
+                                    </div>
+                                </CollapsibleTrigger>
+                                {entry.roast && (
+                                    <CollapsibleContent>
+                                        <div className="border-t border-purple-500/20 p-4 mx-4 mb-4 rounded-b-lg">
+                                            <p className="text-center italic text-primary/90">"{entry.roast}"</p>
+                                        </div>
+                                    </CollapsibleContent>
+                                )}
                             </div>
-                        </div>
+                        </Collapsible>
                     ))}
                 </div>
 
