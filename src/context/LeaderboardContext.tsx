@@ -27,7 +27,7 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
 
   const getLeaderboardFromServer = useCallback(async (): Promise<LeaderboardEntry[]> => {
     try {
-        const response = await fetch('/api/leaderboard');
+        const response = await fetch('/api/leaderboard', { cache: 'no-store' });
         if (!response.ok) {
             console.error("Failed to fetch leaderboard from API");
             return [];
@@ -87,14 +87,8 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
       
       updatedList.sort((a, b) => b.score - a.score);
       
+      // Keep only top 100
       const top100 = updatedList.slice(0, 100);
-
-      // Update the main cache with the new data
-      const cacheKey = `${CACHE_KEY_PREFIX}_all`;
-      localStorage.setItem(cacheKey, JSON.stringify({
-          data: top100,
-          timestamp: Date.now()
-      }));
 
       return top100;
     });

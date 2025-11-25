@@ -37,6 +37,10 @@ async function saveToLeaderboard(result: RoastResultState) {
         }, { merge: true });
 
         revalidateTag('leaderboard');
+        
+        // Give the server a moment to revalidate the tag before the client might refetch
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
 
         // Return the entry for optimistic updates, adding a client-side timestamp
         return { ...entry, roastedAt: new Date() } as LeaderboardEntry;
