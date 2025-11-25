@@ -27,54 +27,41 @@ type TimeFilter = 'all' | 'month' | 'week';
 const PodiumCard = ({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 }) => {
     const isFirst = rank === 1;
     return (
-        <Collapsible className={cn(
-            'relative flex flex-col items-center text-center p-6 bg-white/5 backdrop-blur-xl rounded-2xl border transition-all duration-300',
-            isFirst ? 'border-primary/60 shadow-primary/20 shadow-2xl z-10' : 'border-white/10',
-             'md:col-span-1',
-            rank === 1 && 'md:row-start-1 md:row-end-3',
-            rank === 2 && 'md:row-start-2',
-            rank === 3 && 'md:row-start-2'
+        <div className={cn(
+            'relative flex flex-col items-center text-center p-4 rounded-2xl border transition-all duration-300 bg-white/5 backdrop-blur-xl',
+            isFirst ? 'border-primary/60 shadow-primary/20 shadow-2xl z-10 scale-105' : 'border-white/10 scale-95 mt-6',
         )}>
-            <CollapsibleTrigger className="w-full">
-                <div className={cn('absolute top-0 -translate-y-1/2 flex items-center justify-center w-12 h-12 text-2xl font-bold rounded-full bg-background border-2', isFirst ? 'border-primary' : 'border-white/10')}>{rank}</div>
-                <Crown className={cn(
-                    'absolute top-4 right-4 w-7 h-7',
-                    isFirst ? 'text-primary' : 'text-white/30'
-                )} />
-                <Image
-                    src={entry.avatarUrl}
-                    alt={entry.username}
-                    width={isFirst ? 96 : 80}
-                    height={isFirst ? 96 : 80}
-                    className={cn('rounded-full border-4 shadow-lg mb-4 mx-auto',
-                        isFirst ? 'border-primary' : 'border-white/20'
-                    )}
-                />
-                <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="text-xl font-bold hover:text-primary transition-colors">{entry.name}</a>
-                <p className="text-muted-foreground">@{entry.username}</p>
-                <div className="mt-4 text-2xl font-bold text-primary flex items-center justify-center gap-1">
-                    <FlameIcon className="w-5 h-5" />
-                    <AnimatedNumber value={entry.score} /> / 1000
-                </div>
-            </CollapsibleTrigger>
-            {entry.roast && (
-                 <CollapsibleContent>
-                    <div className="bg-background/50 border-t border-b border-purple-500/20 p-4 mx-4 mt-4 rounded-lg">
-                        <p className="text-sm text-primary/90 italic text-center">"{entry.roast}"</p>
-                    </div>
-                </CollapsibleContent>
-            )}
-        </Collapsible>
+            <div className={cn('absolute top-2 left-2 flex items-center justify-center w-8 h-8 text-lg font-bold rounded-full bg-background/50 border-2', isFirst ? 'border-primary' : 'border-white/10')}>{rank}</div>
+            <Crown className={cn(
+                'absolute top-2 right-2 w-6 h-6',
+                isFirst ? 'text-primary' : 'text-white/30'
+            )} />
+            <Image
+                src={entry.avatarUrl}
+                alt={entry.username}
+                width={isFirst ? 80 : 64}
+                height={isFirst ? 80 : 64}
+                className={cn('rounded-full border-4 shadow-lg mb-2 mx-auto',
+                    isFirst ? 'border-primary' : 'border-white/20'
+                )}
+            />
+            <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="text-base font-bold hover:text-primary transition-colors truncate w-full">{entry.name}</a>
+            <p className="text-sm text-muted-foreground">@{entry.username}</p>
+            <div className="mt-2 text-lg font-bold text-primary flex items-center justify-center gap-1">
+                <FlameIcon className="w-4 h-4" />
+                <AnimatedNumber value={entry.score} /> / 1000
+            </div>
+        </div>
     )
 }
 
 function LeaderboardSkeleton() {
     return (
         <>
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end max-w-4xl mx-auto mb-16">
-                 <Skeleton className="h-64 w-full rounded-2xl" />
-                 <Skeleton className="h-72 w-full rounded-2xl" />
-                 <Skeleton className="h-64 w-full rounded-2xl" />
+             <div className="grid grid-cols-[1fr_1.2fr_1fr] gap-2 items-end max-w-lg mx-auto mb-12">
+                 <Skeleton className="h-48 w-full rounded-2xl" />
+                 <Skeleton className="h-56 w-full rounded-2xl" />
+                 <Skeleton className="h-48 w-full rounded-2xl" />
             </div>
             <div className="space-y-2">
                 {Array.from({ length: 10 }).map((_, i) => (
@@ -110,23 +97,17 @@ export function LeaderboardClient() {
       if (podiumData.length === 0) return [];
       const sortedPodium = [...podiumData].sort((a,b) => b.score - a.score);
       if (sortedPodium.length < 3) return sortedPodium;
+      // Ensure the display order is always [2nd, 1st, 3rd] for the tiered layout
       return [sortedPodium[1], sortedPodium[0], sortedPodium[2]];
   }, [podiumData]);
 
 
   return (
     <div className="w-full max-w-5xl mx-auto">
-        <header className="relative text-center mb-12 grid grid-cols-[1fr,auto,1fr] items-center">
-             <div className="justify-self-start">
-                <Button asChild variant="ghost" size="icon" className="bg-white/5 backdrop-blur-sm border border-white/10 h-10 w-10">
-                    <Link href="/" aria-label="Back to Home">
-                        <ArrowLeft className="h-5 w-5" />
-                    </Link>
-                </Button>
-            </div>
+        <header className="relative text-center mb-8">
             <div className="text-center">
-                <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500 mb-2 flex items-center justify-center gap-4">
-                    <Trophy className="w-12 h-12 text-primary" />
+                <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500 mb-2 flex items-center justify-center gap-3">
+                    <Trophy className="w-10 h-10 text-primary" />
                     Leaderboard
                 </h1>
                 <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -135,23 +116,28 @@ export function LeaderboardClient() {
             </div>
         </header>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-            <div className="relative w-full md:flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <div className="flex flex-col gap-4 mb-8">
+            <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <Input 
                     placeholder="Search username..."
-                    className="pl-10 h-12 bg-white/5"
+                    className="pl-10 h-12 bg-white/5 border-purple-500/30 rounded-full"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <div className="grid grid-cols-3 gap-2 p-1 rounded-lg bg-white/5 border border-white/10">
+            <div className="grid grid-cols-3 gap-2">
                 {(['all', 'month', 'week'] as TimeFilter[]).map(filter => (
                     <Button 
                         key={filter} 
-                        variant={timeFilter === filter ? 'default' : 'ghost'}
+                        variant='ghost'
                         onClick={() => setTimeFilter(filter)}
-                        className={cn('capitalize h-full transition-colors', timeFilter === filter && 'bg-primary/80 hover:bg-primary')}
+                        className={cn(
+                            'capitalize h-12 rounded-full text-base transition-all duration-300 border-2 border-transparent', 
+                            timeFilter === filter 
+                                ? 'bg-gradient-to-r from-primary via-red-400 to-purple-500 text-white font-bold border-primary/50' 
+                                : 'bg-white/5 text-muted-foreground'
+                        )}
                     >
                         {filter === 'all' ? 'All Time' : `This ${filter}`}
                     </Button>
@@ -160,7 +146,7 @@ export function LeaderboardClient() {
         </div>
         
         <div className="flex justify-center items-center gap-4 mb-8 text-sm">
-            <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
+            <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading} className="bg-white/5 border-white/10">
                 <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
                 Refresh
             </Button>
@@ -177,12 +163,11 @@ export function LeaderboardClient() {
         {!loading && (
             <>
                 {filteredData.length > 0 && (
-                     <div className="grid grid-cols-[1fr_1.2fr_1fr] md:grid-cols-3 gap-4 md:gap-8 items-end max-w-4xl mx-auto mb-12 md:mb-16">
-                        {podiumDisplayOrder.map((entry, index) => {
-                            let rank: 1 | 2 | 3;
+                     <div className="grid grid-cols-[1fr_1.2fr_1fr] gap-2 items-end max-w-lg mx-auto mb-12">
+                        {podiumDisplayOrder.map((entry) => {
+                            if (!entry) return null;
                             const sortedPodium = [...podiumData].sort((a,b) => b.score - a.score);
-                            const originalIndex = sortedPodium.findIndex(p => p.username === entry.username);
-                            rank = (originalIndex + 1) as 1 | 2 | 3;
+                            const rank = (sortedPodium.findIndex(p => p.username === entry.username) + 1) as 1 | 2 | 3;
                            
                             return <PodiumCard key={entry.username} entry={entry} rank={rank} />
                         })}
@@ -191,37 +176,28 @@ export function LeaderboardClient() {
                 
                 <div className="space-y-2">
                     {listData.map((entry, index) => (
-                        <Collapsible key={entry.username}>
-                            <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10">
-                                <CollapsibleTrigger className="flex items-center p-3 text-lg w-full">
-                                    <div className="w-12 font-bold text-muted-foreground text-center">{index + 4}</div>
-                                    <div className="flex items-center gap-4 flex-1 overflow-hidden text-left">
-                                        <Image
-                                            src={entry.avatarUrl}
-                                            alt={entry.username}
-                                            width={48}
-                                            height={48}
-                                            className="rounded-full border-2 border-primary/50 shrink-0"
-                                        />
-                                        <div className="truncate">
-                                             <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors truncate">{entry.name}</a>
-                                             <p className="text-sm text-muted-foreground truncate">@{entry.username}</p>
-                                        </div>
+                        <div key={entry.username}>
+                            <div className="flex items-center p-3 text-lg w-full bg-white/5 backdrop-blur-xl rounded-xl border border-white/10">
+                                <div className="w-12 font-bold text-muted-foreground text-center">{index + 4}</div>
+                                <div className="flex items-center gap-4 flex-1 overflow-hidden text-left">
+                                    <Image
+                                        src={entry.avatarUrl}
+                                        alt={entry.username}
+                                        width={48}
+                                        height={48}
+                                        className="rounded-full border-2 border-primary/50 shrink-0"
+                                    />
+                                    <div className="truncate">
+                                         <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors truncate text-base">{entry.name}</a>
+                                         <p className="text-sm text-muted-foreground truncate">@{entry.username}</p>
                                     </div>
-                                     <div className="text-xl font-bold text-primary flex items-center gap-2 shrink-0">
-                                        <FlameIcon className="w-5 h-5" />
-                                        <AnimatedNumber value={entry.score} /> / 1000
-                                    </div>
-                                </CollapsibleTrigger>
-                                {entry.roast && (
-                                <CollapsibleContent>
-                                    <div className="bg-background/50 border-t border-b border-purple-500/20 p-4 mx-4 mb-4 rounded-lg">
-                                        <p className="text-sm text-primary/90 italic text-center">"{entry.roast}"</p>
-                                    </div>
-                                </CollapsibleContent>
-                                )}
+                                </div>
+                                 <div className="text-lg font-bold text-primary flex items-center gap-2 shrink-0">
+                                    <FlameIcon className="w-4 h-4" />
+                                    <AnimatedNumber value={entry.score} />
+                                </div>
                             </div>
-                        </Collapsible>
+                        </div>
                     ))}
                 </div>
 
@@ -245,3 +221,4 @@ export function LeaderboardClient() {
     </div>
   );
 }
+
