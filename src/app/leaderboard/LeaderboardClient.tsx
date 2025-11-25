@@ -71,7 +71,7 @@ const PodiumCard = ({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 
 function LeaderboardSkeleton() {
     return (
         <>
-             <div className="grid grid-cols-[1fr_1.2fr_1fr] gap-2 items-end max-w-lg mx-auto mb-12">
+             <div className="hidden md:grid grid-cols-[1fr_1.2fr_1fr] gap-2 items-end max-w-lg mx-auto mb-12">
                  <Skeleton className="h-48 w-full rounded-2xl" />
                  <Skeleton className="h-56 w-full rounded-2xl" />
                  <Skeleton className="h-48 w-full rounded-2xl" />
@@ -83,6 +83,20 @@ function LeaderboardSkeleton() {
             </div>
         </>
     )
+}
+
+const getRankContent = (rank: number) => {
+    if (rank === 1) return '🥇';
+    if (rank === 2) return '🥈';
+    if (rank === 3) return '🥉';
+    return rank;
+}
+
+const getRankBorderClass = (rank: number) => {
+    if (rank === 1) return 'border-yellow-400';
+    if (rank === 2) return 'border-slate-400';
+    if (rank === 3) return 'border-orange-400';
+    return 'border-white/10';
 }
 
 export function LeaderboardClient() {
@@ -111,7 +125,8 @@ export function LeaderboardClient() {
       const sortedPodium = [...podiumData].sort((a,b) => b.score - a.score);
       if (sortedPodium.length < 3) return sortedPodium;
       // Ensure the display order is always [2nd, 1st, 3rd] for the tiered layout
-      return [sortedPodium[1], sortedPodium[0], sortedPodium[2]];
+      const display = [sortedPodium[1], sortedPodium[0], sortedPodium[2]].filter(Boolean);
+      return display;
   }, [podiumData]);
 
 
@@ -175,8 +190,9 @@ export function LeaderboardClient() {
 
         {!loading && (
             <>
+                {/* Desktop Podium */}
                 {filteredData.length > 0 && (
-                     <div className="grid grid-cols-[1fr_1.2fr_1fr] gap-2 items-end max-w-lg mx-auto mb-12">
+                     <div className="hidden md:grid grid-cols-[1fr_1.2fr_1fr] gap-2 items-end max-w-lg mx-auto mb-12">
                         {podiumDisplayOrder.map((entry) => {
                             if (!entry) return null;
                             const sortedPodium = [...podiumData].sort((a,b) => b.score - a.score);
@@ -187,40 +203,45 @@ export function LeaderboardClient() {
                     </div>
                 )}
                 
+                {/* Unified List for Mobile, and rest of list for Desktop */}
                 <div className="space-y-2">
-                    {listData.map((entry, index) => (
-                        <Collapsible key={entry.username}>
-                            <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10">
-                                <CollapsibleTrigger className="flex items-center p-3 text-lg w-full">
-                                    <div className="w-12 font-bold text-muted-foreground text-center">{index + 4}</div>
-                                    <div className="flex items-center gap-4 flex-1 overflow-hidden text-left">
-                                        <Image
-                                            src={entry.avatarUrl}
-                                            alt={entry.username}
-                                            width={48}
-                                            height={48}
-                                            className="rounded-full border-2 border-primary/50 shrink-0"
-                                        />
-                                        <div className="truncate">
-                                             <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors truncate text-base">{entry.name}</a>
-                                             <p className="text-sm text-muted-foreground truncate">@{entry.username}</p>
+                    {filteredData.map((entry, index) => {
+                        const rank = index + 1;
+                        const isPodium = rank <= 3;
+                        return (
+                            <Collapsible key={entry.username} className={cn(isPodium && 'md:hidden')}>
+                                <div className={cn("bg-white/5 backdrop-blur-xl rounded-xl border-2", getRankBorderClass(rank))}>
+                                    <CollapsibleTrigger className="flex items-center p-3 text-lg w-full">
+                                        <div className="w-12 font-bold text-muted-foreground text-center">{getRankContent(rank)}</div>
+                                        <div className="flex items-center gap-4 flex-1 overflow-hidden text-left">
+                                            <Image
+                                                src={entry.avatarUrl}
+                                                alt={entry.username}
+                                                width={48}
+                                                height={48}
+                                                className="rounded-full border-2 border-primary/50 shrink-0"
+                                            />
+                                            <div className="truncate">
+                                                 <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="font-bold hover:text-primary transition-colors truncate text-base">{entry.name}</a>
+                                                 <p className="text-sm text-muted-foreground truncate">@{entry.username}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                     <div className="text-lg font-bold text-primary flex items-center gap-2 shrink-0">
-                                        <FlameIcon className="w-4 h-4" />
-                                        <AnimatedNumber value={entry.score} />
-                                    </div>
-                                </CollapsibleTrigger>
-                                {entry.roast && (
-                                    <CollapsibleContent>
-                                        <div className="border-t border-purple-500/20 p-4 mx-4 mb-4 rounded-b-lg">
-                                            <p className="text-center italic text-primary/90">"{entry.roast}"</p>
+                                         <div className="text-lg font-bold text-primary flex items-center gap-2 shrink-0">
+                                            <FlameIcon className="w-4 h-4" />
+                                            <AnimatedNumber value={entry.score} />
                                         </div>
-                                    </CollapsibleContent>
-                                )}
-                            </div>
-                        </Collapsible>
-                    ))}
+                                    </CollapsibleTrigger>
+                                    {entry.roast && (
+                                        <CollapsibleContent>
+                                            <div className="border-t border-purple-500/20 p-4 mx-4 mb-4 rounded-b-lg">
+                                                <p className="text-center italic text-primary/90">"{entry.roast}"</p>
+                                            </div>
+                                        </CollapsibleContent>
+                                    )}
+                                </div>
+                            </Collapsible>
+                        )
+                    })}
                 </div>
 
                 {!loading && filteredData.length === 0 && (
