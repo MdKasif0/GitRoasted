@@ -2,8 +2,6 @@
 'use client'
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import type { LeaderboardEntry } from '@/lib/types';
-import { collection, query, orderBy, limit, getDocs, where, Timestamp } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
 import { startOfMonth, startOfWeek } from 'date-fns';
 
 type TimeFilter = 'all' | 'month' | 'week';
@@ -23,32 +21,29 @@ interface LeaderboardContextType {
 const LeaderboardContext = createContext<LeaderboardContextType | null>(null);
 
 export function LeaderboardProvider({ children }: { children: ReactNode }) {
-  const firestore = useFirestore();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const getLeaderboardFromFirestore = useCallback(async (filter: TimeFilter): Promise<LeaderboardEntry[]> => {
-    if (!firestore) return [];
-
-    let baseQuery = query(collection(firestore, 'leaderboard'), orderBy('score', 'desc'), limit(100));
-    
-    if (filter === 'month') {
-        baseQuery = query(baseQuery, where('roastedAt', '>=', startOfMonth(new Date())));
-    } else if (filter === 'week') {
-        baseQuery = query(baseQuery, where('roastedAt', '>=', startOfWeek(new Date())));
+  const getLeaderboardFromServer = useCallback(async (): Promise<LeaderboardEntry[]> => {
+    try {
+        const response = await fetch('/api/leaderboard');
+        if (!response.ok) {
+            console.error("Failed to fetch leaderboard from API");
+            return [];
+        }
+        const result = await response.json();
+        
+        // Firestore Timestamps will be serialized as strings, so we convert them back to Date objects
+        return result.data.map((entry: any) => ({
+            ...entry,
+            roastedAt: new Date(entry.roastedAt),
+        }));
+    } catch (error) {
+        console.error("Error fetching leaderboard from API:", error);
+        return [];
     }
-
-    const snapshot = await getDocs(baseQuery);
-    return snapshot.docs.map(doc => {
-        const docData = doc.data();
-        return {
-            id: doc.id,
-            ...docData,
-            roastedAt: docData.roastedAt instanceof Timestamp ? docData.roastedAt.toDate() : new Date(docData.roastedAt),
-        } as LeaderboardEntry;
-    });
-  }, [firestore]);
+  }, []);
 
   const refreshLeaderboard = useCallback(async (filter: TimeFilter, force = false) => {
     setLoading(true);
@@ -59,7 +54,7 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
         if (cached) {
             const { data, timestamp } = JSON.parse(cached);
             if (Date.now() - timestamp < CACHE_DURATION) {
-                setLeaderboard(data);
+                setLeaderboard(data.map((e: any) => ({...e, roastedAt: new Date(e.roastedAt) })));
                 setLastUpdated(new Date(timestamp));
                 setLoading(false);
                 return;
@@ -67,13 +62,13 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    const data = await getLeaderboardFromFirestore(filter);
+    const data = await getLeaderboardFromServer();
     const now = new Date();
     localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: now.getTime() }));
     setLeaderboard(data);
     setLastUpdated(now);
     setLoading(false);
-  }, [getLeaderboardFromFirestore]);
+  }, [getLeaderboardFromServer]);
 
   const addUser = useCallback((newUser: LeaderboardEntry) => {
     setLeaderboard(prev => {
@@ -82,10 +77,10 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
 
       if (exists) {
         updatedList = prev.map(u => 
-          u.username === newUser.username ? { ...u, ...newUser } : u
+          u.username === newUser.username ? { ...u, ...newUser, roastedAt: new Date() } : u
         );
       } else {
-        updatedList = [...prev, newUser];
+        updatedList = [...prev, { ...newUser, roastedAt: new Date() }];
       }
       
       updatedList.sort((a, b) => b.score - a.score);
