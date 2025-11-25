@@ -51,7 +51,6 @@ export function RecentAdditionsCard() {
                   <p className="text-sm text-muted-foreground">@{entry.username}</p>
                 </div>
                 <div className="text-right text-sm font-bold text-primary flex items-center gap-1">
-                  <FlameIcon className='w-4 h-4' />
                   <span>{Math.round(entry.score / 10)}/100</span>
                 </div>
               </li>

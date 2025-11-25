@@ -46,7 +46,7 @@ export function YourStatsCard() {
         <div className="grid grid-cols-3 gap-4 text-center">
             <div>
                 <p className="text-xs text-muted-foreground">Score</p>
-                <p className="text-xl font-bold flex items-center justify-center gap-1"><FlameIcon className='w-4 h-4' /> {user.score}/100</p>
+                <p className="text-xl font-bold flex items-center justify-center gap-1">{user.score}/100</p>
             </div>
             <div>
                 <p className="text-xs text-muted-foreground">Stars</p>

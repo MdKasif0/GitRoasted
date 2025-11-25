@@ -51,7 +51,6 @@ const PodiumCard = ({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 
                         <a href={`https://github.com/${entry.username}`} target='_blank' rel="noopener noreferrer" className="text-base font-bold hover:text-primary transition-colors truncate w-full">{entry.name}</a>
                         <p className="text-sm text-muted-foreground">@{entry.username}</p>
                         <div className="mt-2 text-lg font-bold text-primary flex items-center justify-center gap-1">
-                            <FlameIcon className="w-4 h-4" />
                             <AnimatedNumber value={entry.score} /> / 1000
                         </div>
                     </div>
@@ -227,7 +226,6 @@ export function LeaderboardClient() {
                                             </div>
                                         </div>
                                          <div className="text-lg font-bold text-primary flex items-center gap-2 shrink-0">
-                                            <FlameIcon className="w-4 h-4" />
                                             <AnimatedNumber value={entry.score} />
                                         </div>
                                     </CollapsibleTrigger>
