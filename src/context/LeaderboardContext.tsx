@@ -27,7 +27,7 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
 
   const getLeaderboardFromServer = useCallback(async (): Promise<LeaderboardEntry[]> => {
     try {
-        const response = await fetch('/api/leaderboard', { cache: 'no-store' });
+        const response = await fetch('/api/leaderboard', { next: { revalidate: 0 } }); // Ensure we get the latest from server cache
         if (!response.ok) {
             console.error("Failed to fetch leaderboard from API");
             return [];
@@ -49,9 +49,7 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     const cacheKey = `${CACHE_KEY_PREFIX}_all`; // Always use the 'all' cache
 
-    if (force) {
-        localStorage.removeItem(cacheKey);
-    } else {
+    if (!force) {
         const cached = localStorage.getItem(cacheKey);
         if (cached) {
             const { data, timestamp } = JSON.parse(cached);
@@ -64,6 +62,7 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    // If forcing, or if cache is invalid, fetch from server
     const data = await getLeaderboardFromServer();
     const now = new Date();
     localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: now.getTime() }));
