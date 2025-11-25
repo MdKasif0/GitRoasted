@@ -133,11 +133,11 @@ export function LeaderboardClient() {
     <div className="w-full max-w-5xl mx-auto">
         <header className="relative text-center mb-8">
             <div className="text-center">
-                <h1 className="text-5xl md:text-7xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500 mb-2 flex items-center justify-center gap-3">
+                <h1 className="text-4xl md:text-7xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500 mb-2 flex items-center justify-center gap-3">
                     <Trophy className="w-10 h-10 text-primary" />
                     Leaderboard
                 </h1>
-                <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+                <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto">
                     The Hall of Flame: See the top-roasted legends and where you stand.
                 </p>
             </div>
@@ -262,3 +262,5 @@ export function LeaderboardClient() {
     </div>
   );
 }
+
+    
