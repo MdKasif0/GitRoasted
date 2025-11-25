@@ -15,7 +15,7 @@ const { firestore: db } = initializeFirebase();
 
 const usernameSchema = z.string().min(1, 'GitHub username cannot be empty.').max(39, 'GitHub username is too long.');
 
-async function saveToLeaderboard(result: RoastResultState) {
+async function saveToLeaderboard(result: RoastResultState): Promise<LeaderboardEntry | null> {
     if (result.status !== 'success' || !result.user || !result.score || !result.leaderboardRoast) return null;
 
     try {
@@ -43,7 +43,7 @@ async function saveToLeaderboard(result: RoastResultState) {
 
 
         // Return the entry for optimistic updates, adding a client-side timestamp
-        return { ...entry, roastedAt: new Date() } as LeaderboardEntry;
+        return { ...entry, roastedAt: new Date().toISOString() } as LeaderboardEntry;
     } catch (error) {
         console.error("Error writing to leaderboard: ", error);
         // Silently fail on leaderboard writes for now, but don't return an entry

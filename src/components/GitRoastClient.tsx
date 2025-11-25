@@ -61,7 +61,7 @@ export default function GitRoastClient() {
     if (state.status === 'success' && state.newLeaderboardEntry) {
         addUser(state.newLeaderboardEntry);
     }
-  }, [state, addUser])
+  }, [state.status, state.newLeaderboardEntry, addUser])
 
   return (
     <section className="w-full max-w-md md:max-w-xl lg:max-w-4xl">
