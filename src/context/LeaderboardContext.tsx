@@ -6,70 +6,74 @@ import { startOfMonth, startOfWeek } from 'date-fns';
 
 type TimeFilter = 'all' | 'month' | 'week';
 
-const CACHE_KEY_PREFIX = 'gitroasted_leaderboard';
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
 interface LeaderboardContextType {
   leaderboard: LeaderboardEntry[];
   loading: boolean;
   lastUpdated: Date | null;
-  refreshLeaderboard: (filter: TimeFilter, force?: boolean) => Promise<void>;
+  hasMore: boolean;
+  totalUsers: number;
+  refreshLeaderboard: (filter: TimeFilter, force?: boolean) => void;
+  loadMore: (filter: TimeFilter) => void;
   addUser: (user: LeaderboardEntry) => void;
   filterLeaderboard: (filter: TimeFilter, searchTerm: string) => LeaderboardEntry[];
 }
 
-const LeaderboardContext = createContext<LeaderboardContextType | null>(null);
+const LeaderboardContext = createContext<LeaderboardContextType | undefined>(undefined);
 
 export function LeaderboardProvider({ children }: { children: ReactNode }) {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [lastVisibleId, setLastVisibleId] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalUsers, setTotalUsers] = useState(0);
 
-  const getLeaderboardFromServer = useCallback(async (): Promise<LeaderboardEntry[]> => {
-    try {
-        const response = await fetch('/api/leaderboard', { next: { revalidate: 0 } }); // Ensure we get the latest from server cache
-        if (!response.ok) {
-            console.error("Failed to fetch leaderboard from API");
-            return [];
-        }
-        const result = await response.json();
-        
-        // Firestore Timestamps will be serialized as strings, so we convert them back to Date objects
-        return result.data.map((entry: any) => ({
-            ...entry,
-            roastedAt: new Date(entry.roastedAt),
-        }));
-    } catch (error) {
-        console.error("Error fetching leaderboard from API:", error);
-        return [];
-    }
-  }, []);
-
-  const refreshLeaderboard = useCallback(async (filter: TimeFilter, force = false) => {
+  const fetchPage = useCallback(async (force = false, filter: TimeFilter) => {
+    if (!force && !hasMore) {
+        setLoading(false);
+        return;
+    };
+    
     setLoading(true);
-    const cacheKey = `${CACHE_KEY_PREFIX}_all`; // Always use the 'all' cache
 
-    if (!force) {
-        const cached = localStorage.getItem(cacheKey);
-        if (cached) {
-            const { data, timestamp } = JSON.parse(cached);
-            if (Date.now() - timestamp < CACHE_DURATION) {
-                setLeaderboard(data.map((e: any) => ({...e, roastedAt: new Date(e.roastedAt) })));
-                setLastUpdated(new Date(timestamp));
-                setLoading(false);
-                return;
-            }
-        }
+    const isRefreshing = force || lastVisibleId === null;
+    const url = `/api/leaderboard?lastVisible=${isRefreshing ? '' : lastVisibleId}`;
+    
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch leaderboard');
+      
+      const { data } = await response.json();
+      const { leaderboard: newLeaderboard, totalUsers: newTotal, lastVisibleId: newLastVisibleId, hasMore: newHasMore } = data;
+
+      const formattedLeaderboard = newLeaderboard.map((e: any) => ({ ...e, roastedAt: new Date(e.roastedAt) }));
+
+      setLeaderboard(prev => isRefreshing ? formattedLeaderboard : [...prev, ...formattedLeaderboard]);
+      setLastVisibleId(newLastVisibleId);
+      setHasMore(newHasMore);
+      setTotalUsers(newTotal);
+      setLastUpdated(new Date());
+
+    } catch (error) {
+      console.error("Error fetching leaderboard:", error);
+    } finally {
+      setLoading(false);
     }
+  }, [hasMore, lastVisibleId]);
 
-    // If forcing, or if cache is invalid, fetch from server
-    const data = await getLeaderboardFromServer();
-    const now = new Date();
-    localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: now.getTime() }));
-    setLeaderboard(data);
-    setLastUpdated(now);
-    setLoading(false);
-  }, [getLeaderboardFromServer]);
+
+  const refreshLeaderboard = useCallback((filter: TimeFilter, force = false) => {
+    setLeaderboard([]);
+    setLastVisibleId(null);
+    setHasMore(true);
+    fetchPage(true, filter);
+  }, [fetchPage]);
+  
+  const loadMore = useCallback((filter: TimeFilter) => {
+      if(!loading && hasMore) {
+          fetchPage(false, filter);
+      }
+  }, [loading, hasMore, fetchPage]);
 
   const addUser = useCallback((newUser: LeaderboardEntry) => {
     setLeaderboard(prev => {
@@ -81,16 +85,15 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
           u.username === newUser.username ? { ...u, ...newUser, roastedAt: new Date() } : u
         );
       } else {
-        updatedList = [...prev, { ...newUser, roastedAt: new Date() }];
+        // Add to the top
+        updatedList = [{ ...newUser, roastedAt: new Date() }, ...prev];
       }
       
       updatedList.sort((a, b) => b.score - a.score);
       
-      // Keep only top 100
-      const top100 = updatedList.slice(0, 100);
-
-      return top100;
+      return updatedList;
     });
+    setTotalUsers(prev => prev + 1);
     setLastUpdated(new Date());
   }, []);
 
@@ -98,7 +101,6 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
     const now = new Date();
     let dataToFilter = leaderboard;
 
-    // Time-based filtering on the client side from the "all-time" cache
     if (filter === 'month') {
         const monthStart = startOfMonth(now);
         dataToFilter = dataToFilter.filter(entry => new Date(entry.roastedAt) >= monthStart);
@@ -107,7 +109,6 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
         dataToFilter = dataToFilter.filter(entry => new Date(entry.roastedAt) >= weekStart);
     }
     
-    // Then, filter by search term
     if (!searchTerm) {
         return dataToFilter;
     }
@@ -124,7 +125,7 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
   }, [refreshLeaderboard]);
 
   return (
-    <LeaderboardContext.Provider value={{ leaderboard, loading, lastUpdated, refreshLeaderboard, addUser, filterLeaderboard }}>
+    <LeaderboardContext.Provider value={{ leaderboard, loading, lastUpdated, hasMore, totalUsers, refreshLeaderboard, loadMore, addUser, filterLeaderboard }}>
       {children}
     </LeaderboardContext.Provider>
   );

@@ -1,44 +1,60 @@
 
-import { NextResponse } from 'next/server';
-import { collection, query, orderBy, limit, getDocs, Timestamp } from 'firebase/firestore';
+import { NextResponse, type NextRequest } from 'next/server';
+import { collection, query, orderBy, limit, getDocs, getCountFromServer, startAfter, doc, getDoc } from 'firebase/firestore';
 import { initializeFirebase } from '@/firebase';
 
-// Cache this route for 5 minutes
-export const revalidate = 300;
+export const revalidate = 0; // Disable caching for this dynamic route
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const { firestore } = initializeFirebase();
+    const { searchParams } = new URL(request.url);
+    const pageSize = 50;
+    const lastVisibleId = searchParams.get('lastVisible');
 
-    const q = query(
-      collection(firestore, 'leaderboard'),
+    const leaderboardCollection = collection(firestore, 'leaderboard');
+
+    // Get total count of users
+    const countQuery = query(leaderboardCollection);
+    const countSnapshot = await getCountFromServer(countQuery);
+    const totalUsers = countSnapshot.data().count;
+
+    // Base query
+    let q = query(
+      leaderboardCollection,
       orderBy('score', 'desc'),
-      limit(100)
+      limit(pageSize)
     );
+
+    // If lastVisibleId is provided, start the query after that document
+    if (lastVisibleId) {
+      const lastDocSnapshot = await getDoc(doc(leaderboardCollection, lastVisibleId));
+      if (lastDocSnapshot.exists()) {
+        q = query(q, startAfter(lastDocSnapshot));
+      }
+    }
     
     const snapshot = await getDocs(q);
     const leaderboard = snapshot.docs.map(doc => {
         const data = doc.data();
-        // Ensure timestamp is serializable
-        const roastedAt = data.roastedAt instanceof Timestamp 
-            ? data.roastedAt.toDate().toISOString() 
-            : new Date().toISOString();
-
         return {
             id: doc.id,
             ...data,
-            roastedAt,
+            roastedAt: data.roastedAt.toDate().toISOString(),
         }
     });
+
+    const lastDoc = snapshot.docs[snapshot.docs.length - 1];
     
     return NextResponse.json({
       success: true,
-      data: leaderboard,
+      data: {
+        leaderboard,
+        totalUsers,
+        lastVisibleId: lastDoc ? lastDoc.id : null,
+        hasMore: leaderboard.length === pageSize
+      },
       timestamp: Date.now()
-    }, {
-      headers: {
-        'Cache-Control': `public, s-maxage=${revalidate}, stale-while-revalidate=${revalidate * 2}`
-      }
     });
   } catch (error: any) {
     console.error("API Route Error: Failed to fetch leaderboard", error);
