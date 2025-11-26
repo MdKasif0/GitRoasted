@@ -157,26 +157,16 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
 
   const addUser = useCallback((newUser: LeaderboardEntry) => {
     setLeaderboard(prev => {
-      const exists = prev.find(u => u.username === newUser.username);
-      let updatedList: LeaderboardEntry[];
-
-      if (exists) {
-        updatedList = prev.map(u => 
-          u.username === newUser.username ? { ...newUser, roastedAt: new Date() } : u
-        );
-      } else {
-        updatedList = [{ ...newUser, roastedAt: new Date() }, ...prev];
-      }
+      const userMap = new Map(prev.map(u => [u.username, u]));
+      userMap.set(newUser.username, { ...newUser, roastedAt: new Date() });
       
+      const updatedList = Array.from(userMap.values());
       updatedList.sort((a, b) => b.score - a.score);
       
       return updatedList;
     });
-    if (!leaderboard.some(u => u.username === newUser.username)) {
-      setTotalUsers(prev => prev + 1);
-    }
     setLastUpdated(new Date());
-  }, [leaderboard]);
+  }, []);
 
   const filterLeaderboard = useCallback((filter: TimeFilter, searchTerm: string): LeaderboardEntry[] => {
     const now = new Date();
