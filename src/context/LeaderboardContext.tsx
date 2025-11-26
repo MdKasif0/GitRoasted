@@ -60,76 +60,90 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
   const [hasMore, setHasMore] = useState(true);
   const [totalUsers, setTotalUsers] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchPage = useCallback(async (page: number, isRefreshing = false) => {
-    setLoading(true);
 
-    const cachedData = getFromCache(page);
-    if (cachedData && !isRefreshing) {
-      setLeaderboard(prev => isRefreshing ? cachedData.leaderboard : [...prev, ...cachedData.leaderboard]);
-      setLastVisibleId(cachedData.lastVisibleId);
-      setHasMore(cachedData.hasMore);
-      setTotalUsers(cachedData.totalUsers);
-      setLoading(false);
-      if (isRefreshing) setLastUpdated(new Date());
-      return;
-    }
+  useEffect(() => {
+    const fetchPage = async () => {
+      setLoading(true);
 
-    const lastId = isRefreshing ? '' : lastVisibleId || '';
-    const url = `/api/leaderboard?lastVisible=${lastId}`;
+      const isFirstPage = currentPage === 1;
+
+      // Don't fetch if there are no more pages
+      if (!isFirstPage && !hasMore) {
+        setLoading(false);
+        return;
+      }
+
+      const cachedData = getFromCache(currentPage);
+      if (cachedData && !isRefreshing) {
+        setLeaderboard(prev => isRefreshing ? cachedData.leaderboard : [...prev, ...cachedData.leaderboard]);
+        setLastVisibleId(cachedData.lastVisibleId);
+        setHasMore(cachedData.hasMore);
+        setTotalUsers(cachedData.totalUsers);
+        setLoading(false);
+        if (isRefreshing) setLastUpdated(new Date());
+        return;
+      }
+      
+      const lastId = isRefreshing || isFirstPage ? '' : lastVisibleId || '';
+      const url = `/api/leaderboard?lastVisible=${lastId}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch leaderboard');
+        
+        const { data } = await response.json();
+        const { leaderboard: newLeaderboard, totalUsers: newTotal, lastVisibleId: newLastVisibleId, hasMore: newHasMore } = data;
+
+        const formattedLeaderboard = newLeaderboard.map((e: any) => ({ ...e, roastedAt: new Date(e.roastedAt) }));
+        
+        const resultToCache = {
+          leaderboard: formattedLeaderboard,
+          lastVisibleId: newLastVisibleId,
+          hasMore: newHasMore,
+          totalUsers: newTotal,
+        };
+        saveToCache(currentPage, resultToCache);
+
+        setLeaderboard(prev => (isRefreshing || isFirstPage) ? formattedLeaderboard : [...prev, ...formattedLeaderboard]);
+        setLastVisibleId(newLastVisibleId);
+        setHasMore(newHasMore);
+        setTotalUsers(newTotal);
+
+        if (isRefreshing) {
+          setLastUpdated(new Date());
+          setIsRefreshing(false);
+        }
+
+      } catch (error) {
+        console.error("Error fetching leaderboard:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('Failed to fetch leaderboard');
-      
-      const { data } = await response.json();
-      const { leaderboard: newLeaderboard, totalUsers: newTotal, lastVisibleId: newLastVisibleId, hasMore: newHasMore } = data;
-
-      const formattedLeaderboard = newLeaderboard.map((e: any) => ({ ...e, roastedAt: new Date(e.roastedAt) }));
-      
-      const resultToCache = {
-        leaderboard: formattedLeaderboard,
-        lastVisibleId: newLastVisibleId,
-        hasMore: newHasMore,
-        totalUsers: newTotal,
-      };
-      saveToCache(page, resultToCache);
-
-      setLeaderboard(prev => isRefreshing ? formattedLeaderboard : [...prev, ...formattedLeaderboard]);
-      setLastVisibleId(newLastVisibleId);
-      setHasMore(newHasMore);
-      setTotalUsers(newTotal);
-      if(isRefreshing) setLastUpdated(new Date());
-
-    } catch (error) {
-      console.error("Error fetching leaderboard:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [lastVisibleId]);
-
+    fetchPage();
+  }, [currentPage, isRefreshing]);
 
   const refreshLeaderboard = useCallback(() => {
     setLeaderboard([]);
     setLastVisibleId(null);
     setHasMore(true);
     setCurrentPage(1);
-    // Clear cache on manual refresh
+    setIsRefreshing(true); // This will trigger the useEffect
     try {
       localStorage.removeItem(CACHE_KEY);
     } catch (error) {
       console.warn("Could not clear localStorage", error);
     }
-    fetchPage(1, true);
-  }, [fetchPage]);
+  }, []);
   
   const loadMore = useCallback(() => {
-      if(!loading && hasMore) {
-          const nextPage = currentPage + 1;
-          setCurrentPage(nextPage);
-          fetchPage(nextPage, false);
-      }
-  }, [loading, hasMore, currentPage, fetchPage]);
+    if (!loading && hasMore) {
+        setCurrentPage(prevPage => prevPage + 1);
+    }
+  }, [loading, hasMore]);
 
   const addUser = useCallback((newUser: LeaderboardEntry) => {
     setLeaderboard(prev => {
@@ -175,11 +189,6 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
       (entry.name && entry.name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [leaderboard]);
-
-
-  useEffect(() => {
-    refreshLeaderboard();
-  }, [refreshLeaderboard]);
 
   return (
     <LeaderboardContext.Provider value={{ leaderboard, loading, lastUpdated, hasMore, totalUsers, refreshLeaderboard, loadMore, addUser, filterLeaderboard }}>
