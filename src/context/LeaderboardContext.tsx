@@ -12,13 +12,45 @@ interface LeaderboardContextType {
   lastUpdated: Date | null;
   hasMore: boolean;
   totalUsers: number;
-  refreshLeaderboard: (filter: TimeFilter, force?: boolean) => void;
-  loadMore: (filter: TimeFilter) => void;
+  refreshLeaderboard: () => void;
+  loadMore: () => void;
   addUser: (user: LeaderboardEntry) => void;
   filterLeaderboard: (filter: TimeFilter, searchTerm: string) => LeaderboardEntry[];
 }
 
 const LeaderboardContext = createContext<LeaderboardContextType | undefined>(undefined);
+
+const CACHE_KEY = 'leaderboard_pages';
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+const saveToCache = (page: number, data: any) => {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}');
+    cached[page] = {
+      data,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cached));
+  } catch (error) {
+    console.warn("Could not save to localStorage", error);
+  }
+};
+
+const getFromCache = (page: number): any | null => {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}');
+    const pageData = cached[page];
+    
+    if (pageData && Date.now() - pageData.timestamp < CACHE_DURATION) {
+      return pageData.data;
+    }
+    return null;
+  } catch (error) {
+    console.warn("Could not read from localStorage", error);
+    return null;
+  }
+};
+
 
 export function LeaderboardProvider({ children }: { children: ReactNode }) {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -27,10 +59,24 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
   const [lastVisibleId, setLastVisibleId] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const fetchPage = useCallback(async (isRefreshing = false) => {
+  const fetchPage = useCallback(async (page: number, isRefreshing = false) => {
     setLoading(true);
-    const url = `/api/leaderboard?lastVisible=${isRefreshing ? '' : lastVisibleId || ''}`;
+
+    const cachedData = getFromCache(page);
+    if (cachedData && !isRefreshing) {
+      setLeaderboard(prev => isRefreshing ? cachedData.leaderboard : [...prev, ...cachedData.leaderboard]);
+      setLastVisibleId(cachedData.lastVisibleId);
+      setHasMore(cachedData.hasMore);
+      setTotalUsers(cachedData.totalUsers);
+      setLoading(false);
+      if (isRefreshing) setLastUpdated(new Date());
+      return;
+    }
+
+    const lastId = isRefreshing ? '' : lastVisibleId || '';
+    const url = `/api/leaderboard?lastVisible=${lastId}`;
     
     try {
       const response = await fetch(url);
@@ -40,6 +86,14 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
       const { leaderboard: newLeaderboard, totalUsers: newTotal, lastVisibleId: newLastVisibleId, hasMore: newHasMore } = data;
 
       const formattedLeaderboard = newLeaderboard.map((e: any) => ({ ...e, roastedAt: new Date(e.roastedAt) }));
+      
+      const resultToCache = {
+        leaderboard: formattedLeaderboard,
+        lastVisibleId: newLastVisibleId,
+        hasMore: newHasMore,
+        totalUsers: newTotal,
+      };
+      saveToCache(page, resultToCache);
 
       setLeaderboard(prev => isRefreshing ? formattedLeaderboard : [...prev, ...formattedLeaderboard]);
       setLastVisibleId(newLastVisibleId);
@@ -55,18 +109,27 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
   }, [lastVisibleId]);
 
 
-  const refreshLeaderboard = useCallback((filter: TimeFilter, force = false) => {
+  const refreshLeaderboard = useCallback(() => {
     setLeaderboard([]);
     setLastVisibleId(null);
     setHasMore(true);
-    fetchPage(true);
+    setCurrentPage(1);
+    // Clear cache on manual refresh
+    try {
+      localStorage.removeItem(CACHE_KEY);
+    } catch (error) {
+      console.warn("Could not clear localStorage", error);
+    }
+    fetchPage(1, true);
   }, [fetchPage]);
   
-  const loadMore = useCallback((filter: TimeFilter) => {
+  const loadMore = useCallback(() => {
       if(!loading && hasMore) {
-          fetchPage(false);
+          const nextPage = currentPage + 1;
+          setCurrentPage(nextPage);
+          fetchPage(nextPage, false);
       }
-  }, [loading, hasMore, fetchPage]);
+  }, [loading, hasMore, currentPage, fetchPage]);
 
   const addUser = useCallback((newUser: LeaderboardEntry) => {
     setLeaderboard(prev => {
@@ -81,12 +144,10 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
         updatedList = [{ ...newUser, roastedAt: new Date() }, ...prev];
       }
       
-      // Re-sort by score after adding/updating
       updatedList.sort((a, b) => b.score - a.score);
       
       return updatedList;
     });
-    // Optimistically increment total user count if it's a new user
     if (!leaderboard.some(u => u.username === newUser.username)) {
       setTotalUsers(prev => prev + 1);
     }
@@ -117,8 +178,8 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
 
 
   useEffect(() => {
-    refreshLeaderboard('all');
-  }, [refreshLeaderboard]);
+    fetchPage(1, true);
+  }, []);
 
   return (
     <LeaderboardContext.Provider value={{ leaderboard, loading, lastUpdated, hasMore, totalUsers, refreshLeaderboard, loadMore, addUser, filterLeaderboard }}>
@@ -134,3 +195,5 @@ export const useLeaderboard = () => {
   }
   return context;
 };
+
+    

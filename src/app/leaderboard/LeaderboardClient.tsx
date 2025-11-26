@@ -101,12 +101,12 @@ export function LeaderboardClient() {
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleRefresh = () => {
-    refreshLeaderboard(timeFilter, true);
-  }
+  const handleRefresh = useCallback(() => {
+    refreshLeaderboard();
+  },[refreshLeaderboard]);
 
   useEffect(() => {
-    refreshLeaderboard(timeFilter);
+    refreshLeaderboard();
   }, [timeFilter, refreshLeaderboard]);
 
   const filteredData = useMemo(() => {
@@ -170,7 +170,7 @@ export function LeaderboardClient() {
         </div>
         
         <div className="flex justify-center items-center gap-4 mb-8 text-sm">
-            <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading} className="bg-white/5 border-white/10">
+            <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading && leaderboard.length > 0} className="bg-white/5 border-white/10">
                 <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
                 Refresh
             </Button>
@@ -251,16 +251,16 @@ export function LeaderboardClient() {
                     </div>
                 )}
                 
-                 <div className="flex flex-col sm:flex-row items-center justify-center mt-8 gap-4">
+                 <div className="flex flex-col sm:flex-row items-center justify-center mt-12 gap-4">
                      {hasMore && (
                         <Button 
-                            onClick={() => loadMore(timeFilter)} 
+                            onClick={loadMore} 
                             disabled={loading}
-                            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white"
+                            className="text-base font-semibold text-white px-8 py-7 w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            {loading ? (
+                            {loading && leaderboard.length > 0 ? (
                               <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                                 Loading...
                               </>
                             ) : (
@@ -270,10 +270,10 @@ export function LeaderboardClient() {
                      )}
                 </div>
                  <div className="text-center text-muted-foreground mt-4">
-                    {totalUsers > 0 && <p>Showing {filteredData.length} of {totalUsers} users.</p>}
+                    {totalUsers > 0 && <p>Showing {filteredData.length} of {totalUsers} developers.</p>}
                 </div>
                  {!hasMore && filteredData.length > 0 && (
-                    <div className="text-center text-muted-foreground mt-4">
+                    <div className="text-center p-8 font-medium text-muted-foreground mt-4">
                         🎉 You've reached the end!
                     </div>
                  )}
@@ -286,3 +286,5 @@ export function LeaderboardClient() {
     </div>
   );
 }
+
+    
