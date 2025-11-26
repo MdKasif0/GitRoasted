@@ -65,11 +65,12 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const fetchPage = async () => {
-      setLoading(true);
+      if (currentPage === 1) {
+          setLoading(true);
+      }
 
       const isFirstPage = currentPage === 1;
 
-      // Don't fetch if there are no more pages
       if (!isFirstPage && !hasMore) {
         setLoading(false);
         return;
@@ -77,11 +78,15 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
 
       const cachedData = getFromCache(currentPage);
       if (cachedData && !isRefreshing) {
-        setLeaderboard(prev => isRefreshing ? cachedData.leaderboard : [...prev, ...cachedData.leaderboard]);
+        setLeaderboard(prev => {
+          const existingUsernames = new Set(prev.map(u => u.username));
+          const uniqueNewUsers = cachedData.leaderboard.filter((u: LeaderboardEntry) => !existingUsernames.has(u.username));
+          return isRefreshing ? cachedData.leaderboard : [...prev, ...uniqueNewUsers];
+        });
         setLastVisibleId(cachedData.lastVisibleId);
         setHasMore(cachedData.hasMore);
         setTotalUsers(cachedData.totalUsers);
-        setLoading(false);
+        if (isFirstPage) setLoading(false);
         if (isRefreshing) setLastUpdated(new Date());
         return;
       }
@@ -106,7 +111,12 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
         };
         saveToCache(currentPage, resultToCache);
 
-        setLeaderboard(prev => (isRefreshing || isFirstPage) ? formattedLeaderboard : [...prev, ...formattedLeaderboard]);
+        setLeaderboard(prev => {
+           const existingUsernames = new Set(prev.map(u => u.username));
+           const uniqueNewUsers = formattedLeaderboard.filter((u: LeaderboardEntry) => !existingUsernames.has(u.username));
+           return (isRefreshing || isFirstPage) ? formattedLeaderboard : [...prev, ...uniqueNewUsers]
+        });
+
         setLastVisibleId(newLastVisibleId);
         setHasMore(newHasMore);
         setTotalUsers(newTotal);
@@ -119,7 +129,7 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error("Error fetching leaderboard:", error);
       } finally {
-        setLoading(false);
+        if (isFirstPage) setLoading(false);
       }
     };
     
@@ -131,7 +141,7 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
     setLastVisibleId(null);
     setHasMore(true);
     setCurrentPage(1);
-    setIsRefreshing(true); // This will trigger the useEffect
+    setIsRefreshing(true);
     try {
       localStorage.removeItem(CACHE_KEY);
     } catch (error) {
