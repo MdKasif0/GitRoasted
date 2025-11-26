@@ -178,8 +178,8 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
 
 
   useEffect(() => {
-    fetchPage(1, true);
-  }, []);
+    refreshLeaderboard();
+  }, [refreshLeaderboard]);
 
   return (
     <LeaderboardContext.Provider value={{ leaderboard, loading, lastUpdated, hasMore, totalUsers, refreshLeaderboard, loadMore, addUser, filterLeaderboard }}>
@@ -195,5 +195,3 @@ export const useLeaderboard = () => {
   }
   return context;
 };
-
-    
