@@ -12,7 +12,7 @@ import { Crown, RefreshCw, Search, Trophy, Loader2 } from 'lucide-react';
 import type { LeaderboardEntry } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnimatedNumber } from '@/components/AnimatedNumber';
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -100,6 +100,9 @@ export function LeaderboardClient() {
   const { leaderboard, loading, lastUpdated, refreshLeaderboard, filterLeaderboard, loadMore, hasMore, totalUsers } = useLeaderboard();
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const prevLeaderboardLength = useRef(0);
+
 
   const handleRefresh = useCallback(() => {
     refreshLeaderboard();
@@ -124,6 +127,15 @@ export function LeaderboardClient() {
       const display = [sortedPodium[1], sortedPodium[0], sortedPodium[2]].filter(Boolean);
       return display;
   }, [podiumData]);
+
+  useEffect(() => {
+    if (leaderboard.length > prevLeaderboardLength.current && prevLeaderboardLength.current > 0) {
+      setTimeout(() => {
+        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+    prevLeaderboardLength.current = leaderboard.length;
+  }, [leaderboard.length]);
 
 
   return (
@@ -204,9 +216,11 @@ export function LeaderboardClient() {
                     {filteredData.map((entry, index) => {
                         const rank = index + 1;
                         const isPodium = rank <= 3;
+                        const isFirstOfNewBatch = index === prevLeaderboardLength.current;
+
                         return (
                             <Collapsible key={entry.username} className={cn(isPodium && 'md:hidden')}>
-                                <div className={cn("bg-white/5 backdrop-blur-xl rounded-xl border-2", getRankBorderClass(rank))}>
+                                <div className={cn("bg-white/5 backdrop-blur-xl rounded-xl border-2", getRankBorderClass(rank))} ref={isFirstOfNewBatch ? scrollRef : null}>
                                     <CollapsibleTrigger className="flex items-center p-3 text-lg w-full">
                                         <div className="w-12 font-bold text-muted-foreground text-center">{getRankContent(rank)}</div>
                                         <div className="flex items-center gap-4 flex-1 overflow-hidden text-left">
