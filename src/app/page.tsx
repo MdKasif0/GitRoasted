@@ -2,9 +2,8 @@
 import GitRoastClient from "@/components/GitRoastClient";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { Leaderboard } from "@/components/Leaderboard";
-import { FlameIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, Github, Moon, Star, Sun, X, BookUser, Trophy, Coffee } from "lucide-react";
+import { BookUser, Trophy, Coffee } from "lucide-react";
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -39,6 +38,17 @@ export default function Home() {
         <p className="text-muted-foreground mt-3 text-lg md:text-xl max-w-2xl mx-auto">
           Get a savage (but friendly) AI-powered roast of any GitHub profile.
         </p>
+        <div className="flex justify-center my-6">
+          <a href="https://www.producthunt.com/products/gitroasted?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-gitroasted" target="_blank" rel="noopener noreferrer">
+            <img 
+              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=463636&theme=light" 
+              alt="GitRoasted | Product Hunt" 
+              style={{width: '250px', height: '54px'}} 
+              width="250" 
+              height="54" 
+            />
+          </a>
+        </div>
          <div className="flex items-center justify-center gap-2 sm:gap-4 mt-4">
             <Button asChild variant="link" className="text-primary">
               <Link href="/how-it-works" className='flex items-center gap-1'>
