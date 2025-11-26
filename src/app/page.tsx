@@ -39,15 +39,7 @@ export default function Home() {
           Get a savage (but friendly) AI-powered roast of any GitHub profile.
         </p>
         <div className="flex justify-center my-6">
-          <a href="https://www.producthunt.com/products/gitroasted?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-gitroasted" target="_blank" rel="noopener noreferrer">
-            <img 
-              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=463636&theme=light" 
-              alt="GitRoasted | Product Hunt" 
-              style={{width: '250px', height: '54px'}} 
-              width="250" 
-              height="54" 
-            />
-          </a>
+          <a href="https://www.producthunt.com/products/gitroasted?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-gitroasted" target="_blank" rel="noopener noreferrer"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1042603&theme=light&t=1764142397410" alt="GitRoasted - Get&#0032;roasted&#0032;by&#0032;your&#0032;GitHub&#0032;commits&#0032;🔥 | Product Hunt" style={{width: "250px", height: "54px"}} width="250" height="54" /></a>
         </div>
          <div className="flex items-center justify-center gap-2 sm:gap-4 mt-4">
             <Button asChild variant="link" className="text-primary">
