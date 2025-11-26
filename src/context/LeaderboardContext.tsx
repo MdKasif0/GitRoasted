@@ -28,16 +28,9 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
   const [hasMore, setHasMore] = useState(true);
   const [totalUsers, setTotalUsers] = useState(0);
 
-  const fetchPage = useCallback(async (force = false, filter: TimeFilter) => {
-    if (!force && !hasMore) {
-        setLoading(false);
-        return;
-    };
-    
+  const fetchPage = useCallback(async (isRefreshing = false) => {
     setLoading(true);
-
-    const isRefreshing = force || lastVisibleId === null;
-    const url = `/api/leaderboard?lastVisible=${isRefreshing ? '' : lastVisibleId}`;
+    const url = `/api/leaderboard?lastVisible=${isRefreshing ? '' : lastVisibleId || ''}`;
     
     try {
       const response = await fetch(url);
@@ -52,26 +45,26 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
       setLastVisibleId(newLastVisibleId);
       setHasMore(newHasMore);
       setTotalUsers(newTotal);
-      setLastUpdated(new Date());
+      if(isRefreshing) setLastUpdated(new Date());
 
     } catch (error) {
       console.error("Error fetching leaderboard:", error);
     } finally {
       setLoading(false);
     }
-  }, [hasMore, lastVisibleId]);
+  }, [lastVisibleId]);
 
 
   const refreshLeaderboard = useCallback((filter: TimeFilter, force = false) => {
     setLeaderboard([]);
     setLastVisibleId(null);
     setHasMore(true);
-    fetchPage(true, filter);
+    fetchPage(true);
   }, [fetchPage]);
   
   const loadMore = useCallback((filter: TimeFilter) => {
       if(!loading && hasMore) {
-          fetchPage(false, filter);
+          fetchPage(false);
       }
   }, [loading, hasMore, fetchPage]);
 
@@ -82,20 +75,23 @@ export function LeaderboardProvider({ children }: { children: ReactNode }) {
 
       if (exists) {
         updatedList = prev.map(u => 
-          u.username === newUser.username ? { ...u, ...newUser, roastedAt: new Date() } : u
+          u.username === newUser.username ? { ...newUser, roastedAt: new Date() } : u
         );
       } else {
-        // Add to the top
         updatedList = [{ ...newUser, roastedAt: new Date() }, ...prev];
       }
       
+      // Re-sort by score after adding/updating
       updatedList.sort((a, b) => b.score - a.score);
       
       return updatedList;
     });
-    setTotalUsers(prev => prev + 1);
+    // Optimistically increment total user count if it's a new user
+    if (!leaderboard.some(u => u.username === newUser.username)) {
+      setTotalUsers(prev => prev + 1);
+    }
     setLastUpdated(new Date());
-  }, []);
+  }, [leaderboard]);
 
   const filterLeaderboard = useCallback((filter: TimeFilter, searchTerm: string): LeaderboardEntry[] => {
     const now = new Date();

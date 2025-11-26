@@ -40,7 +40,8 @@ export async function GET(request: NextRequest) {
         return {
             id: doc.id,
             ...data,
-            roastedAt: data.roastedAt.toDate().toISOString(),
+            // Convert Firestore Timestamp to ISO string
+            roastedAt: data.roastedAt?.toDate ? data.roastedAt.toDate().toISOString() : new Date().toISOString(),
         }
     });
 

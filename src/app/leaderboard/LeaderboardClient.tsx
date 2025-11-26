@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Crown, RefreshCw, Search, Trophy } from 'lucide-react';
+import { Crown, RefreshCw, Search, Trophy, Loader2 } from 'lucide-react';
 import type { LeaderboardEntry } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnimatedNumber } from '@/components/AnimatedNumber';
@@ -19,7 +19,6 @@ import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useLeaderboard } from '@/context/LeaderboardContext';
-import { Pagination } from '@/components/Pagination';
 
 type TimeFilter = 'all' | 'month' | 'week';
 
@@ -97,21 +96,16 @@ const getRankBorderClass = (rank: number) => {
     return 'border-white/10';
 }
 
-const ITEMS_PER_PAGE = 50;
-
 export function LeaderboardClient() {
   const { leaderboard, loading, lastUpdated, refreshLeaderboard, filterLeaderboard, loadMore, hasMore, totalUsers } = useLeaderboard();
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
 
   const handleRefresh = () => {
-    setCurrentPage(1);
     refreshLeaderboard(timeFilter, true);
   }
 
   useEffect(() => {
-    setCurrentPage(1);
     refreshLeaderboard(timeFilter);
   }, [timeFilter, refreshLeaderboard]);
 
@@ -120,17 +114,7 @@ export function LeaderboardClient() {
   }, [leaderboard, timeFilter, searchTerm, filterLeaderboard]);
 
 
-  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
-
-  const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    return filteredData.slice(0, endIndex);
-  }, [filteredData, currentPage]);
-
-
-  const podiumData = paginatedData.slice(0, 3);
-  const listData = paginatedData.slice(3);
+  const podiumData = filteredData.slice(0, 3);
   
   const podiumDisplayOrder = useMemo(() => {
       if (podiumData.length === 0) return [];
@@ -203,7 +187,7 @@ export function LeaderboardClient() {
         {!loading || leaderboard.length > 0 ? (
             <>
                 {/* Desktop Podium */}
-                {paginatedData.length > 0 && (
+                {podiumData.length > 0 && (
                      <div className="hidden md:grid grid-cols-[1fr_1.2fr_1fr] gap-2 items-end max-w-lg mx-auto mb-12">
                         {podiumDisplayOrder.map((entry) => {
                             if (!entry) return null;
@@ -217,7 +201,7 @@ export function LeaderboardClient() {
                 
                 {/* Unified List for Mobile, and rest of list for Desktop */}
                 <div className="space-y-2">
-                    {paginatedData.map((entry, index) => {
+                    {filteredData.map((entry, index) => {
                         const rank = index + 1;
                         const isPodium = rank <= 3;
                         return (
@@ -274,18 +258,25 @@ export function LeaderboardClient() {
                             disabled={loading}
                             className="bg-gradient-to-r from-purple-600 to-pink-500 text-white"
                         >
-                            {loading ? 'Loading...' : 'Load More'}
+                            {loading ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Loading...
+                              </>
+                            ) : (
+                                'Load More'
+                            )}
                         </Button>
                      )}
-                     <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                     />
                 </div>
                  <div className="text-center text-muted-foreground mt-4">
-                    <p>Showing {paginatedData.length} of {totalUsers} users.</p>
+                    {totalUsers > 0 && <p>Showing {filteredData.length} of {totalUsers} users.</p>}
                 </div>
+                 {!hasMore && filteredData.length > 0 && (
+                    <div className="text-center text-muted-foreground mt-4">
+                        🎉 You've reached the end!
+                    </div>
+                 )}
             </>
         ) : (
              <div className="text-center p-16 text-muted-foreground bg-white/5 rounded-lg">
