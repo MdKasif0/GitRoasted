@@ -128,13 +128,12 @@ export function DashboardClient({ result, wins }: { result: RoastResultState, wi
     return (
         <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
             <header className="mb-8">
-                <Button asChild variant="outline" className="mb-4 bg-white/5 border-white/10">
-                    <Link href={`/?username=${user.login}`}>
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Home
+                <Button asChild variant="ghost" size="icon" className="mb-4 bg-white/5 border-white/10 h-10 w-10">
+                    <Link href={`/?username=${user.login}`} aria-label="Back to Home">
+                        <ArrowLeft className="w-5 h-5" />
                     </Link>
                 </Button>
-                 <h1 className="text-4xl md:text-5xl font-bold tracking-tighter">Dashboard for <span className="text-primary">@{user.login}</span></h1>
+                 <h1 className="text-3xl md:text-4xl font-bold tracking-tighter">Dashboard for <span className="text-primary">@{user.login}</span></h1>
                 <p className="text-lg text-muted-foreground mt-1">
                     A complete overview of your GitHub roast and improvement plan.
                 </p>
@@ -287,5 +286,7 @@ export function DashboardClient({ result, wins }: { result: RoastResultState, wi
         </div>
     );
 }
+
+    
 
     
