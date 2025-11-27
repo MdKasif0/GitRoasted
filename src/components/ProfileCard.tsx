@@ -4,6 +4,7 @@
 
 
 
+
 import Image from 'next/image';
 import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare, ArrowRight } from 'lucide-react';
 import React from 'react';
@@ -154,7 +155,7 @@ function QuickWinsSection({ result }: { result: RoastResultState }) {
             <div className="p-4 pt-0 text-center">
                 <Button asChild className="w-full">
                     <Link href={`/dashboard?username=${result.username}`}>
-                        View Full Dashboard & All {allWins.length} Improvement Tips
+                        View More
                         <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>
                 </Button>
@@ -353,6 +354,7 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
 export const ProfileCard = React.memo(ProfileCardComponent);
     
     
+
 
 
 
