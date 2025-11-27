@@ -58,10 +58,20 @@ export default function GitRoastClient() {
   }
 
   useEffect(() => {
-    if (state.status === 'success' && state.newLeaderboardEntry) {
-        addUser(state.newLeaderboardEntry);
+    if (state.status === 'success' && state.user) {
+        // Save successful roast data to localStorage for the Quick Wins page
+        try {
+            const dataToCache = { ...state, newLeaderboardEntry: undefined }; // Don't cache the temporary entry
+            localStorage.setItem(`gitroasted_data_${state.user.login.toLowerCase()}`, JSON.stringify(dataToCache));
+        } catch (error) {
+            console.warn("Could not save roast data to localStorage", error);
+        }
+        
+        if (state.newLeaderboardEntry) {
+            addUser(state.newLeaderboardEntry);
+        }
     }
-  }, [state.status, state.newLeaderboardEntry, addUser])
+  }, [state, addUser])
 
   return (
     <section className="w-full max-w-md md:max-w-xl lg:max-w-4xl">
