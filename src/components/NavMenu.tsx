@@ -136,7 +136,7 @@ export function NavMenu() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="secondary"
-          className="rounded-full bg-red-500/80 text-white hover:bg-red-500 font-bold text-base px-6 py-3 border-2 border-red-500/50 transition-all duration-300"
+          className="rounded-full bg-primary/80 text-white hover:bg-primary font-bold text-base px-6 py-3 border-2 border-primary/50 transition-all duration-300"
         >
           {isOpen ? (
             <>
