@@ -1,9 +1,10 @@
 
 'use client'
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare, ArrowRight, ArrowLeft, GitBranch, User as UserIcon } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare, ArrowRight, ArrowLeft, GitBranch, User as UserIcon, AlertCircle } from 'lucide-react';
 import { differenceInYears } from 'date-fns';
 
 import type { RoastResultState, ScoreBreakdown, ScoreCategory, QuickWin as QuickWinType, DeveloperArchetype } from '@/lib/types';
@@ -21,6 +22,7 @@ import { ScoreCircle } from '@/components/ScoreCircle';
 import { calculateQuickWins } from '@/lib/quickWins';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 
 const breakdownMeta: Record<keyof ScoreBreakdown, { label: string; icon: React.ElementType, description: string, maxScore: number }> = {
@@ -112,8 +114,9 @@ function QuickWinCard({ win }: { win: QuickWinType; }) {
   )
 }
 
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
-export function DashboardClient({ result, wins }: { result: RoastResultState, wins: QuickWinType[] }) {
+function DashboardContent({ result, wins }: { result: RoastResultState, wins: QuickWinType[] }) {
     if (result.status !== 'success' || !result.user || !result.score || !result.breakdown || !result.events) {
         return null;
     }
@@ -285,4 +288,82 @@ export function DashboardClient({ result, wins }: { result: RoastResultState, wi
             </div>
         </div>
     );
+}
+
+export function DashboardClient() {
+  const searchParams = useSearchParams();
+  const username = searchParams.get('username');
+
+  const [result, setResult] = useState<RoastResultState | null>(null);
+  const [wins, setWins] = useState<QuickWinType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!username) {
+      setError('No username provided. Please go back and roast a user first.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const cachedDataString = localStorage.getItem(`gitroasted_data_${username.toLowerCase()}`);
+      if (!cachedDataString) {
+        setError(`No roast data found for "${username}". Please go back and roast this user to see their Dashboard.`);
+        setLoading(false);
+        return;
+      }
+
+      const userData: RoastResultState & { timestamp?: number } = JSON.parse(cachedDataString);
+
+      const isExpired = userData.timestamp && (Date.now() - userData.timestamp > CACHE_DURATION);
+      if (isExpired) {
+          localStorage.removeItem(`gitroasted_data_${username.toLowerCase()}`);
+          setError(`The roast data for "${username}" is over 24 hours old. Please re-roast them for a fresh analysis.`);
+          setLoading(false);
+          return;
+      }
+
+      if (userData.status !== 'success') {
+          setError(`Could not load Dashboard. The last roast for "${username}" was not successful.`);
+          setLoading(false);
+          return;
+      }
+
+      const quickWins = calculateQuickWins(userData);
+      setResult(userData);
+      setWins(quickWins);
+    } catch (e) {
+        console.error("Failed to load or parse data for Dashboard", e);
+        setError("An error occurred while loading the Dashboard data.");
+    } finally {
+        setLoading(false);
+    }
+  }, [username]);
+
+  if (loading) {
+    return null; // The parent page will show the skeleton
+  }
+
+  if (error || !result) {
+    return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-4">
+            <Alert variant="destructive" className="max-w-lg">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Could Not Load Dashboard</AlertTitle>
+                <AlertDescription>
+                    {error || 'An unexpected error occurred.'}
+                </AlertDescription>
+            </Alert>
+             <Button asChild>
+                <Link href={username ? `/?username=${username}` : '/'}>
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Roast
+                </Link>
+            </Button>
+        </div>
+    );
+  }
+
+  return <DashboardContent result={result} wins={wins} />;
 }
