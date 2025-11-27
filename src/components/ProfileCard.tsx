@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ShareableCardDialog } from './ShareableCardDialog';
-import { Badge } from './ui/badge';
-import { Progress } from './ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { FlameIcon } from './icons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
@@ -176,41 +176,42 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
 
   return (
     <div className="w-full max-w-4xl animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5 duration-500 space-y-8">
-        <Card className="bg-black/20 backdrop-blur-lg border-purple-500/30">
-            <CardContent className="p-6 md:p-10">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                    <div className="md:col-span-1 flex flex-col items-center text-center">
-                        <Image
-                        src={user.avatar_url}
-                        alt={user.login}
-                        width={128}
-                        height={128}
-                        className="rounded-full border-4 border-primary transition-transform duration-300 hover:scale-110 glow"
-                        />
-                        <h2 className="text-3xl font-bold mt-4">{user.name || user.login}</h2>
-                        <p className="text-lg text-muted-foreground">@{user.login}</p>
-                    </div>
-                    <div className="md:col-span-1">
-                        <ScoreCircle value={invertedScore} indicatorClassName={celebration.progressClass} />
-                        {celebration && (
-                            <Badge className={`mt-3 text-base mx-auto block text-center w-fit ${celebration.badgeClass}`}>
-                                {celebration.badgeIcon}
-                                {celebration.badgeText}
-                            </Badge>
-                        )}
-                    </div>
-                    <div className="md:col-span-1 flex flex-col gap-2 w-full max-w-xs mx-auto">
-                        <ShareableCardDialog result={result} />
-                        <Button asChild variant="outline" className="w-full bg-white/5 border-white/10">
-                            <a href={user.html_url} target="_blank" rel="noopener noreferrer">
-                            <Github className="mr-2 h-4 w-4" />
-                            View on GitHub
-                            </a>
-                        </Button>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
+      <Card className="bg-black/20 backdrop-blur-lg border-purple-500/30">
+          <CardContent className="p-6 md:p-10">
+              <div className="flex flex-col items-center text-center gap-6">
+                  <Image
+                  src={user.avatar_url}
+                  alt={user.login}
+                  width={128}
+                  height={128}
+                  className="rounded-full border-4 border-primary transition-transform duration-300 hover:scale-110 glow"
+                  />
+                  <div>
+                      <h2 className="text-3xl font-bold">{user.name || user.login}</h2>
+                      <p className="text-lg text-muted-foreground">@{user.login}</p>
+                  </div>
+                  
+                  <ScoreCircle value={invertedScore} indicatorClassName={celebration.progressClass} />
+                  
+                  {celebration && (
+                      <Badge className={`text-base ${celebration.badgeClass}`}>
+                          {celebration.badgeIcon}
+                          {celebration.badgeText}
+                      </Badge>
+                  )}
+                  
+                  <div className="flex flex-col gap-2 w-full max-w-xs mx-auto">
+                      <ShareableCardDialog result={result} />
+                      <Button asChild variant="outline" className="w-full bg-white/5 border-white/10">
+                          <a href={user.html_url} target="_blank" rel="noopener noreferrer">
+                          <Github className="mr-2 h-4 w-4" />
+                          View on GitHub
+                          </a>
+                      </Button>
+                  </div>
+              </div>
+          </CardContent>
+      </Card>
         
         <Card className="bg-black/20 backdrop-blur-lg border-purple-500/30">
             <CardHeader>
