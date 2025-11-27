@@ -208,7 +208,7 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-lg leading-relaxed italic space-y-2">
+                    <div className="text-lg leading-relaxed italic space-y-2 font-serif">
                         {roastLines.map((line, index) => (
                           <p 
                             key={index}
@@ -342,4 +342,5 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
 }
 
 export const ProfileCard = React.memo(ProfileCardComponent);
+    
     
