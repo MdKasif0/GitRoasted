@@ -26,7 +26,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 
 
 // Individual Win Card Component
-function QuickWinCard({ win, rank }: { win: QuickWin; rank: number }) {
+function QuickWinCard({ win }: { win: QuickWin; }) {
   const difficultyColors = {
     easy: 'border-green-500/80 bg-green-500/10 text-green-400',
     medium: 'border-yellow-500/80 bg-yellow-500/10 text-yellow-400',
@@ -97,7 +97,7 @@ export function QuickWinsClient({ username, initialWins, initialScore }: { usern
     <div className="min-h-screen w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-8">
       {/* Header */}
       <div className="mb-12">
-        <Button asChild variant="outline" className="mb-4 bg-white/5 border-white/10 md:w-auto w-10 h-10 p-0 md:px-4 md:py-2 md:w-auto">
+        <Button asChild variant="outline" className="mb-4 bg-white/5 border-white/10 md:w-auto w-10 h-10 p-0 md:px-4 md:py-2">
           <Link href={`/dashboard?username=${username}`}>
             <ArrowLeft className="w-4 h-4 md:mr-2" />
             <span className="hidden md:inline">Back to Dashboard</span>
@@ -143,7 +143,7 @@ export function QuickWinsClient({ username, initialWins, initialScore }: { usern
       {/* Quick Wins List */}
       <div className="grid md:grid-cols-2 gap-6">
         {wins.map((win, index) => (
-          <QuickWinCard key={win.id} win={win} rank={index + 1} />
+          <QuickWinCard key={win.id} win={win} />
         ))}
       </div>
 
