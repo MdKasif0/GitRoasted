@@ -11,6 +11,8 @@ import { Suspense } from "react";
 import { LeaderboardClient } from "@/components/LeaderboardClient";
 import { LeaderboardProvider } from "@/context/LeaderboardContext";
 
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   return (
     <div className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 overflow-x-hidden">
