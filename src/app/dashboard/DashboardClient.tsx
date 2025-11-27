@@ -56,7 +56,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 };
 
 
-function QuickWinCard({ win, rank }: { win: QuickWinType; rank: number }) {
+function QuickWinCard({ win }: { win: QuickWinType; }) {
   const difficultyColors = {
     easy: 'border-green-500/80 bg-green-500/10 text-green-400',
     medium: 'border-yellow-500/80 bg-yellow-500/10 text-yellow-400',
@@ -127,14 +127,15 @@ export function DashboardClient({ result, wins }: { result: RoastResultState, wi
     return (
         <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
             <header className="mb-8">
-                <Button asChild variant="ghost" size="icon" className="mb-4 bg-white/5 border-white/10 h-10 w-10">
-                    <Link href={`/?username=${user.login}`} aria-label="Back to Home">
-                        <ArrowLeft className="w-5 h-5" />
+                <Button asChild variant="outline" className="mb-4 bg-white/5 border-white/10 md:w-auto w-10 h-10 p-0 md:px-4 md:py-2">
+                    <Link href={`/?username=${user.login}`}>
+                        <ArrowLeft className="w-4 h-4 md:mr-2" />
+                        <span className="hidden md:inline">Back to Roast</span>
                     </Link>
                 </Button>
-                 <h1 className="text-3xl md:text-4xl font-bold tracking-tighter">Dashboard for <span className="text-primary">@{user.login}</span></h1>
+                 <h1 className="text-3xl md:text-4xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500">Dashboard for @{user.login}</h1>
                 <p className="text-lg text-muted-foreground mt-1">
-                    A complete overview of your GitHub roast and improvement plan.
+                    Your complete GitHub analysis and improvement plan.
                 </p>
             </header>
 
@@ -153,7 +154,7 @@ export function DashboardClient({ result, wins }: { result: RoastResultState, wi
                             <h2 className="text-3xl font-bold mt-4">{user.name || user.login}</h2>
                             <p className="text-lg text-muted-foreground">@{user.login}</p>
                              <div className="my-6">
-                                <ScoreCircle value={invertedScore} indicatorClassName={celebration.progressClass} />
+                                <ScoreCircle value={invertedScore} />
                                 {celebration && (
                                     <Badge className={`mt-3 text-base mx-auto ${celebration.badgeClass}`}>
                                         {celebration.badgeIcon}
@@ -271,8 +272,8 @@ export function DashboardClient({ result, wins }: { result: RoastResultState, wi
                                 </AccordionTrigger>
                                 <AccordionContent className="px-6 pb-6">
                                      <div className="grid md:grid-cols-2 gap-6">
-                                        {wins.map((win, index) => (
-                                          <QuickWinCard key={win.id} win={win} rank={index + 1} />
+                                        {wins.map((win) => (
+                                          <QuickWinCard key={win.id} win={win} />
                                         ))}
                                       </div>
                                 </AccordionContent>
