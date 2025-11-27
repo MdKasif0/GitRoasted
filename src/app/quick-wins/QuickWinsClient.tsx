@@ -98,9 +98,9 @@ export function QuickWinsClient({ username, initialWins, initialScore }: { usern
       {/* Header */}
       <div className="mb-12">
         <Button asChild variant="outline" className="mb-4 bg-white/5 border-white/10 md:w-auto w-10 h-10 p-0 md:px-4 md:py-2">
-          <Link href={`/dashboard?username=${username}`}>
+          <Link href={`/?username=${username}`}>
             <ArrowLeft className="w-4 h-4 md:mr-2" />
-            <span className="hidden md:inline">Back to Dashboard</span>
+            <span className="hidden md:inline">Back to Home</span>
           </Link>
         </Button>
         
