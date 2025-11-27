@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useActionState, useEffect, useState } from 'react';
@@ -61,7 +60,11 @@ export default function GitRoastClient() {
     if (state.status === 'success' && state.user) {
         // Save successful roast data to localStorage for the Quick Wins page
         try {
-            const dataToCache = { ...state, newLeaderboardEntry: undefined }; // Don't cache the temporary entry
+            const dataToCache = { 
+                ...state, 
+                newLeaderboardEntry: undefined, // Don't cache the temporary entry
+                timestamp: Date.now(), // Add timestamp for cache invalidation
+            };
             localStorage.setItem(`gitroasted_data_${state.user.login.toLowerCase()}`, JSON.stringify(dataToCache));
         } catch (error) {
             console.warn("Could not save roast data to localStorage", error);

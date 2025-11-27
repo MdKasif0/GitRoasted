@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -10,7 +9,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import type { Metadata } from 'next';
+
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 function LoadingSkeleton() {
     return (
@@ -52,7 +52,16 @@ export default function QuickWinsPage() {
         return;
       }
 
-      const userData: RoastResultState = JSON.parse(cachedDataString);
+      const userData: RoastResultState & { timestamp?: number } = JSON.parse(cachedDataString);
+
+      // Check for cache expiration
+      const isExpired = userData.timestamp && (Date.now() - userData.timestamp > CACHE_DURATION);
+      if (isExpired) {
+          localStorage.removeItem(`gitroasted_data_${username.toLowerCase()}`);
+          setError(`The roast data for "${username}" is over 24 hours old. Please re-roast them for fresh tips.`);
+          setLoading(false);
+          return;
+      }
 
       if (userData.status !== 'success') {
           setError(`Could not load Quick Wins. The last roast for "${username}" was not successful.`);
@@ -88,9 +97,9 @@ export default function QuickWinsPage() {
                 </AlertDescription>
             </Alert>
              <Button asChild>
-                <Link href="/">
+                <Link href={username ? `/?username=${username}` : '/'}>
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to Home
+                    Back to Roast
                 </Link>
             </Button>
         </div>
