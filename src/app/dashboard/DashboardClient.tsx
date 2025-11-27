@@ -154,13 +154,15 @@ export function DashboardClient({ result, wins }: { result: RoastResultState, wi
                             />
                             <h2 className="text-3xl font-bold mt-4">{user.name || user.login}</h2>
                             <p className="text-lg text-muted-foreground">@{user.login}</p>
-                            {celebration && (
-                                <Badge className={`mt-3 text-base mx-auto ${celebration.badgeClass}`}>
-                                    {celebration.badgeIcon}
-                                    {celebration.badgeText}
-                                </Badge>
-                            )}
-                            <ScoreCircle value={invertedScore} indicatorClassName={celebration.progressClass} />
+                             <div className="my-6">
+                                <ScoreCircle value={invertedScore} indicatorClassName={celebration.progressClass} />
+                                {celebration && (
+                                    <Badge className={`mt-3 text-base mx-auto ${celebration.badgeClass}`}>
+                                        {celebration.badgeIcon}
+                                        {celebration.badgeText}
+                                    </Badge>
+                                )}
+                            </div>
                             <div className='w-full space-y-2 mt-4'>
                                 <ShareableCardDialog result={result} />
                                 <Button asChild variant="outline" className="w-full bg-white/5 border-white/10">

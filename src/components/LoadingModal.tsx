@@ -97,7 +97,7 @@ export function LoadingModal({ username }: LoadingModalProps) {
     return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
-  const circumference = 2 * Math.PI * 52;
+  const circumference = 2 * Math.PI * 54;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
   const displayProgress = Math.floor(progress);
 
@@ -124,11 +124,11 @@ export function LoadingModal({ username }: LoadingModalProps) {
 
         <div className="relative w-48 h-48 mx-auto mb-8">
             <svg className="w-full h-full" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="56" fill="none" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="8"/>
+                <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="8"/>
                 <circle
                     cx="60"
                     cy="60"
-                    r="56"
+                    r="54"
                     fill="none"
                     stroke="url(#progress-gradient)"
                     strokeWidth="8"

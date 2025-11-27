@@ -3,6 +3,7 @@
 
 
 
+
 import Image from 'next/image';
 import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare, ArrowRight } from 'lucide-react';
 import React from 'react';
@@ -152,9 +153,8 @@ function QuickWinsSection({ result }: { result: RoastResultState }) {
             </CardContent>
             <div className="p-4 pt-0 text-center">
                 <Button asChild className="w-full">
-                    <Link href={`/quick-wins?username=${result.username}`}>
-                        View All {allWins.length} Improvement Tips
-                        <span className="ml-2 font-bold text-green-300">(+{totalPotentialPoints} potential points)</span>
+                    <Link href={`/dashboard?username=${result.username}`}>
+                        View Full Dashboard & All {allWins.length} Improvement Tips
                         <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>
                 </Button>
@@ -192,13 +192,15 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
             />
             <h2 className="text-3xl font-bold mt-4">{user.name || user.login}</h2>
             <p className="text-lg text-muted-foreground">@{user.login}</p>
-             {celebration && (
-              <Badge className={`mt-3 text-base ${celebration.badgeClass}`}>
-                {celebration.badgeIcon}
-                {celebration.badgeText}
-              </Badge>
-            )}
-            <ScoreCircle value={invertedScore} indicatorClassName={celebration.progressClass} />
+             <div className='my-6'>
+                 <ScoreCircle value={invertedScore} indicatorClassName={celebration.progressClass} />
+                {celebration && (
+                    <Badge className={`mt-3 text-base ${celebration.badgeClass}`}>
+                        {celebration.badgeIcon}
+                        {celebration.badgeText}
+                    </Badge>
+                )}
+            </div>
 
             <div className='w-full space-y-2 mt-4'>
                 <ShareableCardDialog result={result} />
@@ -234,11 +236,36 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
                 </CardContent>
             </Card>
 
-            {archetype && <ArchetypeCard archetype={archetype} />}
-
             <QuickWinsSection result={result} />
             
-            <Accordion type="multiple" className="w-full mt-6 space-y-6" defaultValue={['stats', 'breakdown']}>
+            <Accordion type="multiple" className="w-full mt-6 space-y-6" defaultValue={['stats']}>
+                {archetype && (
+                <AccordionItem value="archetype" className='border-none'>
+                     <Card className="bg-background/50 border-purple-500/50">
+                        <AccordionTrigger className='p-6 hover:no-underline'>
+                             <CardTitle className='text-lg flex items-center gap-2'><Users2 className='text-primary' /> Profile Analysis</CardTitle>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-6 pb-6">
+                            <CardDescription className="mb-4">
+                                Based on your activity, you fit the <span className='font-bold text-primary'>{archetype.type}</span> archetype.
+                            </CardDescription>
+                            <p className='italic text-muted-foreground'>{archetype.description}</p>
+                            <div className='space-y-2 mt-4'>
+                                <h4 className='font-semibold'>Common Traits:</h4>
+                                <ul className='space-y-2'>
+                                    {archetype.characteristics.map((trait, index) => (
+                                        <li key={index} className='flex items-start gap-2 text-sm'>
+                                            <CheckSquare className='w-4 h-4 mt-0.5 text-green-500 shrink-0' />
+                                            <span>{trait}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </AccordionContent>
+                    </Card>
+                </AccordionItem>
+                )}
+
                 <AccordionItem value="stats" className='border-none'>
                     <Card className="bg-background/50 border-purple-500/50">
                         <AccordionTrigger className='p-6 hover:no-underline'>
@@ -326,5 +353,6 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
 export const ProfileCard = React.memo(ProfileCardComponent);
     
     
+
 
 
