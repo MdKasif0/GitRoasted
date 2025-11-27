@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 import { LeaderboardClient } from "@/components/LeaderboardClient";
+import { LeaderboardProvider } from "@/context/LeaderboardContext";
 
 export default function Home() {
   return (
@@ -54,10 +55,12 @@ export default function Home() {
 
 
       <main className="w-full flex flex-col items-center gap-16">
-        <GitRoastClient />
-        <Suspense fallback={<Skeleton className="h-[400px] w-full max-w-4xl" />}>
-          <LeaderboardClient />
-        </Suspense>
+        <LeaderboardProvider>
+          <GitRoastClient />
+          <Suspense fallback={<Skeleton className="h-[400px] w-full max-w-4xl" />}>
+            <LeaderboardClient />
+          </Suspense>
+        </LeaderboardProvider>
         <HowItWorksSection />
       </main>
 
