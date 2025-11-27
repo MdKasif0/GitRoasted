@@ -2,6 +2,7 @@
 
 
 
+
 import Image from 'next/image';
 import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare, ArrowRight } from 'lucide-react';
 import React from 'react';
@@ -325,4 +326,5 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
 export const ProfileCard = React.memo(ProfileCardComponent);
     
     
+
 
