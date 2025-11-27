@@ -45,6 +45,15 @@ export function NavMenu() {
         className="w-64 bg-black/80 backdrop-blur-lg border-purple-500/30 text-white mt-2 p-4 rounded-2xl"
       >
         <DropdownMenuGroup>
+           <DropdownMenuItem asChild>
+            <Link
+              href={username ? `/?username=${username}` : '/'}
+              className="flex items-center gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10"
+            >
+              <User className="w-5 h-5 text-primary" />
+              Account
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link
               href={username ? `/quick-wins?username=${username}` : '/'}
@@ -54,7 +63,7 @@ export function NavMenu() {
               Quick Wins
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
+           <DropdownMenuItem asChild>
             <Link
               href="/support"
               className="flex items-center gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10"
@@ -64,16 +73,6 @@ export function NavMenu() {
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator className="bg-white/10 my-2" />
-        <DropdownMenuItem asChild>
-          <Link
-            href={username ? `/?username=${username}` : '/'}
-            className="flex items-center gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10"
-          >
-            <User className="w-5 h-5 text-primary" />
-            Account
-          </Link>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
