@@ -2,11 +2,11 @@
 
 
 import Image from 'next/image';
-import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare } from 'lucide-react';
+import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare, ArrowRight } from 'lucide-react';
 import React from 'react';
 import { differenceInYears } from 'date-fns';
 
-import type { RoastResultState, ScoreBreakdown, ScoreCategory, QuickWin, DeveloperArchetype } from '@/lib/types';
+import type { RoastResultState, ScoreBreakdown, ScoreCategory, QuickWin as QuickWinType, DeveloperArchetype } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -19,6 +19,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './
 import { AnimatedNumber } from './AnimatedNumber';
 import { ScoreCircle } from './ScoreCircle';
 import { calculateQuickWins } from '@/lib/quickWins';
+import Link from 'next/link';
 
 
 interface ProfileCardProps {
@@ -110,47 +111,84 @@ const ArchetypeCard = ({ archetype }: { archetype: DeveloperArchetype }) => (
 );
 
 function QuickWinsSection({ result }: { result: RoastResultState }) {
+    if (result.status !== 'success') return null;
+
     const quickWins = calculateQuickWins(result);
+    const invertedScore = 1000 - (result.score || 0);
 
     if (quickWins.length === 0) {
         return null;
     }
+    
+    const totalPotentialPoints = quickWins.reduce((sum, win) => sum + win.pointsGain, 0);
+    const potentialScore = invertedScore + totalPotentialPoints;
+
 
     return (
-        <Card className="bg-background/50 border-purple-500/50 mt-6">
+        <Card className="bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-500/20 mt-6">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                    <Lightbulb className="text-primary" /> Quick Wins
-                </CardTitle>
-                <CardDescription>A few easy ways to boost your score.</CardDescription>
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                    <div className="flex items-center gap-3">
+                        <Lightbulb className="w-8 h-8 text-primary" />
+                        <div>
+                            <CardTitle className="text-xl">Quick Wins</CardTitle>
+                            <CardDescription>Easy ways to boost your score.</CardDescription>
+                        </div>
+                    </div>
+                     <div className="flex items-center gap-2 p-2 pr-4 rounded-lg bg-green-500/10 border border-green-500/30 text-right">
+                        <div className="text-green-400">
+                            <div className="text-sm font-medium">Potential Score</div>
+                            <div className="text-2xl font-bold">{Math.round(potentialScore)}/1000</div>
+                        </div>
+                        <div className="px-3 py-1 text-sm font-bold text-white bg-green-500 rounded-full">
+                           +{totalPotentialPoints} pts
+                        </div>
+                    </div>
+                </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-                {quickWins.map((win, index) => {
-                    const Icon = win.icon;
-                    return (
-                        <a
-                            href={win.actionUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            key={index}
-                            className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group"
-                        >
-                            <div className="p-2 bg-primary/10 rounded-md border border-primary/20">
-                                <Icon className="w-5 h-5 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                                <div className='flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2'>
-                                    <div className='flex-1'>
-                                        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{win.title}</h4>
-                                        <p className="text-sm text-muted-foreground mt-1">{win.description}</p>
+            <CardContent>
+                <Accordion type="multiple" className="w-full space-y-3">
+                    {quickWins.slice(0,3).map((win) => {
+                        const Icon = win.icon;
+                        const difficultyColor = win.difficulty === 'easy' ? 'border-green-500/50' : win.difficulty === 'medium' ? 'border-yellow-500/50' : 'border-red-500/50';
+                        return (
+                             <AccordionItem key={win.id} value={win.id} className={`bg-background/50 rounded-lg border-l-4 ${difficultyColor} border-b-0`}>
+                                <AccordionTrigger className="p-4 hover:no-underline">
+                                    <div className="flex items-start gap-4 text-left w-full">
+                                        <Icon className="w-5 h-5 text-primary mt-1 shrink-0" />
+                                        <div className="flex-1">
+                                            <h4 className="font-semibold text-foreground">{win.title}</h4>
+                                            <p className="text-sm text-muted-foreground mt-1">{win.description}</p>
+                                        </div>
+                                         <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20 shrink-0 self-start">+{win.pointsGain} pts</Badge>
                                     </div>
-                                    <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20 shrink-0 self-start">+{win.pointsGain} pts</Badge>
-                                </div>
-                            </div>
-                        </a>
-                    );
-                })}
+                                </AccordionTrigger>
+                                <AccordionContent className="px-4 pb-4">
+                                     <div className="pl-9 space-y-4">
+                                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                            <Badge variant="outline" className="capitalize">{win.difficulty}</Badge>
+                                            <span>Est. Time: {win.timeEstimate}</span>
+                                        </div>
+                                         {win.actionUrl && (
+                                            <Button asChild size="sm">
+                                                <a href={win.actionUrl} target="_blank" rel="noopener noreferrer">Take Action <ArrowRight className="w-4 h-4 ml-2" /></a>
+                                            </Button>
+                                        )}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        )
+                    })}
+                </Accordion>
             </CardContent>
+             <div className="p-4 pt-0 text-center">
+                <Button asChild variant="ghost">
+                    <Link href={`/quick-wins?username=${result.username}`}>
+                        View All Improvement Tips
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                </Button>
+            </div>
         </Card>
     );
 }

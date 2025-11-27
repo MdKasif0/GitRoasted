@@ -28,6 +28,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.5,
     },
-    // TODO: Add dynamic routes for user profiles once they are available
+    {
+      url: `${baseUrl}/quick-wins`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.7,
+    },
   ]
 }
