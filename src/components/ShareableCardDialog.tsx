@@ -1,3 +1,4 @@
+
 // src/components/ShareableCardDialog.tsx
 'use client';
 
@@ -251,7 +252,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
           <DialogTitle>Share Your GitRoasted Card</DialogTitle>
         </DialogHeader>
 
-        <div className="grid md:grid-cols-[2fr_1fr] h-[calc(100%-57px)] overflow-hidden">
+        <div className="grid grid-cols-[1fr_380px] h-[calc(100%-57px)] overflow-hidden">
           {/* Preview Section */}
           <div className="flex items-center justify-center p-8 bg-muted/20 overflow-auto relative">
              <div
@@ -308,3 +309,4 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     </Dialog>
   );
 }
+

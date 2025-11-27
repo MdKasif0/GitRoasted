@@ -109,7 +109,7 @@ export function CustomizationPanel({
         <h2 className="text-xl font-bold text-foreground">Customize Your Card</h2>
       </div>
       <ScrollArea className="flex-1">
-        <CardContent className="space-y-6 p-4">
+        <div className="space-y-6 p-4">
           <Section title="Format Selection">
             <RadioGroup
               value={format}
@@ -221,8 +221,7 @@ export function CustomizationPanel({
                     step={1}
                 />
             </Section>
-
-        </CardContent>
+        </div>
       </ScrollArea>
       <div className="p-4 border-t bg-background mt-auto space-y-3">
         <h3 className="font-semibold text-foreground">Export Options</h3>
