@@ -148,7 +148,7 @@ function QuickWinsSection({ result }: { result: RoastResultState }) {
             </CardContent>
             <div className="p-4 pt-0 text-center">
                 <Button asChild className="w-full">
-                    <Link href={`/dashboard?username=${result.username}`}>
+                    <Link href={`/quick-wins?username=${result.username}`}>
                         View More
                         <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>
@@ -194,7 +194,7 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
                   <ScoreCircle value={invertedScore} indicatorClassName={celebration.progressClass} />
                   
                   {celebration && (
-                      <Badge className={`text-base ${celebration.badgeClass}`}>
+                      <Badge className={`text-base mx-auto ${celebration.badgeClass}`}>
                           {celebration.badgeIcon}
                           {celebration.badgeText}
                       </Badge>
