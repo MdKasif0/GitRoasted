@@ -3,7 +3,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare, ArrowRight, ArrowLeft, GitBranch, User as UserIcon } from 'lucide-react';
 import { differenceInYears } from 'date-fns';
 
 import type { RoastResultState, ScoreBreakdown, ScoreCategory, QuickWin as QuickWinType, DeveloperArchetype } from '@/lib/types';
@@ -44,17 +44,16 @@ const getScoreCelebration = (score: number) => {
 
 const iconMap: { [key: string]: React.ElementType } = {
   'add-readme': BookOpen,
-  'add-bio': User,
+  'add-bio': UserIcon,
   'add-topics': Tag,
-  'add-license': BookCopy,
-  'build-streak': Flame,
+  'add-license': BookOpen,
+  'build-streak': FlameIcon,
   'increase-activity': Zap,
-  'complete-profile': User,
+  'complete-profile': UserIcon,
   'add-ci': GitBranch,
   'learn-languages': Languages,
   'improve-ratio': Users,
 };
-const BookCopy = BookOpen; // Alias for simplicity
 
 
 function QuickWinCard({ win, rank }: { win: QuickWinType; rank: number }) {
@@ -286,3 +285,5 @@ export function DashboardClient({ result, wins }: { result: RoastResultState, wi
         </div>
     );
 }
+
+    
