@@ -97,17 +97,17 @@ export function QuickWinsClient({ username, initialWins, initialScore }: { usern
     <div className="min-h-screen w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-8">
       {/* Header */}
       <div className="mb-12">
-        <Button asChild variant="outline" className="mb-4 bg-white/5 border-white/10">
-          <Link href={`/?username=${username}`}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Profile
+        <Button asChild variant="outline" className="mb-4 bg-white/5 border-white/10 md:w-auto w-10 h-10 p-0 md:px-4 md:py-2 md:w-auto">
+          <Link href={`/dashboard?username=${username}`}>
+            <ArrowLeft className="w-4 h-4 md:mr-2" />
+            <span className="hidden md:inline">Back to Dashboard</span>
           </Link>
         </Button>
         
         <div className="flex items-center gap-4">
             <Lightbulb className="w-10 h-10 text-primary" />
             <div>
-                 <h1 className="text-4xl md:text-5xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500">
+                 <h1 className="text-3xl md:text-4xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500">
                     Quick Wins for @{username}
                 </h1>
                 <p className="text-lg text-muted-foreground mt-1">

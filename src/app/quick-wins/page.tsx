@@ -97,9 +97,9 @@ export default function QuickWinsPage() {
                 </AlertDescription>
             </Alert>
              <Button asChild>
-                <Link href={username ? `/?username=${username}` : '/'}>
+                <Link href={username ? `/dashboard?username=${username}` : '/'}>
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to Roast
+                    Back to Dashboard
                 </Link>
             </Button>
         </div>
