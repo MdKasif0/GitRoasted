@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { ShareableCardDialog } from './ShareableCardDialog';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
-import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { FlameIcon } from './icons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { AnimatedNumber } from './AnimatedNumber';
@@ -149,7 +149,7 @@ function QuickWinsSection({ result }: { result: RoastResultState }) {
             <div className="p-4 pt-0 text-center">
                 <Button asChild className="w-full">
                     <Link href={`/dashboard?username=${result.username}`}>
-                        View all {allWins.length} improvement tips
+                        View More
                         <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>
                 </Button>
@@ -172,181 +172,175 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
   const celebration = getScoreCelebration(score);
   const invertedScore = 1000 - score;
 
-  const defaultOpen = ['stats', 'breakdown'];
-  if (archetype) {
-      defaultOpen.push('archetype');
-  }
+  const defaultOpen = ['archetype', 'stats', 'breakdown'];
 
   return (
-    <Card className="w-full max-w-4xl bg-black/20 backdrop-blur-lg border-purple-500/30 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5 duration-500">
-      <CardContent className="p-6 md:p-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Left Column */}
-          <div className="md:col-span-1 flex flex-col items-center text-center">
-            <Image
-              src={user.avatar_url}
-              alt={user.login}
-              width={128}
-              height={128}
-              className="rounded-full border-4 border-primary transition-transform duration-300 hover:scale-110 glow"
-            />
-            <h2 className="text-3xl font-bold mt-4">{user.name || user.login}</h2>
-            <p className="text-lg text-muted-foreground">@{user.login}</p>
-             <div className='my-6'>
-                 <ScoreCircle value={invertedScore} indicatorClassName={celebration.progressClass} />
-                {celebration && (
-                    <Badge className={`mt-3 text-base ${celebration.badgeClass}`}>
-                        {celebration.badgeIcon}
-                        {celebration.badgeText}
-                    </Badge>
-                )}
-            </div>
-
-            <div className='w-full space-y-2 mt-4'>
-                <ShareableCardDialog result={result} />
-                 <Button asChild variant="outline" className="w-full bg-white/5 border-white/10">
-                    <a href={user.html_url} target="_blank" rel="noopener noreferrer">
-                    <Github className="mr-2 h-4 w-4" />
-                    View on GitHub
-                    </a>
-                </Button>
-            </div>
-          </div>
-
-          {/* Right Column */}
-          <div className="md:col-span-2">
-            <Card className="bg-background/50 border-purple-500/50">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <FlameIcon className="text-primary"/> Your Roast
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-lg leading-relaxed italic space-y-2 font-serif">
-                        {roastLines.map((line, index) => (
-                          <p 
-                            key={index}
-                            className="roast-line"
-                            style={{ animationDelay: `${index * 1.5}s` }}
-                          >
-                            {line}
-                          </p>
-                        ))}
+    <div className="w-full max-w-4xl animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5 duration-500 space-y-8">
+        <Card className="bg-black/20 backdrop-blur-lg border-purple-500/30">
+            <CardContent className="p-6 md:p-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    <div className="md:col-span-1 flex flex-col items-center text-center">
+                        <Image
+                        src={user.avatar_url}
+                        alt={user.login}
+                        width={128}
+                        height={128}
+                        className="rounded-full border-4 border-primary transition-transform duration-300 hover:scale-110 glow"
+                        />
+                        <h2 className="text-3xl font-bold mt-4">{user.name || user.login}</h2>
+                        <p className="text-lg text-muted-foreground">@{user.login}</p>
                     </div>
-                </CardContent>
-            </Card>
+                    <div className="md:col-span-1">
+                        <ScoreCircle value={invertedScore} indicatorClassName={celebration.progressClass} />
+                        {celebration && (
+                            <Badge className={`mt-3 text-base mx-auto block text-center w-fit ${celebration.badgeClass}`}>
+                                {celebration.badgeIcon}
+                                {celebration.badgeText}
+                            </Badge>
+                        )}
+                    </div>
+                    <div className="md:col-span-1 flex flex-col gap-2 w-full max-w-xs mx-auto">
+                        <ShareableCardDialog result={result} />
+                        <Button asChild variant="outline" className="w-full bg-white/5 border-white/10">
+                            <a href={user.html_url} target="_blank" rel="noopener noreferrer">
+                            <Github className="mr-2 h-4 w-4" />
+                            View on GitHub
+                            </a>
+                        </Button>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+        
+        <Card className="bg-black/20 backdrop-blur-lg border-purple-500/30">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <FlameIcon className="text-primary"/> Your Roast
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="text-lg leading-relaxed italic space-y-2 font-serif">
+                    {roastLines.map((line, index) => (
+                        <p 
+                        key={index}
+                        className="roast-line"
+                        style={{ animationDelay: `${index * 1.5}s` }}
+                        >
+                        {line}
+                        </p>
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
 
-            <QuickWinsSection result={result} />
-            
-            <Accordion type="multiple" className="w-full mt-6 space-y-6" defaultValue={defaultOpen}>
-                {archetype && (
-                <AccordionItem value="archetype" className='border-none'>
-                     <Card className="bg-background/50 border-purple-500/50">
-                        <AccordionTrigger className='p-6 hover:no-underline'>
-                             <CardTitle className='text-lg flex items-center gap-2'><Users2 className='text-primary' /> Profile Analysis</CardTitle>
-                        </AccordionTrigger>
-                        <AccordionContent className="px-6 pb-6">
-                            <CardDescription className="mb-4">
-                                Based on your activity, you fit the <span className='font-bold text-primary'>{archetype.type}</span> archetype.
-                            </CardDescription>
-                            <p className='italic text-muted-foreground'>{archetype.description}</p>
-                            <div className='space-y-2 mt-4'>
-                                <h4 className='font-semibold'>Common Traits:</h4>
-                                <ul className='space-y-2'>
-                                    {archetype.characteristics.map((trait, index) => (
-                                        <li key={index} className='flex items-start gap-2 text-sm'>
-                                            <CheckSquare className='w-4 h-4 mt-0.5 text-green-500 shrink-0' />
-                                            <span>{trait}</span>
-                                        </li>
+        <QuickWinsSection result={result} />
+
+        <Accordion type="multiple" className="w-full space-y-6" defaultValue={defaultOpen}>
+            {archetype && (
+            <AccordionItem value="archetype" className='border-none'>
+                    <Card className="bg-black/20 backdrop-blur-lg border-purple-500/30">
+                    <AccordionTrigger className='p-6 hover:no-underline'>
+                            <CardTitle className='text-lg flex items-center gap-2'><Users2 className='text-primary' /> Profile Analysis</CardTitle>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-6 pb-6">
+                        <CardDescription className="mb-4">
+                            Based on your activity, you fit the <span className='font-bold text-primary'>{archetype.type}</span> archetype.
+                        </CardDescription>
+                        <p className='italic text-muted-foreground'>{archetype.description}</p>
+                        <div className='space-y-2 mt-4'>
+                            <h4 className='font-semibold'>Common Traits:</h4>
+                            <ul className='space-y-2'>
+                                {archetype.characteristics.map((trait, index) => (
+                                    <li key={index} className='flex items-start gap-2 text-sm'>
+                                        <CheckSquare className='w-4 h-4 mt-0.5 text-green-500 shrink-0' />
+                                        <span>{trait}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </AccordionContent>
+                </Card>
+            </AccordionItem>
+            )}
+
+            <AccordionItem value="stats" className='border-none'>
+                <Card className="bg-black/20 backdrop-blur-lg border-purple-500/30">
+                    <AccordionTrigger className='p-6 hover:no-underline'>
+                        <CardTitle className='text-lg flex items-center gap-2'><BarChart className='text-primary' /> Stats at a Glance</CardTitle>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-6 pb-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            <StatCard icon={Star} label="Stars Received" value={totalStars ?? 0} />
+                            <StatCard icon={Users} label="Followers" value={user.followers} />
+                            <StatCard icon={Users2} label="Following" value={user.following} />
+                            <StatCard icon={Package} label="Public Repos" value={user.public_repos} />
+                            <StatCard icon={GitCommit} label="Total Commits (year)" value={totalContributions} />
+                            {topLanguages && topLanguages.length > 0 && (
+                            <div className="bg-white/5 p-4 rounded-lg transition-colors hover:bg-white/10 text-center col-span-2 sm:col-span-1">
+                                <Languages className="mx-auto h-6 w-6 text-primary mb-2" />
+                                <div className="flex flex-wrap justify-center gap-1 mt-2">
+                                    {topLanguages.map(([language]) => (
+                                        <Badge key={language} variant="secondary" className="text-xs font-medium border-purple-500/20">
+                                        {language}
+                                        </Badge>
                                     ))}
-                                </ul>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-1">Top Languages</p>
                             </div>
-                        </AccordionContent>
-                    </Card>
-                </AccordionItem>
-                )}
+                            )}
+                        </div>
+                    </AccordionContent>
+                </Card>
+            </AccordionItem>
 
-                <AccordionItem value="stats" className='border-none'>
-                    <Card className="bg-background/50 border-purple-500/50">
-                        <AccordionTrigger className='p-6 hover:no-underline'>
-                            <CardTitle className='text-lg flex items-center gap-2'><BarChart className='text-primary' /> Stats at a Glance</CardTitle>
-                        </AccordionTrigger>
-                        <AccordionContent className="px-6 pb-6">
-                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                <StatCard icon={Star} label="Stars Received" value={totalStars ?? 0} />
-                                <StatCard icon={Users} label="Followers" value={user.followers} />
-                                <StatCard icon={Users2} label="Following" value={user.following} />
-                                <StatCard icon={Package} label="Public Repos" value={user.public_repos} />
-                                <StatCard icon={GitCommit} label="Total Commits (year)" value={totalContributions} />
-                                {topLanguages && topLanguages.length > 0 && (
-                                <div className="bg-white/5 p-4 rounded-lg transition-colors hover:bg-white/10 text-center col-span-2 sm:col-span-1">
-                                    <Languages className="mx-auto h-6 w-6 text-primary mb-2" />
-                                    <div className="flex flex-wrap justify-center gap-1 mt-2">
-                                        {topLanguages.map(([language]) => (
-                                            <Badge key={language} variant="secondary" className="text-xs font-medium border-purple-500/20">
-                                            {language}
-                                            </Badge>
+            <AccordionItem value="breakdown" className='border-none'>
+                <Card className="bg-black/20 backdrop-blur-lg border-purple-500/30">
+                    <AccordionTrigger className='p-6 hover:no-underline'>
+                        <CardTitle className='text-lg flex items-center gap-2'><Trophy className='text-primary' /> Score Breakdown</CardTitle>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-6 pb-6 space-y-4">
+                        {(Object.keys(breakdown) as Array<keyof ScoreBreakdown>).map((key) => {
+                            const category = breakdown[key as keyof ScoreBreakdown] as ScoreCategory;
+                            if (key === 'specialBonus' && category.total === 0) return null;
+                            
+                            const meta = breakdownMeta[key as keyof ScoreBreakdown];
+                            const percentage = (category.total / meta.maxScore) * 100;
+                            const indicatorClass = percentage > 75 ? 'bg-green-500' : percentage > 40 ? 'bg-yellow-500' : 'bg-red-500';
+
+                            return (
+                                <div key={key}>
+                                    <TooltipProvider>
+                                        <Tooltip delayDuration={100}>
+                                            <TooltipTrigger className='w-full text-left'>
+                                                <div className="flex items-center gap-2 text-sm mb-2">
+                                                    <meta.icon className="h-4 w-4 text-muted-foreground" />
+                                                    <span className='flex-1 font-semibold text-base'>{meta.label}</span>
+                                                    <span className='text-primary font-bold'>{category.total} / {meta.maxScore} pts</span>
+                                                </div>
+                                                <Progress value={percentage} indicatorClassName={indicatorClass} />
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>{meta.description}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+
+                                    <div className='mt-3 space-y-2 pl-6 border-l-2 border-purple-500/20'>
+                                        {Object.entries(category.breakdown).map(([subKey, subValue]) => (
+                                            <div key={subKey} className="flex justify-between items-center text-xs">
+                                                <span className='text-muted-foreground'>{subKey}</span>
+                                                <span className='font-mono'>{subValue} pts</span>
+                                            </div>
                                         ))}
                                     </div>
-                                    <p className="text-xs text-muted-foreground mt-1">Top Languages</p>
                                 </div>
-                                )}
-                            </div>
-                        </AccordionContent>
-                    </Card>
-                </AccordionItem>
-
-                <AccordionItem value="breakdown" className='border-none'>
-                    <Card className="bg-background/50 border-purple-500/50">
-                        <AccordionTrigger className='p-6 hover:no-underline'>
-                            <CardTitle className='text-lg flex items-center gap-2'><Trophy className='text-primary' /> Score Breakdown</CardTitle>
-                        </AccordionTrigger>
-                        <AccordionContent className="px-6 pb-6 space-y-4">
-                            {(Object.keys(breakdown) as Array<keyof ScoreBreakdown>).map((key) => {
-                                const category = breakdown[key as keyof ScoreBreakdown] as ScoreCategory;
-                                if (key === 'specialBonus' && category.total === 0) return null;
-                                
-                                const meta = breakdownMeta[key as keyof ScoreBreakdown];
-                                const percentage = (category.total / meta.maxScore) * 100;
-                                const indicatorClass = percentage > 75 ? 'bg-green-500' : percentage > 40 ? 'bg-yellow-500' : 'bg-red-500';
-
-                                return (
-                                    <div key={key}>
-                                        <TooltipProvider>
-                                            <Tooltip delayDuration={100}>
-                                                <TooltipTrigger className='w-full text-left'>
-                                                    <div className="flex items-center gap-2 text-sm mb-2">
-                                                        <meta.icon className="h-4 w-4 text-muted-foreground" />
-                                                        <span className='flex-1 font-semibold text-base'>{meta.label}</span>
-                                                        <span className='text-primary font-bold'>{category.total} / {meta.maxScore} pts</span>
-                                                    </div>
-                                                    <Progress value={percentage} indicatorClassName={indicatorClass} />
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p>{meta.description}</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-
-                                        <div className='mt-3 space-y-2 pl-6 border-l-2 border-purple-500/20'>
-                                            {Object.entries(category.breakdown).map(([subKey, subValue]) => (
-                                                <div key={subKey} className="flex justify-between items-center text-xs">
-                                                    <span className='text-muted-foreground'>{subKey}</span>
-                                                    <span className='font-mono'>{subValue} pts</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </AccordionContent>
-                    </Card>
-                </AccordionItem>
-            </Accordion>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+                            )
+                        })}
+                    </AccordionContent>
+                </Card>
+            </AccordionItem>
+        </Accordion>
+    </div>
   );
 }
 
