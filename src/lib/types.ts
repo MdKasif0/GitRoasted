@@ -1,6 +1,5 @@
 
 
-
 import { LucideIcon } from "lucide-react";
 
 export interface GitHubUser {
@@ -191,9 +190,13 @@ export interface FetchProgress {
 }
 
 export interface QuickWin {
-    icon: React.ElementType;
-    title: string;
-    description: string;
-    pointsGain: number;
-    actionUrl?: string;
+  id: string;
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  pointsGain: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  timeEstimate: string;
+  actionUrl?: string;
+  completed?: boolean;
 }

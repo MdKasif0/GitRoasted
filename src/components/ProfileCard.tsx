@@ -1,5 +1,6 @@
 
 
+
 import Image from 'next/image';
 import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare } from 'lucide-react';
 import React from 'react';
@@ -17,6 +18,7 @@ import { FlameIcon } from './icons';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { AnimatedNumber } from './AnimatedNumber';
 import { ScoreCircle } from './ScoreCircle';
+import { calculateQuickWins } from '@/lib/quickWins';
 
 
 interface ProfileCardProps {
@@ -80,49 +82,6 @@ const getScoreCelebration = (score: number) => {
     };
 };
 
-const getQuickWins = (result: RoastResultState): QuickWin[] => {
-    if (result.status !== 'success' || !result.user || !result.repos) return [];
-
-    const { user, repos } = result;
-    const quickWins: QuickWin[] = [];
-
-    // Quick Win: Add a bio
-    if (!user.bio || user.bio.length < 20) {
-        quickWins.push({
-            icon: BookOpen,
-            title: 'Flesh out your bio',
-            description: 'A good bio helps people understand who you are and what you do.',
-            pointsGain: 8,
-            actionUrl: `https://github.com/settings/profile`
-        });
-    }
-
-     // Quick Win: Add a blog/website link
-    if (!user.blog) {
-        quickWins.push({
-            icon: LinkIcon,
-            title: 'Link to your website',
-            description: 'Share your personal blog, portfolio, or social media.',
-            pointsGain: 5,
-            actionUrl: `https://github.com/settings/profile`
-        });
-    }
-
-    // Quick Win: Add topics to repos
-    const reposWithoutTopics = repos.filter(r => (!r.topics || r.topics.length === 0) && r.stargazers_count > 0).slice(0, 3);
-    if (reposWithoutTopics.length > 0) {
-         quickWins.push({
-            icon: Tag,
-            title: 'Tag your repositories',
-            description: `Add topics to repos like ${reposWithoutTopics.map(r => r.name).join(', ')} to improve discoverability.`,
-            pointsGain: reposWithoutTopics.length,
-            actionUrl: `https://github.com/${reposWithoutTopics[0].full_name}`
-        });
-    }
-
-    return quickWins.sort((a, b) => b.pointsGain - a.pointsGain);
-}
-
 const ArchetypeCard = ({ archetype }: { archetype: DeveloperArchetype }) => (
     <Card className="bg-background/50 border-purple-500/50 mt-6">
         <CardHeader>
@@ -150,6 +109,51 @@ const ArchetypeCard = ({ archetype }: { archetype: DeveloperArchetype }) => (
     </Card>
 );
 
+function QuickWinsSection({ result }: { result: RoastResultState }) {
+    const quickWins = calculateQuickWins(result);
+
+    if (quickWins.length === 0) {
+        return null;
+    }
+
+    return (
+        <Card className="bg-background/50 border-purple-500/50 mt-6">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                    <Lightbulb className="text-primary" /> Quick Wins
+                </CardTitle>
+                <CardDescription>A few easy ways to boost your score.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {quickWins.map((win, index) => {
+                    const Icon = win.icon;
+                    return (
+                        <a
+                            href={win.actionUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            key={index}
+                            className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group"
+                        >
+                            <div className="p-2 bg-primary/10 rounded-md border border-primary/20">
+                                <Icon className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                                <div className='flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2'>
+                                    <div className='flex-1'>
+                                        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{win.title}</h4>
+                                        <p className="text-sm text-muted-foreground mt-1">{win.description}</p>
+                                    </div>
+                                    <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20 shrink-0 self-start">+{win.pointsGain} pts</Badge>
+                                </div>
+                            </div>
+                        </a>
+                    );
+                })}
+            </CardContent>
+        </Card>
+    );
+}
 
 function ProfileCardComponent({ result }: ProfileCardProps) {
   if (result.status !== 'success' || !result.user || !result.score || !result.breakdown || !result.events) {
@@ -163,7 +167,6 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
   const roastLines = roast?.split('\n').filter(line => line.trim() !== '') || [];
   const celebration = getScoreCelebration(score);
   const invertedScore = 1000 - score;
-  const quickWins = getQuickWins(result);
 
   return (
     <Card className="w-full max-w-4xl bg-black/20 backdrop-blur-lg border-purple-500/30 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5 duration-500">
@@ -224,38 +227,8 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
 
             {archetype && <ArchetypeCard archetype={archetype} />}
 
-            {quickWins.length > 0 && (
-                <Card className="bg-background/50 border-purple-500/50 mt-6">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                            <Lightbulb className="text-primary"/> Quick Wins
-                        </CardTitle>
-                        <CardDescription>A few easy ways to boost your score.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {quickWins.map((win, index) => {
-                            const Icon = win.icon;
-                            return (
-                                <a href={win.actionUrl} target="_blank" rel="noopener noreferrer" key={index} className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group">
-                                    <div className="p-2 bg-primary/10 rounded-md border border-primary/20">
-                                        <Icon className="w-5 h-5 text-primary" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className='flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2'>
-                                            <div className='flex-1'>
-                                                <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{win.title}</h4>
-                                                <p className="text-sm text-muted-foreground mt-1">{win.description}</p>
-                                            </div>
-                                            <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20 shrink-0 self-start">+{win.pointsGain} pts</Badge>
-                                        </div>
-                                    </div>
-                                </a>
-                            );
-                        })}
-                    </CardContent>
-                </Card>
-            )}
-
+            <QuickWinsSection result={result} />
+            
             <Accordion type="multiple" className="w-full mt-6 space-y-6" defaultValue={['stats', 'breakdown']}>
                 <AccordionItem value="stats" className='border-none'>
                     <Card className="bg-background/50 border-purple-500/50">
