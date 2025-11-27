@@ -177,7 +177,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
                     <DialogTitle>Share Your Card</DialogTitle>
                 </DialogHeader>
 
-                <div className="flex-1 flex items-center justify-center p-4 bg-muted/20 overflow-auto">
+                <div className="flex-1 flex justify-center p-4 bg-muted/20 overflow-auto">
                     <div style={{ transform: `scale(0.6)`, transformOrigin: 'center' }}>
                          <ShareableCardPreview
                             ref={cardRef}
@@ -254,7 +254,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
 
         <div className="grid grid-cols-[1fr_380px] h-[calc(100%-57px)] overflow-hidden">
           {/* Preview Section */}
-          <div className="flex items-center justify-center p-8 bg-muted/20 overflow-auto relative">
+          <div className="flex justify-center p-8 bg-muted/20 overflow-auto relative">
              <div
               style={{
                 transform: `scale(${previewSize / 100})`,
