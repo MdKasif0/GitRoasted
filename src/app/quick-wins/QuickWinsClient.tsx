@@ -45,7 +45,6 @@ function QuickWinCard({ win, rank }: { win: QuickWin; rank: number }) {
         difficultyColors[win.difficulty],
         "border-l-4"
         )}>
-       <Badge variant="outline" className="absolute top-4 right-4">{`#${rank}`}</Badge>
       <CardHeader className="flex flex-row items-start gap-4 space-y-0">
           <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
              <Icon className="w-6 h-6 text-primary" />
@@ -161,5 +160,3 @@ export function QuickWinsClient({ username, initialWins, initialScore }: { usern
     </div>
   )
 }
-
-    
