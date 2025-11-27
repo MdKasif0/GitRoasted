@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button';
 import { Coffee, Lightbulb, User, Menu as MenuIcon, X, Users, LayoutDashboard, ArrowLeft } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
+
 
 type MenuState = 'main' | 'dashboard' | 'quick-wins';
 
@@ -24,6 +26,8 @@ export function NavMenu() {
   const [availableUsers, setAvailableUsers] = React.useState<string[]>([]);
   const searchParams = useSearchParams();
   const currentUsername = searchParams.get('username');
+  const router = useRouter();
+
 
   React.useEffect(() => {
     if (isOpen) {
@@ -42,6 +46,11 @@ export function NavMenu() {
 
   const hasUsers = availableUsers.length > 0;
   const hasMultipleUsers = availableUsers.length > 1;
+
+  const handleNavigation = (path: string) => {
+    setIsOpen(false);
+    router.push(path);
+  }
 
   const renderContent = () => {
     if (menuState === 'dashboard' || menuState === 'quick-wins') {
@@ -77,47 +86,47 @@ export function NavMenu() {
     return (
       <DropdownMenuGroup className="animate-in slide-in-from-left-5">
          <DropdownMenuItem
-            asChild={!hasMultipleUsers}
             onSelect={(e) => {
+                e.preventDefault();
+                if (!hasUsers && !currentUsername) return;
+                
                 if (hasMultipleUsers) {
-                    e.preventDefault();
                     setMenuState('dashboard');
+                } else {
+                    const user = availableUsers[0] || currentUsername;
+                    handleNavigation(`/dashboard?username=${user}`);
                 }
             }}
             disabled={!hasUsers && !currentUsername}
+            className="flex items-center justify-between gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10 cursor-pointer"
           >
-            <Link
-                href={hasUsers ? `/dashboard?username=${availableUsers[0]}`: currentUsername ? `/dashboard?username=${currentUsername}`: '#'}
-                className="flex items-center justify-between gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10"
-            >
-                <div className='flex items-center gap-3'>
-                    <LayoutDashboard className="w-5 h-5 text-primary" />
-                    Dashboard
-                </div>
-                {hasMultipleUsers && <ChevronRight className="w-5 h-5" />}
-            </Link>
+            <div className='flex items-center gap-3'>
+                <LayoutDashboard className="w-5 h-5 text-primary" />
+                Dashboard
+            </div>
+            {hasMultipleUsers && <ChevronRight className="w-5 h-5" />}
           </DropdownMenuItem>
           
            <DropdownMenuItem
-            asChild={!hasMultipleUsers}
-            onSelect={(e) => {
+             onSelect={(e) => {
+                e.preventDefault();
+                if (!hasUsers && !currentUsername) return;
+
                 if (hasMultipleUsers) {
-                    e.preventDefault();
                     setMenuState('quick-wins');
+                } else {
+                    const user = availableUsers[0] || currentUsername;
+                    handleNavigation(`/quick-wins?username=${user}`);
                 }
             }}
             disabled={!hasUsers && !currentUsername}
+            className="flex items-center justify-between gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10 cursor-pointer"
           >
-            <Link
-                href={hasUsers ? `/quick-wins?username=${availableUsers[0]}`: currentUsername ? `/quick-wins?username=${currentUsername}`: '#'}
-                className="flex items-center justify-between gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10"
-            >
-                <div className='flex items-center gap-3'>
-                    <Lightbulb className="w-5 h-5 text-primary" />
-                    Quick Wins
-                </div>
-                 {hasMultipleUsers && <ChevronRight className="w-5 h-5" />}
-            </Link>
+             <div className='flex items-center gap-3'>
+                <Lightbulb className="w-5 h-5 text-primary" />
+                Quick Wins
+            </div>
+             {hasMultipleUsers && <ChevronRight className="w-5 h-5" />}
           </DropdownMenuItem>
 
            <DropdownMenuItem asChild>
