@@ -2,10 +2,11 @@
 import GitRoastClient from "@/components/GitRoastClient";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { Leaderboard } from "@/components/Leaderboard";
-import { Button } from "@/components/ui/button";
-import { BookUser, Trophy, Coffee } from "lucide-react";
+import { NavMenu } from "@/components/NavMenu";
+import { BookUser, Trophy } from "lucide-react";
 import Link from 'next/link';
 import Image from 'next/image';
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -23,12 +24,7 @@ export default function Home() {
             GitRoasted
           </h1>
         </Link>
-        <Button asChild variant="ghost" className="text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
-          <Link href="/support">
-            <Coffee className="w-5 h-5 mr-2" />
-            Buy me a Coffee
-          </Link>
-        </Button>
+        <NavMenu />
       </header>
       
       <div className="w-full max-w-4xl mb-12 text-center">
