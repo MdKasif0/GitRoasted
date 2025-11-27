@@ -1,16 +1,21 @@
 
-'use client'
+'use client';
 
-import { useState } from 'react'
-import type { GitHubUser, QuickWin } from '@/lib/types';
+import { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { calculateQuickWins } from '@/lib/quickWins';
+import type { RoastResultState, QuickWin, GitHubUser } from '@/lib/types';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle, ArrowLeft, ArrowRight, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, Tag, Flame, Zap, User, GitBranch, Languages, Users, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
+import { BookOpen, Tag, Flame, Zap, User, GitBranch, Languages, Users } from 'lucide-react';
+
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 const iconMap: { [key: string]: React.ElementType } = {
   'add-readme': BookOpen,
@@ -25,8 +30,6 @@ const iconMap: { [key: string]: React.ElementType } = {
   'improve-ratio': Users,
 };
 
-
-// Individual Win Card Component
 function QuickWinCard({ win }: { win: QuickWin; }) {
   const difficultyColors = {
     easy: 'border-green-500/80 bg-green-500/10 text-green-400',
@@ -83,7 +86,7 @@ function QuickWinCard({ win }: { win: QuickWin; }) {
   )
 }
 
-export function QuickWinsClient({ user, initialWins, initialScore }: { user: GitHubUser, initialWins: QuickWin[], initialScore: number }) {
+function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUser, initialWins: QuickWin[], initialScore: number }) {
   const [wins, setWins] = useState<QuickWin[]>(initialWins)
   const [totalPoints, setTotalPoints] = useState(0)
   
@@ -155,7 +158,7 @@ export function QuickWinsClient({ user, initialWins, initialScore }: { user: Git
 
       {/* Quick Wins List */}
       <div className="grid md:grid-cols-2 gap-6">
-        {wins.map((win, index) => (
+        {wins.map((win) => (
           <QuickWinCard key={win.id} win={win} />
         ))}
       </div>
@@ -172,4 +175,78 @@ export function QuickWinsClient({ user, initialWins, initialScore }: { user: Git
       </div>
     </div>
   )
+}
+
+
+export function QuickWinsClient() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const username = searchParams.get('username');
+
+  const [wins, setWins] = useState<QuickWin[]>([]);
+  const [currentScore, setCurrentScore] = useState(0);
+  const [user, setUser] = useState<GitHubUser | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!username) {
+      setError('No username provided. Please go back and roast a user first.');
+      return;
+    }
+
+    try {
+      const cachedDataString = localStorage.getItem(`gitroasted_data_${username.toLowerCase()}`);
+      if (!cachedDataString) {
+        setError(`No roast data found for "${username}". Please go back and roast this user to see their Quick Wins.`);
+        return;
+      }
+
+      const userData: RoastResultState & { timestamp?: number } = JSON.parse(cachedDataString);
+
+      // Check for cache expiration
+      const isExpired = userData.timestamp && (Date.now() - userData.timestamp > CACHE_DURATION);
+      if (isExpired) {
+          localStorage.removeItem(`gitroasted_data_${username.toLowerCase()}`);
+          setError(`The roast data for "${username}" is over 24 hours old. Please re-roast them for fresh tips.`);
+          return;
+      }
+
+      if (userData.status !== 'success' || !userData.user) {
+          setError(`Could not load Quick Wins. The last roast for "${username}" was not successful.`);
+          return;
+      }
+
+      const quickWins = calculateQuickWins(userData);
+      const invertedScore = 1000 - (userData.score || 0);
+
+      setWins(quickWins);
+      setCurrentScore(invertedScore);
+      setUser(userData.user);
+    } catch (e) {
+        console.error("Failed to load or parse data for Quick Wins", e);
+        setError("An error occurred while loading the Quick Wins data.");
+    }
+  }, [username, router]);
+
+  if (error || !user) {
+    return (
+        <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-4">
+            <Alert variant="destructive" className="max-w-lg">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Could Not Load Quick Wins</AlertTitle>
+                <AlertDescription>
+                    {error || 'An unexpected error occurred.'}
+                </AlertDescription>
+            </Alert>
+             <Button asChild>
+                <Link href={username ? `/?username=${username}` : '/'}>
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Home
+                </Link>
+            </Button>
+        </div>
+    );
+  }
+
+  return <QuickWinsContent user={user} initialWins={wins} initialScore={currentScore} />;
 }
