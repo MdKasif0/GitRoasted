@@ -1,12 +1,14 @@
 
 import GitRoastClient from "@/components/GitRoastClient";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
-import { Leaderboard } from "@/components/Leaderboard";
 import { NavMenu } from "@/components/NavMenu";
 import { BookUser, Trophy } from "lucide-react";
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Suspense } from "react";
+import { LeaderboardClient } from "@/components/LeaderboardClient";
 
 export default function Home() {
   return (
@@ -53,7 +55,9 @@ export default function Home() {
 
       <main className="w-full flex flex-col items-center gap-16">
         <GitRoastClient />
-        <Leaderboard />
+        <Suspense fallback={<Skeleton className="h-[400px] w-full max-w-4xl" />}>
+          <LeaderboardClient />
+        </Suspense>
         <HowItWorksSection />
       </main>
 
