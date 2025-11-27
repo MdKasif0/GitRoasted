@@ -1,10 +1,4 @@
 
-
-
-
-
-
-
 import Image from 'next/image';
 import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare, ArrowRight } from 'lucide-react';
 import React from 'react';
@@ -155,7 +149,7 @@ function QuickWinsSection({ result }: { result: RoastResultState }) {
             <div className="p-4 pt-0 text-center">
                 <Button asChild className="w-full">
                     <Link href={`/dashboard?username=${result.username}`}>
-                        View More
+                        View all {allWins.length} improvement tips
                         <ArrowRight className="w-4 h-4 ml-2" />
                     </Link>
                 </Button>
@@ -177,6 +171,11 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
   const roastLines = roast?.split('\n').filter(line => line.trim() !== '') || [];
   const celebration = getScoreCelebration(score);
   const invertedScore = 1000 - score;
+
+  const defaultOpen = ['stats', 'breakdown'];
+  if (archetype) {
+      defaultOpen.push('archetype');
+  }
 
   return (
     <Card className="w-full max-w-4xl bg-black/20 backdrop-blur-lg border-purple-500/30 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-5 duration-500">
@@ -239,7 +238,7 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
 
             <QuickWinsSection result={result} />
             
-            <Accordion type="multiple" className="w-full mt-6 space-y-6" defaultValue={['stats']}>
+            <Accordion type="multiple" className="w-full mt-6 space-y-6" defaultValue={defaultOpen}>
                 {archetype && (
                 <AccordionItem value="archetype" className='border-none'>
                      <Card className="bg-background/50 border-purple-500/50">
@@ -352,9 +351,3 @@ function ProfileCardComponent({ result }: ProfileCardProps) {
 }
 
 export const ProfileCard = React.memo(ProfileCardComponent);
-    
-    
-
-
-
-
