@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { calculateQuickWins } from '@/lib/quickWins';
-import type { RoastResultState, QuickWin } from '@/lib/types';
+import type { RoastResultState, QuickWin, GitHubUser } from '@/lib/types';
 import { QuickWinsClient } from './QuickWinsClient';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
@@ -34,6 +34,7 @@ export default function QuickWinsPage() {
 
   const [wins, setWins] = useState<QuickWin[]>([]);
   const [currentScore, setCurrentScore] = useState(0);
+  const [user, setUser] = useState<GitHubUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,7 +64,7 @@ export default function QuickWinsPage() {
           return;
       }
 
-      if (userData.status !== 'success') {
+      if (userData.status !== 'success' || !userData.user) {
           setError(`Could not load Quick Wins. The last roast for "${username}" was not successful.`);
           setLoading(false);
           return;
@@ -74,6 +75,7 @@ export default function QuickWinsPage() {
 
       setWins(quickWins);
       setCurrentScore(invertedScore);
+      setUser(userData.user);
     } catch (e) {
         console.error("Failed to load or parse data for Quick Wins", e);
         setError("An error occurred while loading the Quick Wins data.");
@@ -86,7 +88,7 @@ export default function QuickWinsPage() {
     return <LoadingSkeleton />;
   }
 
-  if (error || !username) {
+  if (error || !user) {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-4">
             <Alert variant="destructive" className="max-w-lg">
@@ -106,5 +108,5 @@ export default function QuickWinsPage() {
     );
   }
 
-  return <QuickWinsClient username={username} initialWins={wins} initialScore={currentScore} />;
+  return <QuickWinsClient user={user} initialWins={wins} initialScore={currentScore} />;
 }

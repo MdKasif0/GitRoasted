@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { QuickWin } from '@/lib/types';
+import type { GitHubUser, QuickWin } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, Tag, Flame, Zap, User, GitBranch, Languages, Users, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 const iconMap: { [key: string]: React.ElementType } = {
   'add-readme': BookOpen,
@@ -82,7 +83,7 @@ function QuickWinCard({ win }: { win: QuickWin; }) {
   )
 }
 
-export function QuickWinsClient({ username, initialWins, initialScore }: { username: string, initialWins: QuickWin[], initialScore: number }) {
+export function QuickWinsClient({ user, initialWins, initialScore }: { user: GitHubUser, initialWins: QuickWin[], initialScore: number }) {
   const [wins, setWins] = useState<QuickWin[]>(initialWins)
   const [totalPoints, setTotalPoints] = useState(0)
   
@@ -96,19 +97,31 @@ export function QuickWinsClient({ username, initialWins, initialScore }: { usern
   return (
     <div className="min-h-screen w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-8">
       {/* Header */}
-      <div className="mb-12">
+      <div className="mb-8">
         <Button asChild variant="outline" className="mb-4 bg-white/5 border-white/10 md:w-auto w-10 h-10 p-0 md:px-4 md:py-2">
-          <Link href={`/?username=${username}`}>
+          <Link href={`/?username=${user.login}`}>
             <ArrowLeft className="w-4 h-4 md:mr-2" />
             <span className="hidden md:inline">Back to Home</span>
           </Link>
         </Button>
         
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col items-center text-center">
+            <Image
+              src={user.avatar_url}
+              alt={user.login}
+              width={96}
+              height={96}
+              className="rounded-full border-4 border-primary transition-transform duration-300 hover:scale-110 glow mb-4"
+            />
+            <h2 className="text-2xl font-bold">{user.name || user.login}</h2>
+            <p className="text-md text-muted-foreground">@{user.login}</p>
+        </div>
+
+        <div className="flex items-center gap-4 mt-8">
             <Lightbulb className="w-10 h-10 text-primary" />
             <div>
                  <h1 className="text-3xl md:text-4xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500">
-                    Quick Wins for @{username}
+                    Quick Wins
                 </h1>
                 <p className="text-lg text-muted-foreground mt-1">
                     Easy ways to boost your GitHub score.
@@ -152,7 +165,7 @@ export function QuickWinsClient({ username, initialWins, initialScore }: { usern
         <h3 className="text-2xl font-bold">Ready to improve?</h3>
         <p className="text-muted-foreground mt-2 mb-6">Complete these tasks to boost your score by {totalPoints} points!</p>
         <Button asChild size="lg">
-          <Link href={`/?username=${username}`}>
+          <Link href={`/?username=${user.login}`}>
             Back to Profile
           </Link>
         </Button>
