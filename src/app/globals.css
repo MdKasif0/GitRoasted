@@ -80,6 +80,65 @@
   }
 }
 
+@layer components {
+    .glass-card {
+      @apply bg-slate-800/50 backdrop-blur-xl border border-slate-700/80 shadow-2xl shadow-black/50;
+    }
+
+    .gradient-text {
+        @apply bg-gradient-to-r from-primary via-purple-400 to-accent;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .quick-win-card {
+      @apply bg-gradient-to-br from-slate-800 to-slate-900 border border-primary/20 rounded-2xl p-6 relative overflow-hidden transition-all duration-300;
+    }
+
+    .quick-win-card::before {
+      content: '';
+      @apply absolute -inset-px rounded-2xl bg-gradient-to-r from-primary via-accent to-primary opacity-0 transition-opacity duration-300;
+      z-index: -1;
+      background-size: 200%;
+      animation: shimmer 5s infinite linear;
+    }
+
+    .quick-win-card:hover {
+      @apply -translate-y-2 shadow-2xl shadow-primary/10;
+    }
+
+    .quick-win-card:hover::before {
+      @apply opacity-100;
+    }
+
+    .action-button {
+      @apply bg-gradient-to-r from-primary to-purple-600 px-6 py-3 rounded-lg text-white font-semibold border-none cursor-pointer relative overflow-hidden transition-all duration-300;
+    }
+
+    .action-button::after {
+      content: '';
+      @apply absolute top-0 w-full h-full;
+      left: -100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+      );
+      transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .action-button:hover::after {
+      left: 100%;
+    }
+
+    .action-button:hover {
+        @apply shadow-lg shadow-primary/20;
+    }
+}
+
+
 @keyframes count-up {
   from {
     --num: 0;

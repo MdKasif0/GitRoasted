@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { calculateQuickWins } from '@/lib/quickWins';
 import type { RoastResultState, QuickWin, GitHubUser } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, ArrowLeft, ArrowRight, Lightbulb } from 'lucide-react';
+import { AlertCircle, ArrowLeft, ArrowRight, Lightbulb, RefreshCw, Star, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -14,6 +14,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { BookOpen, Tag, Flame, Zap, User, GitBranch, Languages, Users } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { AnimatedNumber } from '@/components/AnimatedNumber';
 
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -30,148 +32,208 @@ const iconMap: { [key: string]: React.ElementType } = {
   'improve-ratio': Users,
 };
 
-function QuickWinCard({ win }: { win: QuickWin; }) {
+
+type Difficulty = 'all' | 'easy' | 'medium' | 'hard';
+
+function QuickWinCard({ win, index }: { win: QuickWin; index: number }) {
+  const Icon = iconMap[win.id] || Lightbulb;
   const difficultyColors = {
-    easy: 'border-green-500/80 bg-green-500/10 text-green-400',
-    medium: 'border-yellow-500/80 bg-yellow-500/10 text-yellow-400',
-    hard: 'border-red-500/80 bg-red-500/10 text-red-400'
-  }
+    easy: 'border-green-500/20 from-green-500/10 to-green-500/0',
+    medium: 'border-yellow-500/20 from-yellow-500/10 to-yellow-500/0',
+    hard: 'border-red-500/20 from-red-500/10 to-red-500/0'
+  };
   const difficultyBadgeColors = {
     easy: 'bg-green-500/10 text-green-400 border-green-500/20',
     medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
     hard: 'bg-red-500/10 text-red-400 border-red-500/20'
-  }
-  const Icon = iconMap[win.id] || Lightbulb;
+  };
 
   return (
-    <Card className={cn(
-        "win-card transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-primary/50",
-        difficultyColors[win.difficulty],
-        "border-l-4"
-        )}>
-      <CardHeader className="flex flex-row items-start gap-4 space-y-0">
-          <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
-             <Icon className="w-6 h-6 text-primary" />
-          </div>
-          <div className="flex-1">
-            <CardTitle>{win.title}</CardTitle>
-             <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
-                <Badge variant="outline" className={cn("capitalize", difficultyBadgeColors[win.difficulty])}>{win.difficulty}</Badge>
-                <span>⏱️ {win.timeEstimate}</span>
-             </div>
-          </div>
-      </CardHeader>
-      <CardContent className="pb-4">
-        <p className="text-muted-foreground mb-4">{win.description}</p>
-        <div className="flex flex-col md:flex-row justify-between items-center pt-4 border-t border-white/10">
-            <div className="text-center md:text-left mb-4 md:mb-0">
-                <div className="text-3xl font-bold text-green-400">+{win.pointsGain}</div>
-                <div className="text-xs text-muted-foreground -mt-1">points</div>
+    <div className="quick-win-card card-entrance" style={{ animationDelay: `${400 + index * 50}ms`}}>
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-4">
+                <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
+                    <Icon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-100">{win.title}</h3>
+            </div>
+            <Star className="w-5 h-5 text-yellow-400/50 hover:text-yellow-400 transition-colors" />
+        </div>
+
+        {/* Description */}
+        <p className="text-slate-400 my-4">{win.description}</p>
+        
+        {/* Meta */}
+        <div className="flex items-center gap-2 text-sm">
+            <Badge className={cn("capitalize", difficultyBadgeColors[win.difficulty])}>{win.difficulty}</Badge>
+            <span className="text-slate-500">⏱️ {win.timeEstimate}</span>
+        </div>
+        
+        <div className="border-t border-slate-700/50 my-4"></div>
+
+        {/* Footer */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-left">
+                <div className="points-badge text-green-400 text-4xl font-bold">+{win.pointsGain}</div>
+                <div className="text-xs text-slate-500 -mt-1">points</div>
             </div>
             {win.actionUrl && (
-            <Button asChild size="sm" className='w-full md:w-auto group'>
+            <Button asChild className='action-button group w-full md:w-auto'>
                 <a 
                 href={win.actionUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="action-button"
                 >
                 Take Action <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
                 </a>
             </Button>
             )}
         </div>
-      </CardContent>
-    </Card>
+    </div>
   )
 }
 
 function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUser, initialWins: QuickWin[], initialScore: number }) {
-  const [wins, setWins] = useState<QuickWin[]>(initialWins)
-  const [totalPoints, setTotalPoints] = useState(0)
-  
-  useState(() => {
-    const total = initialWins.reduce((sum, win) => sum + win.pointsGain, 0)
-    setTotalPoints(total)
-  });
+  const [wins, setWins] = useState<QuickWin[]>(initialWins);
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [activeFilter, setActiveFilter] = useState<Difficulty>('all');
+
+  useEffect(() => {
+    const total = initialWins.reduce((sum, win) => sum + win.pointsGain, 0);
+    setTotalPoints(total);
+  }, [initialWins]);
 
   const potentialScore = Math.min(1000, Math.round(initialScore + totalPoints));
+  const progressPercentage = (initialScore / potentialScore) * 100;
+
+  const filteredWins = activeFilter === 'all'
+    ? wins
+    : wins.filter(win => win.difficulty === activeFilter);
+  
+  const difficultyCounts = initialWins.reduce((acc, win) => {
+    acc[win.difficulty] = (acc[win.difficulty] || 0) + 1;
+    return acc;
+  }, {} as Record<'easy' | 'medium' | 'hard', number>);
+  
 
   return (
-    <div className="min-h-screen w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen w-full p-4 sm:p-6 md:p-8">
       {/* Header */}
-      <div className="mb-8">
-        <Button asChild variant="outline" className="mb-4 bg-white/5 border-white/10 md:w-auto w-10 h-10 p-0 md:px-4 md:py-2">
+      <div className="relative mb-8 text-center animate-in fade-in-0 duration-500 scale-95" style={{animationName: 'slideInUp'}}>
+        <Button asChild variant="ghost" className="absolute top-0 left-0 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20">
           <Link href={`/?username=${user.login}`}>
-            <ArrowLeft className="w-4 h-4 md:mr-2" />
-            <span className="hidden md:inline">Back to Home</span>
+            <ArrowLeft className="w-5 h-5" />
           </Link>
         </Button>
         
-        <div className="flex flex-col items-center text-center">
-            <Image
-              src={user.avatar_url}
-              alt={user.login}
-              width={96}
-              height={96}
-              className="rounded-full border-4 border-primary transition-transform duration-300 hover:scale-110 glow mb-4"
-            />
+        <div className="flex flex-col items-center">
+            <div className="relative mb-4">
+                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-primary to-accent animate-slow-spin"></div>
+                <Image
+                  src={user.avatar_url}
+                  alt={user.login}
+                  width={80}
+                  height={80}
+                  className="relative rounded-full border-4 border-slate-900"
+                />
+            </div>
             <h2 className="text-2xl font-bold">{user.name || user.login}</h2>
-            <p className="text-md text-muted-foreground">@{user.login}</p>
+            <p className="text-md text-slate-400">@{user.login}</p>
         </div>
 
-        <div className="flex items-center gap-4 mt-8">
-            <Lightbulb className="w-10 h-10 text-primary" />
-            <div>
-                 <h1 className="text-3xl md:text-4xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500">
-                    Quick Wins
-                </h1>
-                <p className="text-lg text-muted-foreground mt-1">
-                    Easy ways to boost your GitHub score.
-                </p>
-            </div>
+        <div className="mt-8">
+             <h1 className="text-4xl md:text-5xl font-bold tracking-tighter gradient-text">
+                Quick Wins
+            </h1>
+            <p className="text-lg text-slate-400 mt-2 max-w-xl mx-auto">
+                Your personalized roadmap to level up your GitHub score.
+            </p>
         </div>
       </div>
 
       {/* Score Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 items-center justify-center gap-4 md:gap-8 mb-12 text-center p-6 bg-gradient-to-r from-purple-600/20 to-pink-500/20 rounded-2xl border border-white/10">
-        <Card className="bg-white/5">
-          <CardHeader>
-            <CardDescription>Current Score</CardDescription>
-            <CardTitle className="text-5xl">{Math.round(initialScore)}</CardTitle>
-          </CardHeader>
-        </Card>
-        
-        <div className="hidden md:block text-5xl text-muted-foreground font-light">→</div>
-        <div className='block md:hidden text-3xl text-muted-foreground font-light rotate-90 mx-auto'>→</div>
-        
-        <Card className="border-2 border-green-500/50 bg-green-500/10 text-green-400">
-          <CardHeader>
-            <CardDescription className="text-green-400/80">Potential Score</CardDescription>
-            <CardTitle className="text-5xl">{potentialScore}</CardTitle>
-            <CardContent className="p-0 pt-2">
-                 <Badge className="bg-green-500 text-white">+{totalPoints} points</Badge>
-            </CardContent>
-          </CardHeader>
-        </Card>
+      <div className="glass-card max-w-4xl mx-auto p-6 md:p-8 mb-12 card-entrance" style={{ animationDelay: '100ms' }}>
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-4 text-center">
+            {/* Current Score */}
+            <div className='flex flex-col items-center justify-center'>
+                <CardDescription className='text-slate-400'>Current Score</CardDescription>
+                <div className='text-6xl font-bold text-slate-100'><AnimatedNumber value={Math.round(initialScore)} /></div>
+            </div>
+            {/* Arrow */}
+            <div className="hidden md:block text-4xl text-slate-500 font-light mx-8">→</div>
+            <div className='block md:hidden text-3xl text-slate-500 font-light rotate-90 mx-auto'>→</div>
+            {/* Potential Score */}
+            <div className='flex flex-col items-center justify-center'>
+                <CardDescription className='text-slate-400'>Potential Score</CardDescription>
+                <div className='text-6xl font-bold gradient-text'><AnimatedNumber value={potentialScore} /></div>
+                <Badge className="mt-2 bg-green-500/10 text-green-300 border-green-500/20">🎯 +{totalPoints} pts</Badge>
+            </div>
+        </div>
+        <div className="mt-8">
+            <Progress value={progressPercentage} className="h-3" />
+            <div className="flex justify-between text-sm text-slate-400 mt-2">
+                <span>{initialWins.length} Quick Wins Available</span>
+                <span>Est. 2-3 weeks to complete</span>
+            </div>
+        </div>
       </div>
+      
+      {/* Filter Pills */}
+      <div className="flex justify-center gap-2 mb-8 card-entrance" style={{ animationDelay: '300ms' }}>
+        {(['all', 'easy', 'medium', 'hard'] as Difficulty[]).map((difficulty) => {
+            const count = difficulty === 'all' ? initialWins.length : (difficultyCounts[difficulty as 'easy'|'medium'|'hard'] || 0);
+            if (count === 0 && difficulty !== 'all') return null;
+            
+            return (
+              <Button 
+                key={difficulty}
+                onClick={() => setActiveFilter(difficulty)}
+                variant="ghost"
+                className={cn(
+                    'capitalize rounded-full border border-transparent transition-all duration-300',
+                    activeFilter === difficulty 
+                        ? 'bg-primary text-primary-foreground border-primary/50' 
+                        : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700/50 hover:text-slate-200'
+                )}
+              >
+                {difficulty} <Badge variant="secondary" className="ml-2 bg-slate-600/50 text-slate-300">{count}</Badge>
+              </Button>
+            )
+        })}
+      </div>
+
 
       {/* Quick Wins List */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {wins.map((win) => (
-          <QuickWinCard key={win.id} win={win} />
+      <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+        {filteredWins.map((win, index) => (
+          <QuickWinCard key={win.id} win={win} index={index} />
         ))}
       </div>
+       {filteredWins.length === 0 && activeFilter !== 'all' && (
+           <div className="text-center py-16 col-span-2">
+                <CheckCircle className="mx-auto w-12 h-12 text-green-500 mb-4" />
+                <h3 className="text-xl font-bold">All '{activeFilter}' wins completed!</h3>
+                <p className="text-slate-400">Great job! Try another category.</p>
+           </div>
+       )}
 
       {/* Bottom CTA */}
-      <div className="text-center mt-16">
-        <h3 className="text-2xl font-bold">Ready to improve?</h3>
-        <p className="text-muted-foreground mt-2 mb-6">Complete these tasks to boost your score by {totalPoints} points!</p>
-        <Button asChild size="lg">
-          <Link href={`/?username=${user.login}`}>
-            Back to Profile
-          </Link>
-        </Button>
+      <div className="text-center mt-16 max-w-2xl mx-auto p-8 rounded-2xl bg-gradient-to-t from-slate-900 to-slate-800/50 border border-slate-700">
+        <h3 className="text-2xl font-bold">Ready to level up? 🚀</h3>
+        <p className="text-slate-400 mt-2 mb-6">Complete these {initialWins.length} quick wins to gain +{totalPoints} points!</p>
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button asChild size="lg">
+              <Link href={`/?username=${user.login}`}>
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Profile
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href={`/dashboard?username=${user.login}`}>
+                View Full Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+        </div>
       </div>
     </div>
   )
@@ -203,7 +265,6 @@ export function QuickWinsClient() {
 
       const userData: RoastResultState & { timestamp?: number } = JSON.parse(cachedDataString);
 
-      // Check for cache expiration
       const isExpired = userData.timestamp && (Date.now() - userData.timestamp > CACHE_DURATION);
       if (isExpired) {
           localStorage.removeItem(`gitroasted_data_${username.toLowerCase()}`);
