@@ -52,19 +52,17 @@ type Difficulty = 'all' | 'easy' | 'medium' | 'hard';
 function QuickWinCard({ win, index }: { win: QuickWin; index: number }) {
   const Icon = iconMap[win.id] || Lightbulb;
   const category = categoryMap[win.id] || 'General';
+  const progress = win.progress || 0;
   
   const difficultyClasses = {
     easy: {
       badge: "bg-green-500/10 text-green-400 border-green-500/20",
-      button: "bg-gradient-to-r from-green-500 to-emerald-500",
     },
     medium: {
       badge: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-      button: "bg-gradient-to-r from-yellow-500 to-amber-500",
     },
     hard: {
       badge: "bg-red-500/10 text-red-400 border-red-500/20",
-      button: "bg-gradient-to-r from-red-500 to-rose-500",
     }
   };
 
@@ -87,10 +85,10 @@ function QuickWinCard({ win, index }: { win: QuickWin; index: number }) {
         
         <div className="w-full space-y-5">
             <div>
-              <Progress value={45} indicatorClassName="bg-gradient-to-r from-purple-500 to-pink-500" />
+              <Progress value={progress} indicatorClassName="bg-gradient-to-r from-purple-500 to-pink-500" />
               <div className="flex justify-between items-center mt-2 text-sm">
-                  <span className="text-slate-400">45% Completed</span>
-                  <span className="font-bold text-primary">+{win.pointsGain} Points</span>
+                  <span className="text-slate-400">{win.progressLabel || 'Progress'}</span>
+                  <span className="font-bold text-primary">{win.progressValue || `${Math.round(progress)}%`}</span>
               </div>
             </div>
 

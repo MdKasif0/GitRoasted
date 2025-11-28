@@ -199,4 +199,7 @@ export interface QuickWin {
   timeEstimate: string;
   actionUrl?: string;
   completed?: boolean;
+  progress?: number;
+  progressLabel?: string;
+  progressValue?: string;
 }
