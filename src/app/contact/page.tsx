@@ -60,7 +60,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen w-full flex flex-col items-center p-4 sm:p-6 md:p-8 animate-in fade-in-0 duration-500 bg-background text-foreground">
        <div className="w-full max-w-5xl">
-            <div className="relative mb-8 text-center">
+            <div className="relative mb-8 text-center md:text-center">
                 <Button asChild variant="ghost" className="absolute -top-2 left-0 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20 flex">
                 <Link href={`/`}>
                     <ArrowLeft className="w-5 h-5" />
@@ -110,26 +110,28 @@ function ContactCard({ method, onCopyEmail, emailCopied }: { method: any, onCopy
 
   if (method.id === 'email') {
     return (
-        <div className="premium-border-container h-full cursor-pointer" onClick={onCopyEmail}>
-            <div className={cn("premium-card-content flex flex-col sm:flex-row items-center text-center sm:text-left gap-6 p-6 h-full")}>
-                <div 
-                    className="p-4 rounded-full"
-                    style={{ background: `${method.color}20`, border: `2px solid ${method.color}80`}}
-                >
-                    <Icon className="w-8 h-8" style={{ color: method.color }} />
-                </div>
-                <div className="flex-1">
-                    <h3 className="text-xl font-bold">{method.name}</h3>
-                    <p className="text-primary font-semibold">{method.handle}</p>
-                    <p className="text-muted-foreground text-sm mt-1">{method.description}</p>
-                </div>
-                <div className="hidden sm:block">
-                    <Button variant="ghost" size="icon" className="text-muted-foreground" onClick={(e) => { e.stopPropagation(); onCopyEmail?.(); }}>
-                        {emailCopied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
-                    </Button>
+        <a href={method.url} className="w-full h-full text-left">
+            <div className="premium-border-container h-full">
+                <div className={cn("premium-card-content flex flex-col sm:flex-row items-center text-center sm:text-left gap-6 p-6 h-full")}>
+                    <div 
+                        className="p-4 rounded-full"
+                        style={{ background: `${method.color}20`, border: `2px solid ${method.color}80`}}
+                    >
+                        <Icon className="w-8 h-8" style={{ color: method.color }} />
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-xl font-bold">{method.name}</h3>
+                        <p className="text-primary font-semibold">{method.handle}</p>
+                        <p className="text-muted-foreground text-sm mt-1">{method.description}</p>
+                    </div>
+                    <div className="hidden sm:block">
+                        <Button variant="ghost" size="icon" className="text-muted-foreground" onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCopyEmail?.(); }}>
+                            {emailCopied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+                        </Button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </a>
     )
   }
 
