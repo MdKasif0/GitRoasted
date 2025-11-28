@@ -61,7 +61,7 @@ export default function ContactPage() {
     <div className="min-h-screen w-full flex flex-col items-center p-4 sm:p-6 md:p-8 animate-in fade-in-0 duration-500 bg-background text-foreground">
        <div className="w-full max-w-5xl">
             <div className="relative mb-8 text-center md:text-left">
-                <Button asChild variant="ghost" className="absolute -top-2 -left-2 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20 hidden md:flex">
+                <Button asChild variant="ghost" className="absolute -top-2 left-0 md:-left-2 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20 flex">
                 <Link href={`/`}>
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
