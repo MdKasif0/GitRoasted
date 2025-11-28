@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { calculateQuickWins } from '@/lib/quickWins';
 import type { RoastResultState, QuickWin, GitHubUser } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, ArrowLeft, ArrowRight, Lightbulb, RefreshCw, Star, CheckCircle } from 'lucide-react';
+import { AlertCircle, ArrowLeft, ArrowRight, Lightbulb, RefreshCw, Star, CheckCircle, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -37,61 +37,62 @@ type Difficulty = 'all' | 'easy' | 'medium' | 'hard';
 
 function QuickWinCard({ win, index }: { win: QuickWin; index: number }) {
   const Icon = iconMap[win.id] || Lightbulb;
-  const difficultyColors = {
-    easy: 'border-green-500/20 from-green-500/10 to-green-500/0',
-    medium: 'border-yellow-500/20 from-yellow-500/10 to-yellow-500/0',
-    hard: 'border-red-500/20 from-red-500/10 to-red-500/0'
-  };
-  const difficultyBadgeColors = {
-    easy: 'bg-green-500/10 text-green-400 border-green-500/20',
-    medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-    hard: 'bg-red-500/10 text-red-400 border-red-500/20'
+  
+  const difficultyClasses = {
+    easy: {
+      badge: "bg-green-500/10 text-green-400 border-green-500/20",
+      button: "bg-gradient-to-r from-green-500 to-emerald-500",
+    },
+    medium: {
+      badge: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
+      button: "bg-gradient-to-r from-yellow-500 to-amber-500",
+    },
+    hard: {
+      badge: "bg-red-500/10 text-red-400 border-red-500/20",
+      button: "bg-gradient-to-r from-red-500 to-rose-500",
+    }
   };
 
   return (
-    <div className="quick-win-card card-entrance" style={{ animationDelay: `${400 + index * 50}ms`}}>
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
-                    <Icon className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-100">{win.title}</h3>
+    <div className="premium-border-container card-entrance" style={{ animationDelay: `${400 + index * 50}ms`}}>
+      <div className="premium-card-content flex flex-col justify-between">
+        <div className="w-full">
+            <div className="flex justify-between items-start text-left mb-4">
+                <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10">
+                    <Award className="w-3 h-3 mr-1.5" />
+                    Novice
+                </Badge>
             </div>
-            <Star className="w-5 h-5 text-yellow-400/50 hover:text-yellow-400 transition-colors" />
-        </div>
-
-        {/* Description */}
-        <p className="text-slate-400 my-4">{win.description}</p>
-        
-        {/* Meta */}
-        <div className="flex items-center gap-2 text-sm">
-            <Badge className={cn("capitalize", difficultyBadgeColors[win.difficulty])}>{win.difficulty}</Badge>
-            <span className="text-slate-500">⏱️ {win.timeEstimate}</span>
+            
+            <Icon className="w-12 h-12 text-primary/80 mx-auto mb-4" />
+            
+            <h3 className="text-xl font-bold text-slate-100 mb-2 text-center">{win.title}</h3>
+            <p className="text-slate-400 text-sm text-center mb-6">{win.description}</p>
         </div>
         
-        <div className="border-t border-slate-700/50 my-4"></div>
-
-        {/* Footer */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-left">
-                <div className="points-badge text-green-400 text-4xl font-bold">+{win.pointsGain}</div>
-                <div className="text-xs text-slate-500 -mt-1">points</div>
+        <div className="w-full space-y-5">
+            <div>
+              <Progress value={45} indicatorClassName="bg-gradient-to-r from-purple-500 to-pink-500" />
+              <div className="flex justify-between items-center mt-2 text-sm">
+                  <span className="text-slate-400">45% Completed</span>
+                  <span className="font-bold text-primary">+{win.pointsGain} Points</span>
+              </div>
             </div>
-            {win.actionUrl && (
-            <Button asChild className='action-button group w-full md:w-auto'>
-                <a 
-                href={win.actionUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                >
-                Take Action <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-                </a>
-            </Button>
-            )}
+
+            <div className="flex justify-between items-center">
+                 <Badge className={cn("capitalize", difficultyClasses[win.difficulty].badge)}>
+                    {win.difficulty}
+                 </Badge>
+                 <Button asChild className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold shadow-lg hover:shadow-yellow-400/30">
+                    <a href={win.actionUrl} target="_blank" rel="noopener noreferrer">
+                        Complete Win
+                    </a>
+                </Button>
+            </div>
         </div>
+      </div>
     </div>
-  )
+  );
 }
 
 function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUser, initialWins: QuickWin[], initialScore: number }) {
@@ -122,7 +123,7 @@ function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUse
       {/* Header */}
       <div className="relative mb-8 text-center animate-in fade-in-0 duration-500 scale-95" style={{animationName: 'slideInUp'}}>
         <Button asChild variant="ghost" className="absolute top-0 left-0 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20">
-          <Link href={`/?username=${user.login}`}>
+          <Link href={`/dashboard?username=${user.login}`}>
             <ArrowLeft className="w-5 h-5" />
           </Link>
         </Button>
@@ -205,13 +206,13 @@ function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUse
 
 
       {/* Quick Wins List */}
-      <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {filteredWins.map((win, index) => (
           <QuickWinCard key={win.id} win={win} index={index} />
         ))}
       </div>
        {filteredWins.length === 0 && activeFilter !== 'all' && (
-           <div className="text-center py-16 col-span-2">
+           <div className="text-center py-16 col-span-full">
                 <CheckCircle className="mx-auto w-12 h-12 text-green-500 mb-4" />
                 <h3 className="text-xl font-bold">All '{activeFilter}' wins completed!</h3>
                 <p className="text-slate-400">Great job! Try another category.</p>
@@ -224,13 +225,13 @@ function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUse
         <p className="text-slate-400 mt-2 mb-6">Complete these {initialWins.length} quick wins to gain +{totalPoints} points!</p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild size="lg">
-              <Link href={`/?username=${user.login}`}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Profile
+              <Link href={`/dashboard?username=${user.login}`}>
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href={`/dashboard?username=${user.login}`}>
-                View Full Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+              <Link href={`/?username=${user.login}`}>
+                Back to Roast <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
         </div>

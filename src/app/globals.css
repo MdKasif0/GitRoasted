@@ -136,6 +136,26 @@
     .action-button:hover {
         @apply shadow-lg shadow-primary/20;
     }
+
+    .premium-border-container {
+        @apply relative p-px rounded-3xl;
+        background: linear-gradient(135deg, hsl(var(--primary) / 0.4), hsl(var(--secondary) / 0.4));
+    }
+
+    .premium-border-container::before {
+        content: '';
+        @apply absolute -inset-px rounded-3xl opacity-0 transition-opacity duration-300;
+        background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+        animation: shimmer 4s infinite;
+    }
+
+    .premium-border-container:hover::before {
+        @apply opacity-100;
+    }
+
+    .premium-card-content {
+        @apply bg-slate-900/80 backdrop-blur-xl rounded-3xl p-6 text-center h-full;
+    }
 }
 
 
@@ -182,4 +202,13 @@
 .roast-line {
   opacity: 0;
   animation: fade-in-up 0.5s ease-out forwards;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
 }
