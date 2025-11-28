@@ -32,11 +32,25 @@ const iconMap: { [key: string]: React.ElementType } = {
   'improve-ratio': Users,
 };
 
+const categoryMap: { [key: string]: string } = {
+    'add-readme': 'Documentation',
+    'add-bio': 'Profile',
+    'add-topics': 'Discoverability',
+    'add-license': 'Legal',
+    'build-streak': 'Consistency',
+    'increase-activity': 'Activity',
+    'complete-profile': 'Profile',
+    'add-ci': 'Best Practices',
+    'learn-languages': 'Versatility',
+    'improve-ratio': 'Community',
+};
+
 
 type Difficulty = 'all' | 'easy' | 'medium' | 'hard';
 
 function QuickWinCard({ win, index }: { win: QuickWin; index: number }) {
   const Icon = iconMap[win.id] || Lightbulb;
+  const category = categoryMap[win.id] || 'General';
   
   const difficultyClasses = {
     easy: {
@@ -60,7 +74,7 @@ function QuickWinCard({ win, index }: { win: QuickWin; index: number }) {
             <div className="flex justify-between items-start text-left mb-4">
                 <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10">
                     <Award className="w-3 h-3 mr-1.5" />
-                    Novice
+                    {category}
                 </Badge>
             </div>
             
@@ -312,3 +326,5 @@ export function QuickWinsClient() {
 
   return <QuickWinsContent user={user} initialWins={wins} initialScore={currentScore} />;
 }
+
+    
