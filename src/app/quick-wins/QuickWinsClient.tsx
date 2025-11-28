@@ -180,7 +180,7 @@ function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUse
       </div>
       
       {/* Filter Pills */}
-      <div className="flex justify-center gap-2 mb-8 card-entrance" style={{ animationDelay: '300ms' }}>
+      <div className="flex flex-wrap justify-center gap-2 mb-8 card-entrance" style={{ animationDelay: '300ms' }}>
         {(['all', 'easy', 'medium', 'hard'] as Difficulty[]).map((difficulty) => {
             const count = difficulty === 'all' ? initialWins.length : (difficultyCounts[difficulty as 'easy'|'medium'|'hard'] || 0);
             if (count === 0 && difficulty !== 'all') return null;
