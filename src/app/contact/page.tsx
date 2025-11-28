@@ -60,14 +60,14 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen w-full flex flex-col items-center p-4 sm:p-6 md:p-8 animate-in fade-in-0 duration-500 bg-background text-foreground">
        <div className="w-full max-w-5xl">
-            <div className="relative mb-8 text-center md:text-left">
-                <Button asChild variant="ghost" className="absolute -top-2 left-0 md:-left-2 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20 flex">
+            <div className="relative mb-8 text-center">
+                <Button asChild variant="ghost" className="absolute -top-2 left-0 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20 flex">
                 <Link href={`/`}>
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
                 </Button>
                 
-                <div className="flex flex-col items-center md:items-start">
+                <div className="flex flex-col items-center">
                     <h1 className="text-4xl md:text-5xl font-bold tracking-tighter gradient-text">Get in Touch 💬</h1>
                     <p className="text-lg text-muted-foreground mt-2 max-w-xl">
                         Have questions, feedback, or just want to say hi? We'd love to hear from you!
