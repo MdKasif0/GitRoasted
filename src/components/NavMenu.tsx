@@ -12,7 +12,7 @@ import {
   DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Coffee, Lightbulb, User, Menu as MenuIcon, X, Users, LayoutDashboard, ArrowLeft } from 'lucide-react';
+import { Coffee, Lightbulb, User, Menu as MenuIcon, X, Users, LayoutDashboard, ArrowLeft, Contact } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -128,6 +128,16 @@ export function NavMenu() {
             </div>
              {hasMultipleUsers && <ChevronRight className="w-5 h-5" />}
           </DropdownMenuItem>
+
+            <DropdownMenuItem asChild>
+                <Link
+                href="/contact"
+                className="flex items-center gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10"
+                >
+                <Contact className="w-5 h-5 text-primary" />
+                Contact Us
+                </Link>
+            </DropdownMenuItem>
 
            <DropdownMenuItem asChild>
             <Link
