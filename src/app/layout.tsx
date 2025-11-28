@@ -43,8 +43,8 @@ export const metadata: Metadata = {
     title: title,
     description: description,
     images: ['/og-image.png'],
-    creator: '@Md_Kasif_Uddin',
-    site: '@Md_Kasif_Uddin',
+    creator: '@md_kasif_uddin',
+    site: '@md_kasif_uddin',
   },
   robots: {
     index: true,

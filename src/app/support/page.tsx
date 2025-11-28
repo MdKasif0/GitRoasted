@@ -18,7 +18,7 @@ const PerkItem = ({ icon: Icon, text }: { icon: React.ElementType, text: string 
 
 export default function SupportPage() {
   const upiId = 'mdkasifuddin@fam';
-  const developerName = 'GitRoasted Dev';
+  const developerName = 'Md Kasif';
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 md:p-8 animate-in fade-in-0 duration-500">

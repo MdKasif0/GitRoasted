@@ -77,7 +77,7 @@ export default function Home() {
                 <a href="https://github.com/MdKasif0/GitRoasted" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                     <FaGithub className="w-5 h-5" />
                 </a>
-                <a href="https://twitter.com/Md_Kasif_Uddin" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                <a href="https://twitter.com/md_kasif_uddin" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                     <FaTwitter className="w-5 h-5" />
                 </a>
                 <a href="https://instagram.com/md_kasif_uddin" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
