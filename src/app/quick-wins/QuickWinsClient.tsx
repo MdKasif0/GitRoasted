@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -97,11 +98,13 @@ function QuickWinCard({ win, index }: { win: QuickWin; index: number }) {
                  <Badge className={cn("capitalize", difficultyClasses[win.difficulty].badge)}>
                     {win.difficulty}
                  </Badge>
-                 <Button asChild className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold shadow-lg hover:shadow-yellow-400/30">
-                    <a href={win.actionUrl} target="_blank" rel="noopener noreferrer">
-                        Complete Win
-                    </a>
-                </Button>
+                 {win.actionUrl && (
+                    <Button asChild className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold shadow-lg hover:shadow-yellow-400/30">
+                        <a href={win.actionUrl} target="_blank" rel="noopener noreferrer">
+                            Complete Win
+                        </a>
+                    </Button>
+                 )}
             </div>
         </div>
       </div>
