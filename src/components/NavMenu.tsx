@@ -12,7 +12,7 @@ import {
   DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Coffee, Lightbulb, User, Menu as MenuIcon, X, Users, LayoutDashboard, ArrowLeft, Contact } from 'lucide-react';
+import { Coffee, Lightbulb, User, Menu as MenuIcon, X, Users, LayoutDashboard, ArrowLeft, Contact, ChevronRight } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -62,29 +62,32 @@ export function NavMenu() {
                     e.preventDefault();
                     setMenuState('main');
                 }}
-                className="flex items-center gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10 cursor-pointer"
+                className="flex items-center gap-2 p-2 text-sm font-semibold rounded-md transition-colors hover:bg-white/10 cursor-pointer mb-2"
             >
-                <ArrowLeft className="w-5 h-5 text-primary" />
+                <ArrowLeft className="w-4 h-4 text-primary" />
                 Back
             </DropdownMenuItem>
              <DropdownMenuSeparator className="bg-purple-500/20" />
-             {availableUsers.map(uName => (
-                <DropdownMenuItem asChild key={uName}>
-                  <Link
-                    href={`/${targetPage}?username=${uName}`}
-                    className="flex items-center gap-3 p-3 text-base normal-case tracking-wider rounded-lg transition-colors hover:bg-white/10"
-                  >
-                    {uName}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
+             <div className="mt-2 space-y-1">
+                {availableUsers.map(uName => (
+                    <DropdownMenuItem asChild key={uName}>
+                    <Link
+                        href={`/${targetPage}?username=${uName}`}
+                        className="flex items-center gap-3 p-2 text-sm rounded-md transition-colors hover:bg-white/10"
+                    >
+                        <User className="w-4 h-4" />
+                        {uName}
+                    </Link>
+                    </DropdownMenuItem>
+                ))}
+             </div>
         </div>
       );
     }
 
     // Main Menu
     return (
-      <DropdownMenuGroup className="animate-in slide-in-from-left-5">
+      <DropdownMenuGroup className="animate-in slide-in-from-left-5 space-y-1">
          <DropdownMenuItem
             onSelect={(e) => {
                 e.preventDefault();
@@ -98,13 +101,13 @@ export function NavMenu() {
                 }
             }}
             disabled={!hasUsers && !currentUsername}
-            className="flex items-center justify-between gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10 cursor-pointer"
+            className="flex items-center justify-between gap-3 p-2 text-sm font-medium rounded-md transition-colors hover:bg-white/10 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className='flex items-center gap-3'>
-                <LayoutDashboard className="w-5 h-5 text-primary" />
+                <LayoutDashboard className="w-4 h-4 text-primary" />
                 Dashboard
             </div>
-            {hasMultipleUsers && <ChevronRight className="w-5 h-5" />}
+            {hasMultipleUsers && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
           </DropdownMenuItem>
           
            <DropdownMenuItem
@@ -120,31 +123,33 @@ export function NavMenu() {
                 }
             }}
             disabled={!hasUsers && !currentUsername}
-            className="flex items-center justify-between gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10 cursor-pointer"
+            className="flex items-center justify-between gap-3 p-2 text-sm font-medium rounded-md transition-colors hover:bg-white/10 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
              <div className='flex items-center gap-3'>
-                <Lightbulb className="w-5 h-5 text-primary" />
+                <Lightbulb className="w-4 h-4 text-primary" />
                 Quick Wins
             </div>
-             {hasMultipleUsers && <ChevronRight className="w-5 h-5" />}
+             {hasMultipleUsers && <ChevronRight className="w-4 h-4 text-muted-foreground" />}
           </DropdownMenuItem>
+          
+          <DropdownMenuSeparator className="bg-purple-500/20 my-1" />
 
             <DropdownMenuItem asChild>
                 <Link
-                href="/contact"
-                className="flex items-center gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10"
+                    href="/contact"
+                    className="flex items-center gap-3 p-2 text-sm font-medium rounded-md transition-colors hover:bg-white/10"
                 >
-                <Contact className="w-5 h-5 text-primary" />
-                Contact Us
+                    <Contact className="w-4 h-4 text-primary" />
+                    Contact Us
                 </Link>
             </DropdownMenuItem>
 
            <DropdownMenuItem asChild>
             <Link
               href="/support"
-              className="flex items-center gap-3 p-3 text-lg font-bold uppercase tracking-wider rounded-lg transition-colors hover:bg-white/10"
+              className="flex items-center gap-3 p-2 text-sm font-medium rounded-md transition-colors hover:bg-white/10"
             >
-              <Coffee className="w-5 h-5 text-primary" />
+              <Coffee className="w-4 h-4 text-primary" />
               Buy me a Coffee
             </Link>
           </DropdownMenuItem>
@@ -157,17 +162,17 @@ export function NavMenu() {
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="secondary"
-          className="rounded-full bg-primary/80 text-white hover:bg-primary font-bold text-base px-6 py-3 border-2 border-primary/50 transition-all duration-300"
+          variant="outline"
+          className="rounded-full bg-white/5 border-white/10 backdrop-blur-sm text-foreground font-semibold px-4 py-2 text-sm h-auto"
         >
           {isOpen ? (
             <>
-              <X className="w-5 h-5 mr-2" />
+              <X className="w-4 h-4 mr-2" />
               Close
             </>
           ) : (
             <>
-              <MenuIcon className="w-5 h-5 mr-2" />
+              <MenuIcon className="w-4 h-4 mr-2" />
               Menu
             </>
           )}
@@ -176,7 +181,7 @@ export function NavMenu() {
       <DropdownMenuContent
         align="end"
         className={cn(
-            "w-64 md:w-80 bg-black/80 backdrop-blur-lg border-purple-500/30 text-white mt-2 p-4 rounded-2xl",
+            "w-64 bg-black/80 backdrop-blur-lg border-purple-500/30 text-white mt-2 p-2 rounded-2xl",
             "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
             "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
         )}
@@ -186,19 +191,3 @@ export function NavMenu() {
     </DropdownMenu>
   );
 }
-
-// Add ChevronRight for the sub-menu indicator
-const ChevronRight = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="m9 18 6-6-6-6" />
-  </svg>
-);
