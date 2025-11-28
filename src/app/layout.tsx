@@ -43,8 +43,8 @@ export const metadata: Metadata = {
     title: title,
     description: description,
     images: ['/og-image.png'],
-    creator: '@YourTwitterHandle', // Add your twitter handle
-    site: '@YourTwitterHandle',
+    creator: '@Md_Kasif_Uddin',
+    site: '@Md_Kasif_Uddin',
   },
   robots: {
     index: true,
