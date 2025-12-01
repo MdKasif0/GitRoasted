@@ -12,7 +12,7 @@ import {
   DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Coffee, Lightbulb, User, Menu as MenuIcon, X, Users, LayoutDashboard, ArrowLeft, Contact, ChevronRight } from 'lucide-react';
+import { Coffee, Lightbulb, User, Menu as MenuIcon, X, Users, LayoutDashboard, ArrowLeft, Contact, ChevronRight, Swords } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
@@ -133,6 +133,16 @@ export function NavMenu() {
           </DropdownMenuItem>
           
           <DropdownMenuSeparator className="bg-purple-500/20 my-1" />
+            
+            <DropdownMenuItem asChild>
+                <Link
+                    href="/compare"
+                    className="flex items-center gap-3 p-2 text-sm font-medium rounded-md transition-colors hover:bg-white/10"
+                >
+                    <Swords className="w-4 h-4 text-primary" />
+                    Compare
+                </Link>
+            </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
                 <Link
