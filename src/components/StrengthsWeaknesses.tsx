@@ -46,7 +46,7 @@ function getImprovementHint(category: keyof typeof categoryDisplayMap, you: Roas
 }
 
 
-function analyzeGaps(user1: RoastResultState, user2: RoastResultState, currentUserName: string) {
+export function analyzeGaps(user1: RoastResultState, user2: RoastResultState, currentUserName: string) {
     const isUser1Current = user1.username === currentUserName;
     const you = isUser1Current ? user1 : user2;
     const them = isUser1Current ? user2 : user1;
