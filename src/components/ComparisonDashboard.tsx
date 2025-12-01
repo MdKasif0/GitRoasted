@@ -8,6 +8,7 @@ import { Crown, Trophy, Package, Calendar, GitCommit, Heart, Code, Milestone, Za
 import { cn } from '@/lib/utils'
 import { AnimatedNumber } from './AnimatedNumber'
 import { Progress } from './ui/progress'
+import { StrengthsWeaknesses } from './StrengthsWeaknesses'
 
 interface ComparisonDashboardProps {
   user1Data: RoastResultState
@@ -26,6 +27,8 @@ const breakdownMeta: Record<keyof Omit<ScoreBreakdown, 'specialBonus'>, { label:
 
 function UserScoreCard({ user, isWinner, position }: { user: RoastResultState, isWinner: boolean, position: 'left' | 'right' }) {
   if (user.status !== 'success' || !user.user || typeof user.score === 'undefined') return null;
+
+  const invertedScore = 1000 - (user.score || 0);
 
   return (
     <div className={cn(
@@ -48,7 +51,7 @@ function UserScoreCard({ user, isWinner, position }: { user: RoastResultState, i
       <h3 className="text-2xl font-bold">{user.user.name || user.user.login}</h3>
       <a href={`https://github.com/${user.user.login}`} target="_blank" rel="noopener noreferrer" className="text-base text-muted-foreground hover:text-primary transition-colors">@{user.user.login}</a>
       <div className="mt-4 text-5xl font-bold text-primary flex items-baseline justify-center gap-1">
-        <AnimatedNumber value={user.score} />
+        <AnimatedNumber value={invertedScore} />
         <span className="text-2xl text-muted-foreground">/ 1000</span>
       </div>
     </div>
@@ -59,6 +62,8 @@ function CategoryComparison({ user1, user2 }: { user1: RoastResultState, user2: 
     if (user1.status !== 'success' || user2.status !== 'success' || !user1.breakdown || !user2.breakdown) return null;
     
     const categories = Object.keys(breakdownMeta) as Array<keyof typeof breakdownMeta>;
+    const invertedScore1 = 1000 - (user1.score || 0);
+    const invertedScore2 = 1000 - (user2.score || 0);
 
     return (
         <Card className="bg-black/20 backdrop-blur-lg border-purple-500/30">
@@ -71,9 +76,10 @@ function CategoryComparison({ user1, user2 }: { user1: RoastResultState, user2: 
             </CardHeader>
             <CardContent className="space-y-6">
                 {categories.map(key => {
+                    if (!user1.breakdown?.[key] || !user2.breakdown?.[key]) return null;
                     const category = breakdownMeta[key];
-                    const score1 = user1.breakdown![key].total;
-                    const score2 = user2.breakdown![key].total;
+                    const score1 = user1.breakdown[key].total;
+                    const score2 = user2.breakdown[key].total;
                     const winner = score1 > score2 ? 'user1' : (score2 > score1 ? 'user2' : 'tie');
                     const diff = Math.abs(score1 - score2);
 
@@ -121,9 +127,12 @@ export function ComparisonDashboard({ user1Data, user2Data }: ComparisonDashboar
     return <div>Error loading comparison data.</div>;
   }
 
-  const winner = user1Data.score > user2Data.score ? 'user1' : 'user2';
+  const invertedScore1 = 1000 - user1Data.score;
+  const invertedScore2 = 1000 - user2Data.score;
+  
+  const winner = invertedScore1 > invertedScore2 ? 'user1' : 'user2';
   const winnerData = winner === 'user1' ? user1Data : user2Data;
-  const scoreDiff = Math.abs(user1Data.score - user2Data.score);
+  const scoreDiff = Math.abs(invertedScore1 - invertedScore2);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 animate-in fade-in-0 duration-500">
@@ -143,6 +152,8 @@ export function ComparisonDashboard({ user1Data, user2Data }: ComparisonDashboar
       </div>
 
       <CategoryComparison user1={user1Data} user2={user2Data} />
+      
+      <StrengthsWeaknesses user1={user1Data} user2={user2Data} currentUser={user1Data.username} />
     </div>
   );
 }
