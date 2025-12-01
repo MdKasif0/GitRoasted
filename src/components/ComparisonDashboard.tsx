@@ -30,7 +30,7 @@ const breakdownMeta: Record<keyof Omit<ScoreBreakdown, 'specialBonus'>, { label:
 function UserScoreCard({ user, isWinner, position }: { user: RoastResultState, isWinner: boolean, position: 'left' | 'right' }) {
   if (user.status !== 'success' || !user.user || typeof user.score === 'undefined') return null;
 
-  const invertedScore = 1000 - (user.score || 0);
+  const seriousnessScore = user.score || 0;
 
   return (
     <div className={cn(
@@ -53,7 +53,7 @@ function UserScoreCard({ user, isWinner, position }: { user: RoastResultState, i
       <h3 className="text-2xl font-bold">{user.user.name || user.user.login}</h3>
       <a href={`https://github.com/${user.user.login}`} target="_blank" rel="noopener noreferrer" className="text-base text-muted-foreground hover:text-primary transition-colors">@{user.user.login}</a>
       <div className="mt-4 text-5xl font-bold text-primary flex items-baseline justify-center gap-1">
-        <AnimatedNumber value={invertedScore} />
+        <AnimatedNumber value={seriousnessScore} />
         <span className="text-2xl text-muted-foreground">/ 1000</span>
       </div>
     </div>
@@ -64,8 +64,6 @@ function CategoryComparison({ user1, user2 }: { user1: RoastResultState, user2: 
     if (user1.status !== 'success' || user2.status !== 'success' || !user1.breakdown || !user2.breakdown) return null;
     
     const categories = Object.keys(breakdownMeta) as Array<keyof typeof breakdownMeta>;
-    const invertedScore1 = 1000 - (user1.score || 0);
-    const invertedScore2 = 1000 - (user2.score || 0);
 
     return (
         <Card className="bg-black/20 backdrop-blur-lg border-purple-500/30">
@@ -129,12 +127,12 @@ export function ComparisonDashboard({ user1Data, user2Data }: ComparisonDashboar
     return <div>Error loading comparison data.</div>;
   }
 
-  const invertedScore1 = 1000 - user1Data.score;
-  const invertedScore2 = 1000 - user2Data.score;
+  const score1 = user1Data.score;
+  const score2 = user2Data.score;
   
-  const winner = invertedScore1 > invertedScore2 ? 'user1' : 'user2';
+  const winner = score1 > score2 ? 'user1' : 'user2';
   const winnerData = winner === 'user1' ? user1Data : user2Data;
-  const scoreDiff = Math.abs(invertedScore1 - invertedScore2);
+  const scoreDiff = Math.abs(score1 - score2);
 
   const currentUser = user1Data;
   const opponent = user2Data;
