@@ -11,6 +11,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { ComparisonDashboard } from '@/components/ComparisonDashboard'
 
 
 function ComparisonLoadingSkeleton() {
@@ -54,8 +55,8 @@ export default function ComparisonResultsPage() {
           }))
         ]);
         
-        setData1({ status: 'success', ...result1, score: result1.roastResult.score, breakdown: result1.roastResult.breakdown, archetype: result1.roastResult.archetype });
-        setData2({ status: 'success', ...result2, score: result2.roastResult.score, breakdown: result2.roastResult.breakdown, archetype: result2.roastResult.archetype });
+        setData1({ status: 'success', username: user1, ...result1, score: 1000 - result1.roastResult.score, breakdown: result1.roastResult.breakdown, archetype: result1.roastResult.archetype });
+        setData2({ status: 'success', username: user2, ...result2, score: 1000 - result2.roastResult.score, breakdown: result2.roastResult.breakdown, archetype: result2.roastResult.archetype });
 
       } catch (err: any) {
         console.error('Comparison error:', err)
@@ -70,14 +71,14 @@ export default function ComparisonResultsPage() {
 
   if (loading) return <ComparisonLoadingSkeleton />
   
-  if(error) {
+  if(error || !data1 || !data2) {
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-4">
             <Alert variant="destructive" className="max-w-lg">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Could Not Load Comparison</AlertTitle>
                 <AlertDescription>
-                    {error}
+                    {error || 'Could not load data for one or both users.'}
                 </AlertDescription>
             </Alert>
              <Button asChild>
@@ -91,12 +92,13 @@ export default function ComparisonResultsPage() {
   }
 
   return (
-    <div>
-        <h1 className="text-2xl font-bold text-center p-8">Comparison Dashboard (Coming Soon!)</h1>
-        <div className="grid grid-cols-2 gap-4 p-4">
-            <pre className="bg-muted p-4 rounded-lg overflow-auto"><code>{JSON.stringify(data1, null, 2)}</code></pre>
-            <pre className="bg-muted p-4 rounded-lg overflow-auto"><code>{JSON.stringify(data2, null, 2)}</code></pre>
-        </div>
+    <div className="p-4 sm:p-6 md:p-8">
+        <Button asChild variant="ghost" className="absolute top-6 left-6 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20">
+            <Link href={`/compare`}>
+                <ArrowLeft className="w-5 h-5" />
+            </Link>
+        </Button>
+        <ComparisonDashboard user1Data={data1} user2Data={data2} />
     </div>
   )
 }
