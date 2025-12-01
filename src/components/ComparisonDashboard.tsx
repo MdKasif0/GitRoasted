@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils'
 import { AnimatedNumber } from './AnimatedNumber'
 import { Progress } from './ui/progress'
 import { StrengthsWeaknesses } from './StrengthsWeaknesses'
+import { ImprovementRoadmap } from './ImprovementRoadmap'
+import { ProjectRecommendations } from './ProjectRecommendations'
 
 interface ComparisonDashboardProps {
   user1Data: RoastResultState
@@ -134,6 +136,9 @@ export function ComparisonDashboard({ user1Data, user2Data }: ComparisonDashboar
   const winnerData = winner === 'user1' ? user1Data : user2Data;
   const scoreDiff = Math.abs(invertedScore1 - invertedScore2);
 
+  const currentUser = user1Data;
+  const opponent = user2Data;
+
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 animate-in fade-in-0 duration-500">
       <header className="text-center">
@@ -153,7 +158,11 @@ export function ComparisonDashboard({ user1Data, user2Data }: ComparisonDashboar
 
       <CategoryComparison user1={user1Data} user2={user2Data} />
       
-      <StrengthsWeaknesses user1={user1Data} user2={user2Data} currentUser={user1Data.username} />
+      <StrengthsWeaknesses user1={user1Data} user2={user2Data} currentUser={user1Data.username!} />
+
+      <ImprovementRoadmap currentUser={currentUser} opponent={opponent} />
+      
+      <ProjectRecommendations currentUser={currentUser} opponent={opponent} />
     </div>
   );
 }
