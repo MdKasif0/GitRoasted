@@ -594,6 +594,66 @@
   font-size: 32px;
 }
 
+@media print {
+    body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .printable-content {
+        visibility: visible;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .printable-content * {
+        visibility: visible;
+    }
+    body * {
+        visibility: hidden;
+    }
+    .no-print {
+        display: none !important;
+    }
+    
+    /* Ensure backgrounds and colors are printed */
+    .dark body, .bg-background, .bg-black\/20 {
+        background-color: #0b0918 !important;
+    }
+    .winner-banner {
+        background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%) !important;
+    }
+    .user-score-card, .category-comparison, .radar-comparison, .card, 
+    .bg-white\/5, .bg-black\/20 {
+        background-color: rgba(30, 41, 59, 0.6) !important;
+        color: #F1F5F9 !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+    }
+    .text-foreground, h1, h2, h3, h4, h5, p, span, div {
+        color: #F1F5F9 !important;
+    }
+    .text-muted-foreground, .score-label {
+        color: #94A3B8 !important;
+    }
+    .score-number {
+        background: linear-gradient(135deg, #667EEA 0%, #F093FB 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        color: transparent !important;
+    }
+
+    /* Fix for Recharts charts not rendering */
+    .recharts-surface {
+        fill: transparent !important;
+    }
+    .recharts-legend-item-text,
+    .recharts-text,
+    .recharts-polar-angle-axis-tick-value {
+        fill: #94A3B8 !important;
+    }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .comparison-input {
