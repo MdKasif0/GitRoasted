@@ -39,7 +39,7 @@ export default async function ComparisonResultsPage({ params }: ComparisonResult
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
-        <Button asChild variant="ghost" className="absolute top-6 left-6 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20">
+        <Button asChild variant="ghost" className="absolute top-6 left-6 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20 no-print">
             <Link href={`/compare`}>
                 <ArrowLeft className="w-5 h-5" />
             </Link>

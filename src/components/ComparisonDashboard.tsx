@@ -170,7 +170,9 @@ export function ComparisonDashboard({ user1Data, user2Data }: ComparisonDashboar
       
       <ProjectRecommendations currentUser={currentUser} opponent={opponent} />
 
-      <ShareComparison user1={user1Data} user2={user2Data} winner={winner} />
+      <div className="no-print">
+        <ShareComparison user1={user1Data} user2={user2Data} winner={winner} />
+      </div>
 
     </div>
   );
