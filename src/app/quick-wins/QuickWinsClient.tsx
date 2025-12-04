@@ -18,8 +18,6 @@ import { BookOpen, Tag, Flame, Zap, User, GitBranch, Languages, Users } from 'lu
 import { Progress } from '@/components/ui/progress';
 import { AnimatedNumber } from '@/components/AnimatedNumber';
 
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-
 const iconMap: { [key: string]: React.ElementType } = {
   'add-readme': BookOpen,
   'add-bio': User,
@@ -279,14 +277,7 @@ export function QuickWinsClient() {
         return;
       }
 
-      const userData: RoastResultState & { timestamp?: number } = JSON.parse(cachedDataString);
-
-      const isExpired = userData.timestamp && (Date.now() - userData.timestamp > CACHE_DURATION);
-      if (isExpired) {
-          localStorage.removeItem(`gitroasted_data_${username.toLowerCase()}`);
-          setError(`The roast data for "${username}" is over 24 hours old. Please re-roast them for fresh tips.`);
-          return;
-      }
+      const userData: RoastResultState = JSON.parse(cachedDataString);
 
       if (userData.status !== 'success' || !userData.user) {
           setError(`Could not load Quick Wins. The last roast for "${username}" was not successful.`);

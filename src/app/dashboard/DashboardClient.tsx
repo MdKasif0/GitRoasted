@@ -114,8 +114,6 @@ function QuickWinCard({ win }: { win: QuickWinType; }) {
   )
 }
 
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-
 function DashboardContent({ result, wins }: { result: RoastResultState, wins: QuickWinType[] }) {
     if (result.status !== 'success' || !result.user || !result.score || !result.breakdown || !result.events) {
         return null;
@@ -314,15 +312,7 @@ export function DashboardClient() {
         return;
       }
 
-      const userData: RoastResultState & { timestamp?: number } = JSON.parse(cachedDataString);
-
-      const isExpired = userData.timestamp && (Date.now() - userData.timestamp > CACHE_DURATION);
-      if (isExpired) {
-          localStorage.removeItem(`gitroasted_data_${username.toLowerCase()}`);
-          setError(`The roast data for "${username}" is over 24 hours old. Please re-roast them for a fresh analysis.`);
-          setLoading(false);
-          return;
-      }
+      const userData: RoastResultState = JSON.parse(cachedDataString);
 
       if (userData.status !== 'success') {
           setError(`Could not load Dashboard. The last roast for "${username}" was not successful.`);
