@@ -7,7 +7,7 @@
 *Get your GitHub developer score out of 1000 with a savage AI roast*
 
 [![Live Demo](https://img.shields.io/badge/demo-live-success?style=for-the-badge&logo=netlify)](https://gitroasted.netlify.app)
-[![Product Hunt](https://img.shields.io/badge/Product%20Hunt-%23%2022%20Product%20of%20the%20Day-orange?style=for-the-badge&logo=producthunt)](https://www.producthunt.com/posts/gitroasted)
+[![Product Hunt](https://img.shields.io/badge/Product%20Hunt-%23%20Product%20of%20the%20Day-orange?style=for-the-badge&logo=producthunt)](https://www.producthunt.com/posts/gitroasted)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)](https://nextjs.org/)
@@ -15,12 +15,10 @@
 [![Firebase](https://img.shields.io/badge/Firebase-Firestore-orange?style=flat-square&logo=firebase)](https://firebase.google.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
 
-![GitRoasted Banner](./public/images/banner.png)
-
 [🚀 Live Demo](https://gitroasted.netlify.app) • 
 [📖 Documentation](#features) • 
-[🐛 Report Bug](https://github.com/yourusername/gitroasted/issues) • 
-[✨ Request Feature](https://github.com/yourusername/gitroasted/issues)
+[🐛 Report Bug](https://github.com/MdKasif0/GitRoasted/issues) • 
+[✨ Request Feature](https://github.com/MdKasif0/GitRoasted/issues)
 
 </div>
 
@@ -32,7 +30,7 @@ GitRoasted is a **free, open-source developer tool** that analyzes your GitHub p
 
 - 📊 **Comprehensive Score** - Out of 1000 based on 8 key metrics
 - 🔥 **AI-Generated Roast** - Savage but funny feedback on your coding habits
-- 🏆 **Global Leaderboard** - Compete with 10,000+ developers worldwide
+- 🏆 **Global Leaderboard** - Compete with developers worldwide
 - 💡 **Improvement Tips** - Actionable advice to boost your score
 - ⚔️ **Profile Comparison** - Battle other developers head-to-head
 - 📤 **Shareable Cards** - Beautiful cards for social media
@@ -43,21 +41,19 @@ GitRoasted is a **free, open-source developer tool** that analyzes your GitHub p
 
 ## 🎥 Demo
 
-<div align="center">
-
-![Demo GIF](./public/images/demo.gif)
-
-</div>
-
 ### Try it now:
 1. Visit [gitroasted.netlify.app](https://gitroasted.netlify.app)
 2. Enter any GitHub username
 3. Get instant analysis + roast!
 
-**Example Profiles:**
-- [torvalds](https://gitroasted.netlify.app/profile/torvalds) - 892/1000
-- [gaearon](https://gitroasted.netlify.app/profile/gaearon) - 845/1000
-- [tj](https://gitroasted.netlify.app/profile/tj) - 823/1000
+**Features in Action:**
+- 🎯 Real-time GitHub profile analysis
+- 🤖 AI-powered personalized roasts
+- 📊 Interactive score breakdowns
+- 🏆 Live leaderboard rankings
+- 🎨 Customizable share cards
+
+---
 
 ## 🚀 Features
 
@@ -65,7 +61,7 @@ GitRoasted is a **free, open-source developer tool** that analyzes your GitHub p
 - ✅ **GitHub Profile Analysis** - Analyzes 100+ data points from GitHub API
 - ✅ **8-Metric Scoring System** - Comprehensive evaluation (Impact, Consistency, Quality, Community, Diversity, Experience, Activity, Bonuses)
 - ✅ **AI-Powered Roasts** - Personalized 2-3 line roasts that are savage yet appreciative
-- ✅ **Global Leaderboard** - Real-time ranking of 10,000+ developers with pagination
+- ✅ **Global Leaderboard** - Real-time ranking with pagination and search
 - ✅ **Profile Comparison** - Head-to-head battles with detailed breakdowns
 - ✅ **Quick Wins** - Personalized improvement roadmap with actionable tips
 - ✅ **Shareable Cards** - Generate cards for Instagram, Twitter, or 3:4 format
@@ -116,29 +112,34 @@ GitRoasted is a **free, open-source developer tool** that analyzes your GitHub p
 ---
 
 ## 🏗️ Architecture
+
+```
 ┌─────────────────────────────────────────────────────────┐
 │                     Client Browser                       │
 │  (Next.js 14 App + React Components + Tailwind CSS)     │
 └────────────────┬────────────────────────────────────────┘
-│
-├─ GitHub API (REST v3)
-│  └─ User data, repos, contributions
-│
-├─ Firebase Firestore
-│  └─ Leaderboard storage
-│  └─ User scores cache
-│
-└─ localStorage
-└─ Client-side caching
-└─ User preferences
+                 │
+                 ├─ GitHub API (REST v3)
+                 │  └─ User data, repos, contributions
+                 │
+                 ├─ Firebase Firestore
+                 │  └─ Leaderboard storage
+                 │  └─ User scores cache
+                 │
+                 └─ localStorage
+                    └─ Client-side caching
+                    └─ User preferences
+
 Data Flow:
-User enters GitHub username
-Fetch data from GitHub API (parallel requests)
-Calculate score using 8-metric algorithm
-Generate AI roast based on profile data
-Store result in Firestore (if new/improved score)
-Display results with animations
-Cache in localStorage for 24h
+1. User enters GitHub username
+2. Fetch data from GitHub API (parallel requests)
+3. Calculate score using 8-metric algorithm
+4. Generate AI roast based on profile data
+5. Store result in Firestore (if new/improved score)
+6. Display results with animations
+7. Cache in localStorage for 24h
+```
+
 ---
 
 ## 📊 Scoring Algorithm
@@ -164,7 +165,7 @@ GitRoasted evaluates profiles across **8 key dimensions** (total 1000 points):
 - **📈 Average (400-599)**: Top 50% - Keep Building
 - **🌱 Developing (0-399)**: Room for Growth
 
-**Algorithm Details**: See [SCORING.md](./docs/SCORING.md)
+---
 
 ## 🚀 Getting Started
 
@@ -183,47 +184,70 @@ Before you begin, ensure you have:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/gitroasted.git
-   cd gitroasted
-Install dependencies
-npm install
-Set up environment variables
-Create a .env.local file in the root directory:
-# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+   git clone https://github.com/MdKasif0/GitRoasted.git
+   cd GitRoasted
+   ```
 
-# GitHub API (Optional - for higher rate limits)
-GITHUB_TOKEN=your_github_personal_access_token
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-# Analytics (Optional)
-NEXT_PUBLIC_GA_MEASUREMENT_ID=your_ga_id
-Set up Firebase Firestore
-a. Create a new Firebase project
-b. Enable Firestore Database
-c. Create a collection named leaderboard
-d. Set up Firestore rules:
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /leaderboard/{document} {
-      allow read: if true;
-      allow write: if true;
-    }
-  }
-}
-e. Create composite index:
-Collection: leaderboard
-Fields: score (Descending)
-Run the development server
-npm run dev
-Open your browser
-Navigate to http://localhost:3000
-🔨 Build for Production
+3. **Set up environment variables**
+   
+   Create a `.env.local` file in the root directory:
+   ```env
+   # Firebase Configuration
+   NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+   
+   # GitHub API (Optional - for higher rate limits)
+   GITHUB_TOKEN=your_github_personal_access_token
+   
+   # Analytics (Optional)
+   NEXT_PUBLIC_GA_MEASUREMENT_ID=your_ga_id
+   ```
+
+4. **Set up Firebase Firestore**
+   
+   a. Create a new Firebase project  
+   b. Enable Firestore Database  
+   c. Create a collection named `leaderboard`  
+   d. Set up Firestore rules:
+   ```javascript
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /leaderboard/{document} {
+         allow read: if true;
+         allow write: if true;
+       }
+     }
+   }
+   ```
+   
+   e. Create composite index:
+   - Collection: `leaderboard`
+   - Fields: `score` (Descending)
+
+5. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open your browser**
+   
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+---
+
+### 🔨 Build for Production
+
+```bash
 # Build the application
 npm run build
 
@@ -232,22 +256,36 @@ npm start
 
 # Or build and export static files
 npm run build && npm run export
-🚢 Deployment
-Deploy to Netlify (Recommended)
-Connect your repository
-Sign up at Netlify
-Click "New site from Git"
-Connect your GitHub repository
-Configure build settings
-Build command: npm run build
-Publish directory: .next
-Add environment variables
-Go to Site settings → Environment variables
-Add all variables from .env.local
-Deploy
-Click "Deploy site"
-Your site will be live at yoursite.netlify.app
-Deploy to Vercel
+```
+
+---
+
+### 🚢 Deployment
+
+#### Deploy to Netlify (Recommended)
+
+1. **Connect your repository**
+   - Sign up at [Netlify](https://www.netlify.com/)
+   - Click "New site from Git"
+   - Connect your GitHub repository
+
+2. **Configure build settings**
+   ```
+   Build command: npm run build
+   Publish directory: .next
+   ```
+
+3. **Add environment variables**
+   - Go to Site settings → Environment variables
+   - Add all variables from `.env.local`
+
+4. **Deploy**
+   - Click "Deploy site"
+   - Your site will be live at `yoursite.netlify.app`
+
+#### Deploy to Vercel
+
+```bash
 # Install Vercel CLI
 npm i -g vercel
 
@@ -255,8 +293,15 @@ npm i -g vercel
 vercel
 
 # Follow the prompts to deploy
-📖 Usage
-Analyze a Profile
+```
+
+---
+
+## 📖 Usage
+
+### Analyze a Profile
+
+```typescript
 // Visit the homepage
 https://gitroasted.netlify.app
 
@@ -264,7 +309,11 @@ https://gitroasted.netlify.app
 "torvalds", "gaearon", "your-username"
 
 // Get instant results!
-Using the API (Self-hosted)
+```
+
+### Using the API (Self-hosted)
+
+```bash
 # Fetch user score
 GET /api/score?username=torvalds
 
@@ -280,11 +329,21 @@ GET /api/score?username=torvalds
   },
   "roast": "Your commit history..."
 }
-Embedding the Badge
+```
+
+### Embedding the Badge
+
 Add your GitRoasted score to your GitHub README:
+
+```markdown
 [![GitRoasted Score](https://gitroasted.netlify.app/api/badge/yourusername)](https://gitroasted.netlify.app/profile/yourusername)
-GitHub Action Integration
-Add to .github/workflows/update-score.yml:
+```
+
+### GitHub Action Integration
+
+Add to `.github/workflows/update-score.yml`:
+
+```yaml
 name: Update GitRoasted Score
 
 on:
@@ -300,7 +359,10 @@ jobs:
       - name: Update Score
         run: |
           curl -X POST https://gitroasted.netlify.app/api/refresh/${{ github.repository_owner }}
+```
+
 ---
+
 ## 🤝 Contributing
 
 We love contributions! GitRoasted is open-source and welcomes contributions from developers of all skill levels.
@@ -313,123 +375,183 @@ We love contributions! GitRoasted is open-source and welcomes contributions from
 
 2. **Clone your fork**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/gitroasted.git
-   cd gitroasted
-Create a feature branch
-git checkout -b feature/amazing-feature
-Make your changes
-Follow our coding standards
-Commit your changes
-git commit -m "Add: amazing new feature"
-Use conventional commits:
-feat: - New feature
-fix: - Bug fix
-docs: - Documentation
-style: - Formatting
-refactor: - Code restructuring
-test: - Adding tests
-chore: - Maintenance
-Push to your fork
-git push origin feature/amazing-feature
-Open a Pull Request
-Go to the original repository and click "New Pull Request"
-Coding Standards
-Use TypeScript for type safety
-Follow ESLint rules (run npm run lint)
-Write meaningful commit messages
-Add comments for complex logic
-Update documentation for new features
-Write tests for new functionality (when applicable)
-Areas We Need Help
-🐛 Bug fixes - Check open issues
-✨ New features - See roadmap
-📝 Documentation - Improve guides and examples
-🌐 Translations - Add support for more languages
-🎨 Design - UI/UX improvements
-⚡ Performance - Optimization opportunities
-🗺️ Roadmap
-✅ Completed
-[x] Core scoring algorithm (8 metrics)
-[x] AI-powered roast generation
-[x] Global leaderboard with pagination
-[x] Profile comparison feature
-[x] Quick wins improvement tips
-[x] Shareable social cards
-[x] PWA support
-[x] Dark/light themes
-[x] Mobile responsive design
-🚧 In Progress
-[ ] Team/Organization leaderboards
-[ ] Historical score tracking (graph over time)
-[ ] Achievement badge system
-[ ] API rate limit optimization
-🔮 Planned
-[ ] Native mobile apps (iOS & Android)
-[ ] VS Code extension
-[ ] GitHub Action for README badges
-[ ] Email notifications for score changes
-[ ] Premium features (advanced analytics)
-[ ] Integration with LinkedIn
-[ ] Multi-user comparison (up to 5 users)
-[ ] Custom scoring weights
-[ ] Private leaderboards
-[ ] Internationalization (i18n)
-Vote on features: GitHub Discussions
-🐛 Bug Reports & Feature Requests
+   git clone https://github.com/YOUR_USERNAME/GitRoasted.git
+   cd GitRoasted
+   ```
+
+3. **Create a feature branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+
+4. **Make your changes**
+   
+   Follow our [coding standards](#coding-standards)
+
+5. **Commit your changes**
+   ```bash
+   git commit -m "Add: amazing new feature"
+   ```
+   
+   Use conventional commits:
+   - `feat:` - New feature
+   - `fix:` - Bug fix
+   - `docs:` - Documentation
+   - `style:` - Formatting
+   - `refactor:` - Code restructuring
+   - `test:` - Adding tests
+   - `chore:` - Maintenance
+
+6. **Push to your fork**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+
+7. **Open a Pull Request**
+   
+   Go to the original repository and click "New Pull Request"
+
+### Coding Standards
+
+- Use **TypeScript** for type safety
+- Follow **ESLint** rules (run `npm run lint`)
+- Write **meaningful commit messages**
+- Add **comments** for complex logic
+- Update **documentation** for new features
+- Write **tests** for new functionality (when applicable)
+
+### Areas We Need Help
+
+- 🐛 **Bug fixes** - Check [open issues](https://github.com/MdKasif0/GitRoasted/issues)
+- ✨ **New features** - See [roadmap](#roadmap)
+- 📝 **Documentation** - Improve guides and examples
+- 🌐 **Translations** - Add support for more languages
+- 🎨 **Design** - UI/UX improvements
+- ⚡ **Performance** - Optimization opportunities
+
+---
+
+## 🗺️ Roadmap
+
+### ✅ Completed
+- [x] Core scoring algorithm (8 metrics)
+- [x] AI-powered roast generation
+- [x] Global leaderboard with pagination
+- [x] Profile comparison feature
+- [x] Quick wins improvement tips
+- [x] Shareable social cards
+- [x] PWA support
+- [x] Dark/light themes
+- [x] Mobile responsive design
+
+### 🚧 In Progress
+- [ ] Team/Organization leaderboards
+- [ ] Historical score tracking (graph over time)
+- [ ] Achievement badge system
+- [ ] API rate limit optimization
+
+### 🔮 Planned
+- [ ] Native mobile apps (iOS & Android)
+- [ ] VS Code extension
+- [ ] GitHub Action for README badges
+- [ ] Email notifications for score changes
+- [ ] Premium features (advanced analytics)
+- [ ] Integration with LinkedIn
+- [ ] Multi-user comparison (up to 5 users)
+- [ ] Custom scoring weights
+- [ ] Private leaderboards
+- [ ] Internationalization (i18n)
+
+**Vote on features**: [GitHub Discussions](https://github.com/MdKasif0/GitRoasted/discussions)
+
+---
+
+## 🐛 Bug Reports & Feature Requests
+
 Found a bug? Have an idea? We'd love to hear from you!
-Bug Report: Open an issue
-Feature Request: Open an issue
-General Discussion: GitHub Discussions
-💬 Community & Support
+
+**Bug Report**: [Open an issue](https://github.com/MdKasif0/GitRoasted/issues/new?template=bug_report.md)
+
+**Feature Request**: [Open an issue](https://github.com/MdKasif0/GitRoasted/issues/new?template=feature_request.md)
+
+**General Discussion**: [GitHub Discussions](https://github.com/MdKasif0/GitRoasted/discussions)
+
+---
+
+## 💬 Community & Support
+
 Join our community of developers!
-💬 Discord: Join our server
-🐦 Twitter: @gitroasted
-📧 Email: contact@gitroasted.com
-📱 Instagram: @gitroasted
-FAQ
-Q: Is GitRoasted free?
+
+- 💬 **Discord**: [Join our server](https://discord.gg/gitroasted)
+- 🐦 **Twitter**: [@gitroasted](https://twitter.com/gitroasted)
+- 📧 **Email**: contact@gitroasted.com
+- 📱 **Instagram**: [@gitroasted](https://instagram.com/gitroasted)
+
+### FAQ
+
+**Q: Is GitRoasted free?**  
 A: Yes! GitRoasted is 100% free and open-source.
-Q: How often does my score update?
+
+**Q: How often does my score update?**  
 A: Scores are cached for 24 hours. You can force refresh by searching again.
-Q: Why is my score lower than expected?
-A: Check the Quick Wins page for improvement tips!
-Q: Can I use this for my company?
+
+**Q: Why is my score lower than expected?**  
+A: Check the [Quick Wins](https://gitroasted.netlify.app/quick-wins) page for improvement tips!
+
+**Q: Can I use this for my company?**  
 A: Absolutely! It's open-source under MIT license.
-Q: Does GitRoasted collect my data?
-A: We only store your public GitHub data (username, avatar, score). See Privacy Policy.
-More questions? Check our full FAQ
-🙏 Acknowledgments
-Built With Love By
-Your Name - Creator & Maintainer
-Special Thanks
-GitHub - For the incredible API
-Next.js Team - For the amazing framework
-Vercel - For inspiration
-All Contributors - For making this project better
-Inspired By
-GitHub's contribution graph
-GitHub Profile Summary Cards
-Developer communities on Twitter
-Resources
-Icons from React Icons
-Illustrations from Undraw
-Fonts from Google Fonts
+
+**Q: Does GitRoasted collect my data?**  
+A: We only store your public GitHub data (username, avatar, score). See [Privacy Policy](./PRIVACY.md).
+
+**More questions?** Check our [full FAQ](https://gitroasted.netlify.app/faq)
+
+---
+
+## 🙏 Acknowledgments
+
+### Built With Love By
+- [Md Kasif](https://github.com/MdKasif0) - Creator & Maintainer
+
+### Special Thanks
+- [GitHub](https://github.com) - For the incredible API
+- [Next.js Team](https://nextjs.org) - For the amazing framework
+- [Vercel](https://vercel.com) - For inspiration
+- [All Contributors](https://github.com/MdKasif0/GitRoasted/graphs/contributors) - For making this project better
+
+### Inspired By
+- GitHub's contribution graph
+- [GitHub Profile Summary Cards](https://github.com/vn7n24fzkq/github-profile-summary-cards)
+- Developer communities on Twitter
+
+### Resources
+- Icons from [React Icons](https://react-icons.github.io/)
+- Illustrations from [Undraw](https://undraw.co/)
+- Fonts from [Google Fonts](https://fonts.google.com/)
+
+---
 
 ## 📄 License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ### MIT License Summary
+
+```
 MIT License
+
 Copyright (c) 2024 GitRoasted
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
+
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -437,6 +559,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
+
 **What this means:**
 - ✅ Commercial use allowed
 - ✅ Modification allowed
@@ -468,19 +592,19 @@ We respect the [GitHub Terms of Service](https://docs.github.com/en/github/site-
 
 ## 🌟 Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/gitroasted&type=Date)](https://star-history.com/#yourusername/gitroasted&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=MdKasif0/GitRoasted&type=Date)](https://star-history.com/#MdKasif0/GitRoasted&Date)
 
 ---
 
 ## 📊 Project Stats
 
-![GitHub Repo stars](https://img.shields.io/github/stars/yourusername/gitroasted?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/gitroasted?style=social)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/gitroasted)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/yourusername/gitroasted)
-![GitHub contributors](https://img.shields.io/github/contributors/yourusername/gitroasted)
-![GitHub last commit](https://img.shields.io/github/last-commit/yourusername/gitroasted)
-![GitHub code size](https://img.shields.io/github/languages/code-size/yourusername/gitroasted)
+![GitHub Repo stars](https://img.shields.io/github/stars/MdKasif0/GitRoasted?style=social)
+![GitHub forks](https://img.shields.io/github/forks/MdKasif0/GitRoasted?style=social)
+![GitHub issues](https://img.shields.io/github/issues/MdKasif0/GitRoasted)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/MdKasif0/GitRoasted)
+![GitHub contributors](https://img.shields.io/github/contributors/MdKasif0/GitRoasted)
+![GitHub last commit](https://img.shields.io/github/last-commit/MdKasif0/GitRoasted)
+![GitHub code size](https://img.shields.io/github/languages/code-size/MdKasif0/GitRoasted)
 
 ---
 
@@ -512,7 +636,7 @@ If you find GitRoasted useful, consider supporting it:
 **[gitroasted.netlify.app](https://gitroasted.netlify.app)**
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/gitroasted?style=social)](https://twitter.com/gitroasted)
-[![GitHub followers](https://img.shields.io/github/followers/yourusername?style=social)](https://github.com/yourusername)
+[![GitHub followers](https://img.shields.io/github/followers/MdKasif0?style=social)](https://github.com/MdKasif0)
 
 ---
 
