@@ -247,7 +247,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
             Share Your Card
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-6xl h-[90vh] p-0 overflow-hidden">
+      <DialogContent className="max-w-5xl h-[80vh] p-0 overflow-hidden">
         <DialogHeader className="p-4 border-b">
           <DialogTitle>Share Your GitRoasted Card</DialogTitle>
         </DialogHeader>
@@ -309,4 +309,3 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     </Dialog>
   );
 }
-
