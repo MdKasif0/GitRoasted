@@ -136,7 +136,7 @@ function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUse
       {/* Header */}
       <div className="relative mb-8 text-center animate-in fade-in-0 duration-500 scale-95" style={{animationName: 'slideInUp'}}>
         <Button asChild variant="ghost" className="absolute top-0 left-0 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20">
-          <Link href={`/dashboard?username=${user.login}`}>
+          <Link href={`/?username=${user.login}`}>
             <ArrowLeft className="w-5 h-5" />
           </Link>
         </Button>
@@ -238,8 +238,8 @@ function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUse
         <p className="text-slate-400 mt-2 mb-6">Complete these {initialWins.length} quick wins to gain +{totalPoints} points!</p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild size="lg">
-              <Link href={`/dashboard?username=${user.login}`}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+              <Link href={`/?username=${user.login}`}>
+                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
