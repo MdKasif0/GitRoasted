@@ -247,12 +247,12 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
             Share Your Card
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-5xl h-[80vh] p-0 overflow-hidden">
-        <DialogHeader className="p-4 border-b">
+      <DialogContent className="max-w-5xl max-h-[90vh] p-0 flex flex-col">
+        <DialogHeader className="p-4 border-b shrink-0">
           <DialogTitle>Share Your GitRoasted Card</DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-[1fr_380px] h-[calc(100%-57px)] overflow-hidden">
+        <div className="grid grid-cols-[1fr_380px] overflow-y-auto">
           {/* Preview Section */}
           <div className="flex items-center p-8 bg-muted/20 overflow-auto relative">
              <div
