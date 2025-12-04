@@ -60,7 +60,7 @@ export default function ComparePage() {
             <Card className="p-6 sm:p-8 bg-black/20 backdrop-blur-lg border-purple-500/30">
                 <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-0">
                     {/* User 1 Input */}
-                    <div className="w-full md:w-5/12 text-center md:text-right p-4 rounded-lg bg-white/5">
+                    <div className="w-full md:w-5/12 text-center md:text-left p-4 rounded-lg bg-white/5">
                         <label htmlFor='user1-input' className="text-sm font-bold text-primary">Player 1</label>
                         <Input
                             id="user1-input"
@@ -69,7 +69,7 @@ export default function ComparePage() {
                             value={user1}
                             onChange={(e) => setUser1(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleCompare()}
-                            className="w-full h-12 mt-2 text-lg text-center md:text-right bg-transparent border-white/10"
+                            className="w-full h-12 mt-2 text-lg text-center md:text-left bg-transparent border-white/10"
                         />
                     </div>
 
