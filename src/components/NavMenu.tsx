@@ -140,7 +140,7 @@ export function NavMenu() {
                     className="flex items-center gap-3 p-2 text-sm font-medium rounded-md transition-colors hover:bg-white/10"
                 >
                     <Swords className="w-4 h-4 text-primary" />
-                    Compare
+                    Battle
                 </Link>
             </DropdownMenuItem>
 
