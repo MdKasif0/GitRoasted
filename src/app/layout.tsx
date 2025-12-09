@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     siteName: 'GitRoasted',
     images: [
       {
-        url: 'public/gitroasted-opengraph.png',
+        url: '/gitroasted-opengraph.png',
         width: 1200,
         height: 630,
         alt: 'GitRoasted social sharing image',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: title,
     description: description,
-    images: ['public/gitroasted-opengraph.png'],
+    images: ['/gitroasted-opengraph.png'],
     creator: '@md_kasif_uddin',
     site: '@md_kasif_uddin',
   },
