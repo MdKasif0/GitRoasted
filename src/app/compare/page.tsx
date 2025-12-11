@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://gitroasted.netlify.app/og-wrapper.png",
+        url: "https://gitroasted.netlify.app/og-gitclash.png",
         width: 1200,
         height: 630,
         alt: "GitClash - Compare GitHub Profiles",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "GitClash: Battle of the Devs",
     description: "Put two GitHub profiles head-to-head and see who comes out on top.",
-    images: ["https://gitroasted.netlify.app/og-wrapper.png"],
+    images: ["https://gitroasted.netlify.app/og-gitclash.png"],
   },
 };
 
