@@ -18,21 +18,27 @@ export default function ComparePage() {
   const [error, setError] = useState('')
 
   const handleCompare = async () => {
-    if (!user1 || !user2) {
-      setError('Please enter both usernames')
-      return
-    }
-    
-    if (user1.toLowerCase() === user2.toLowerCase()) {
-      setError('Please enter different usernames')
-      return
-    }
-
-    setLoading(true)
-    setError('')
-    
-    router.push(`/compare/${user1}/vs/${user2}`)
-  }
+     const trimmedUser1 = user1.trim()
+     const trimmedUser2 = user2.trim()
+     
+     if (!trimmedUser1 || !trimmedUser2) {
+       setError('Please enter both usernames')
+       return
+     }
+     
+     if (trimmedUser1.toLowerCase() === trimmedUser2.toLowerCase()) {
+       setError('Please enter different usernames')
+       return
+     }
+     
+     setLoading(true)
+     
+     // Encode usernames to handle special characters
+     const encoded1 = encodeURIComponent(trimmedUser1)
+     const encoded2 = encodeURIComponent(trimmedUser2)
+     
+     router.push(`/compare/${encoded1}/vs/${encoded2}`)
+   }
 
   const handleSuggestion = (u1: string, u2: string) => {
     setUser1(u1);

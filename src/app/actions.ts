@@ -10,7 +10,6 @@ import { initializeFirebase } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { revalidateTag } from 'next/cache';
 
-// Initialize Firebase
 const { firestore: db } = initializeFirebase();
 
 const usernameSchema = z.string().min(1, 'GitHub username cannot be empty.').max(39, 'GitHub username is too long.');
@@ -38,43 +37,47 @@ async function saveToLeaderboard(result: RoastResultState): Promise<LeaderboardE
 
         revalidateTag('leaderboard');
         
-        // Give the server a moment to revalidate the tag before the client might refetch
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-
-        // Return the entry for optimistic updates, adding a client-side timestamp
         return { ...entry, roastedAt: new Date().toISOString() } as LeaderboardEntry;
     } catch (error) {
         console.error("Error writing to leaderboard: ", error);
-        // Silently fail on leaderboard writes for now, but don't return an entry
         return null;
     }
 }
 
 export async function getComparisonData(user1: string, user2: string): Promise<{ data1: RoastResultState | null; data2: RoastResultState | null; error?: string; }> {
-  try {
-    const [result1, result2] = await Promise.all([
-      fetchComprehensiveGitHubData(user1).then(async (data) => ({
-        ...data,
-        roastResult: await calculateRoastScore(data.user, data.events, data.repos)
-      })),
-      fetchComprehensiveGitHubData(user2).then(async (data) => ({
-        ...data,
-        roastResult: await calculateRoastScore(data.user, data.events, data.repos)
-      }))
+    const [res1, res2] = await Promise.allSettled([
+        fetchComprehensiveGitHubData(user1).then(async (data) => ({
+            ...data,
+            roastResult: await calculateRoastScore(data.user, data.events, data.repos)
+        })),
+        fetchComprehensiveGitHubData(user2).then(async (data) => ({
+            ...data,
+            roastResult: await calculateRoastScore(data.user, data.events, data.repos)
+        }))
     ]);
+
+    if (res1.status === 'rejected') {
+        const err = res1.reason as any;
+        console.error(`Comparison error for ${user1}:`, err);
+        return { data1: null, data2: null, error: `Failed to fetch data for ${user1}: ${err.message || 'Unknown error'}` };
+    }
+
+    if (res2.status === 'rejected') {
+        const err = res2.reason as any;
+        console.error(`Comparison error for ${user2}:`, err);
+        return { data1: null, data2: null, error: `Failed to fetch data for ${user2}: ${err.message || 'Unknown error'}` };
+    }
     
+    const result1 = res1.value;
+    const result2 = res2.value;
+
     const data1: RoastResultState = { status: 'success', username: user1, ...result1, score: 1000 - result1.roastResult.score, breakdown: result1.roastResult.breakdown, archetype: result1.roastResult.archetype };
     const data2: RoastResultState = { status: 'success', username: user2, ...result2, score: 1000 - result2.roastResult.score, breakdown: result2.roastResult.breakdown, archetype: result2.roastResult.archetype };
 
     return { data1, data2 };
-
-  } catch (err: any) {
-    console.error('Comparison error in server action:', err);
-    return { data1: null, data2: null, error: err.message || 'Failed to fetch data for one or both users.' };
-  }
 }
-
 
 export async function getRoast(prevState: RoastResultState, formData: FormData): Promise<RoastResultState> {
   const username = formData.get('username') as string;
