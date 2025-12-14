@@ -16,6 +16,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
 
 [🚀 Live Demo](https://gitroasted.netlify.app) • 
+Made by- https://x.com/md_kasif_uddin
 [📖 Documentation](#features) • 
 [🐛 Report Bug](https://github.com/MdKasif0/GitRoasted/issues) • 
 [✨ Request Feature](https://github.com/MdKasif0/GitRoasted/issues)
