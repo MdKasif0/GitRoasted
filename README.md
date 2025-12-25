@@ -40,13 +40,15 @@ GitRoasted is a **free, open-source developer tool** that analyzes your GitHub p
 
 ---
 
-## 🎥 Demo
+## 🎥 Documentation as a video
 
 <div align="center">
 
-### 🎬 Watch GitRoasted in Action
+<a href="https://youtu.be/XzzdQJDsYOw">
+  <img src="./public/video-thumbnail.png" width="100%" style="max-width: 800px; cursor: pointer;" alt="Watch GitRoasted Introduction">
+</a>
 
-https://github.com/MdKasif0/public/gitroasted-video.mp4
+*👆 Click to watch the documentation video*
 
 </div>
 
