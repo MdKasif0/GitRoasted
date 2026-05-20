@@ -294,6 +294,22 @@ npm run build && npm run export
    - Click "Deploy site"
    - Your site will be live at `yoursite.netlify.app`
 
+#### Deploy to Diploi
+
+1. **Launch the project via launch button**
+
+[![Launch with Diploi](https://diploi.com/launch-big.svg)](https://diploi.com/launch/MdKasif0/GitRoasted)
+
+2. **Add custom environment variables**
+
+In Diploi, open your deployment page and go to **Options > Next.js > Environment**. Add any environment variables required by your project.
+
+3. **Preview the deployment**
+
+You can view the live deployment from the deployment page using the provided preview URL.
+
+For more information, visit [Diploi](https://diploi.com/).
+
 #### Deploy to Vercel
 
 ```bash
