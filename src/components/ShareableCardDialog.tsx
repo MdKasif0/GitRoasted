@@ -183,11 +183,9 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
         </Button>
       </DialogTrigger>
       
-      {/* Custom, borderless, fully controlled DialogContent */}
       <DialogContent 
-        className="max-w-[1250px] max-h-[90vh] w-full p-0 flex flex-col bg-[#0A0A0A] border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+        className="max-w-[1250px] max-h-[90vh] w-full p-0 flex flex-col bg-[#0A0A0A] border border-white/10 rounded-xl overflow-hidden shadow-2xl [&>button]:hidden"
         style={{ '--radius': '0.75rem' } as React.CSSProperties}
-        hideCloseButton // assuming you have or can add a hideCloseButton prop, or we just position ours over it. Next.js dialog might require CSS to hide default.
       >
         {/* --- HEADER --- */}
         <div className="flex items-start justify-between p-6 pb-4 shrink-0">
