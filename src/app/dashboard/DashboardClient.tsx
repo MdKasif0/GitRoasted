@@ -1,117 +1,107 @@
-
-'use client'
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import { Github, Users, Star, Languages, TrendingUp, Calendar, Zap, Download, Trophy, Sparkles, Building, Leaf, Package, BarChart, GitCommit, Heart, Code, Milestone, Users2, Lightbulb, Link as LinkIcon, BookOpen, Tag, CheckSquare, ArrowRight, ArrowLeft, GitBranch, User as UserIcon, AlertCircle } from 'lucide-react';
-import { differenceInYears } from 'date-fns';
+import { Github, ArrowRight, Check, ChevronDown, ChevronUp, AlertCircle, ArrowLeft } from 'lucide-react';
 
-import type { RoastResultState, ScoreBreakdown, ScoreCategory, QuickWin as QuickWinType, DeveloperArchetype } from '@/lib/types';
+import type { RoastResultState, ScoreBreakdown, ScoreCategory, QuickWin as QuickWinType } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { ShareableCardDialog } from '@/components/ShareableCardDialog';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { FlameIcon } from '@/components/icons';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { AnimatedNumber } from '@/components/AnimatedNumber';
-import { ScoreCircle } from '@/components/ScoreCircle';
 import { calculateQuickWins } from '@/lib/quickWins';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { FlameIcon } from '@/components/icons';
 
-
-const breakdownMeta: Record<keyof ScoreBreakdown, { label: string; icon: React.ElementType, description: string, maxScore: number }> = {
-    impact: { label: 'Impact', icon: Package, description: 'Repository impact & stars', maxScore: 250 },
-    consistency: { label: 'Consistency', icon: Calendar, description: 'Contribution frequency & streaks', maxScore: 200 },
-    quality: { label: 'Quality', icon: GitCommit, description: 'Code quality indicators', maxScore: 150 },
-    community: { label: 'Community', icon: Heart, description: 'Social engagement & collaboration', maxScore: 150 },
-    diversity: { label: 'Diversity', icon: Code, description: 'Technology breadth', maxScore: 100 },
-    experience: { label: 'Experience', icon: Milestone, description: 'Account age & maturity', maxScore: 75 },
-    activity: { label: 'Activity', icon: Zap, description: 'Recent activity', maxScore: 50 },
-    specialBonus: { label: 'Special Bonus', icon: Sparkles, description: 'Exceptional achievements', maxScore: 25 },
-}
+const breakdownMeta: Record<keyof ScoreBreakdown, { label: string; maxScore: number }> = {
+    impact: { label: 'Impact', maxScore: 250 },
+    consistency: { label: 'Consistency', maxScore: 200 },
+    quality: { label: 'Quality', maxScore: 150 },
+    community: { label: 'Community', maxScore: 150 },
+    diversity: { label: 'Diversity', maxScore: 100 },
+    experience: { label: 'Experience', maxScore: 75 },
+    activity: { label: 'Activity', maxScore: 50 },
+    specialBonus: { label: 'Special Bonus', maxScore: 25 },
+};
 
 const getScoreCelebration = (score: number) => {
     const invertedScore = 1000 - score;
-    if (invertedScore >= 900) return { badgeText: 'Git Legend!', badgeIcon: <Trophy className="mr-1 h-4 w-4" />, badgeClass: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30', progressClass: 'stroke-yellow-400' };
-    if (invertedScore >= 750) return { badgeText: 'Star Developer!', badgeIcon: <Sparkles className="mr-1 h-4 w-4" />, badgeClass: 'bg-purple-500/10 text-purple-400 border-purple-500/30', progressClass: 'stroke-purple-400' };
-    if (invertedScore >= 500) return { badgeText: 'Keep Building!', badgeIcon: <Building className="mr-1 h-4 w-4" />, badgeClass: 'bg-blue-500/10 text-blue-400 border-blue-500/30', progressClass: 'stroke-blue-400' };
-    return { badgeText: 'Every Expert Started Here!', badgeIcon: <Leaf className="mr-1 h-4 w-4" />, badgeClass: 'bg-green-500/10 text-green-400 border-green-500/30', progressClass: 'stroke-green-400' };
+    if (invertedScore >= 900) return '🔥 Git Legend';
+    if (invertedScore >= 750) return '✨ Star Developer';
+    if (invertedScore >= 500) return '🏗️ Rising Developer';
+    return '🌱 Fresh Install';
 };
 
-const iconMap: { [key: string]: React.ElementType } = {
-  'add-readme': BookOpen,
-  'add-bio': UserIcon,
-  'add-topics': Tag,
-  'add-license': BookOpen,
-  'build-streak': FlameIcon,
-  'increase-activity': Zap,
-  'complete-profile': UserIcon,
-  'add-ci': GitBranch,
-  'learn-languages': Languages,
-  'improve-ratio': Users,
-};
-
-
-function QuickWinCard({ win }: { win: QuickWinType; }) {
-  const difficultyColors = {
-    easy: 'border-green-500/80 bg-green-500/10 text-green-400',
-    medium: 'border-yellow-500/80 bg-yellow-500/10 text-yellow-400',
-    hard: 'border-red-500/80 bg-red-500/10 text-red-400'
-  }
-  const difficultyBadgeColors = {
-    easy: 'bg-green-500/10 text-green-400 border-green-500/20',
-    medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-    hard: 'bg-red-500/10 text-red-400 border-red-500/20'
-  }
-  const Icon = iconMap[win.id] || Lightbulb;
-
-  return (
-    <Card className={cn(
-        "win-card transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-primary/50",
-        difficultyColors[win.difficulty],
-        "border-l-4"
-        )}>
-      <CardHeader className="flex flex-row items-start gap-4 space-y-0">
-          <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
-             <Icon className="w-6 h-6 text-primary" />
-          </div>
-          <div className="flex-1">
-            <CardTitle>{win.title}</CardTitle>
-             <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
-                <Badge variant="outline" className={cn("capitalize", difficultyBadgeColors[win.difficulty])}>{win.difficulty}</Badge>
-                <span>⏱️ {win.timeEstimate}</span>
-             </div>
-          </div>
-      </CardHeader>
-      <CardContent className="pb-4">
-        <p className="text-muted-foreground mb-4">{win.description}</p>
-        <div className="flex flex-col md:flex-row justify-between items-center pt-4 border-t border-white/10">
-            <div className="text-center md:text-left mb-4 md:mb-0">
-                <div className="text-3xl font-bold text-green-400">+{win.pointsGain}</div>
-                <div className="text-xs text-muted-foreground -mt-1">points</div>
-            </div>
-            {win.actionUrl && (
-            <Button asChild size="sm" className='w-full md:w-auto group'>
-                <a 
-                href={win.actionUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="action-button"
-                >
-                Take Action <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+function TopNav({ username }: { username: string }) {
+    return (
+        <header className="w-full flex items-center justify-between py-6 mb-12 border-b border-white/5">
+            <Link href="/" className="flex items-center gap-2 group">
+                <FlameIcon className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+                <span className="text-lg font-bold tracking-tight text-white">GitRoasted</span>
+            </Link>
+            
+            <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
+                <Link href={`/?username=${username}`} className="hover:text-white transition-colors flex items-center gap-1">
+                    Roast another <ArrowRight className="w-3 h-3" />
+                </Link>
+                <Link href="/#leaderboard" className="hover:text-white transition-colors">Leaderboard</Link>
+                <Link href="/about" className="hover:text-white transition-colors">About</Link>
+                <a href="https://github.com/MdKasif0/GitRoasted" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                    <Github className="w-4 h-4" />
                 </a>
-            </Button>
+            </nav>
+            <div className="md:hidden">
+                 <Link href={`/?username=${username}`} className="text-sm font-medium text-primary flex items-center gap-1">
+                    Roast another <ArrowRight className="w-3 h-3" />
+                </Link>
+            </div>
+        </header>
+    );
+}
+
+function ScoreRow({ category, data }: { category: keyof ScoreBreakdown, data: ScoreCategory }) {
+    const [expanded, setExpanded] = useState(false);
+    const meta = breakdownMeta[category];
+    if (category === 'specialBonus' && data.total === 0) return null;
+    
+    const percentage = (data.total / meta.maxScore) * 100;
+    
+    return (
+        <div className="border-b border-white/5 last:border-0 py-4">
+            <div 
+                className="flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer group"
+                onClick={() => setExpanded(!expanded)}
+            >
+                <div className="flex items-center gap-4 flex-1">
+                    <span className="font-medium text-white w-28">{meta.label}</span>
+                    <div className="flex-1 max-w-[200px] h-1.5 bg-white/5 rounded-full overflow-hidden hidden sm:block">
+                        <div 
+                            className="h-full bg-primary/80 rounded-full transition-all duration-1000"
+                            style={{ width: `${percentage}%` }}
+                        />
+                    </div>
+                </div>
+                <div className="flex items-center gap-4 mt-2 sm:mt-0">
+                     <div className="text-sm font-mono text-muted-foreground group-hover:text-white transition-colors">
+                        <span className="text-white">{data.total}</span> / {meta.maxScore}
+                    </div>
+                    {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                </div>
+            </div>
+            
+            {expanded && (
+                <div className="mt-4 pl-0 sm:pl-[128px] space-y-2 animate-in slide-in-from-top-2 opacity-0 fade-in duration-200">
+                    {Object.entries(data.breakdown).map(([subKey, subValue]) => (
+                        <div key={subKey} className="flex justify-between items-center text-sm">
+                            <span className="text-muted-foreground">{subKey}</span>
+                            <span className="font-mono text-white/70">{subValue} pts</span>
+                        </div>
+                    ))}
+                </div>
             )}
         </div>
-      </CardContent>
-    </Card>
-  )
+    );
 }
 
 function DashboardContent({ result, wins }: { result: RoastResultState, wins: QuickWinType[] }) {
@@ -120,169 +110,181 @@ function DashboardContent({ result, wins }: { result: RoastResultState, wins: Qu
     }
 
     const { user, score, roast, totalStars, topLanguages, breakdown, events, archetype } = result;
-    const celebration = getScoreCelebration(score);
+    const badgeText = getScoreCelebration(score);
     const invertedScore = 1000 - score;
     const roastLines = roast?.split('\n').filter(line => line.trim() !== '') || [];
     const totalContributions = events.filter(e => e.type === 'PushEvent').length;
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
-            <header className="mb-8">
-                <Button asChild variant="outline" className="mb-4 bg-white/5 border-white/10 md:w-auto w-10 h-10 p-0 md:px-4 md:py-2">
-                    <Link href={`/?username=${user.login}`}>
-                        <ArrowLeft className="w-4 h-4 md:mr-2" />
-                        <span className="hidden md:inline">Back to Roast</span>
-                    </Link>
-                </Button>
-                 <h1 className="text-3xl md:text-4xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500">Dashboard for @{user.login}</h1>
-                <p className="text-lg text-muted-foreground mt-1">
-                    Your complete GitHub analysis and improvement plan.
-                </p>
-            </header>
+        <div className="w-full min-h-screen bg-[#050505] text-[#F5F5F5] font-sans selection:bg-primary/30 relative">
+            {/* Extremely subtle background depth */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+            
+            <div className="max-w-[1100px] mx-auto px-6 md:px-12 lg:px-16 pb-32 relative z-10">
+                <TopNav username={user.login} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* --- Left Sticky Column --- */}
-                <aside className="lg:col-span-1 lg:sticky top-8 self-start space-y-8">
-                    <Card className="bg-black/20 backdrop-blur-lg border-purple-500/30 text-center">
-                        <CardContent className="p-6">
-                            <Image
-                                src={user.avatar_url}
-                                alt={user.login}
-                                width={128}
-                                height={128}
-                                className="rounded-full border-4 border-primary transition-transform duration-300 hover:scale-110 glow mx-auto"
-                            />
-                            <h2 className="text-3xl font-bold mt-4">{user.name || user.login}</h2>
-                            <p className="text-lg text-muted-foreground">@{user.login}</p>
-                             <div className="my-6">
-                                <ScoreCircle value={invertedScore} />
-                                {celebration && (
-                                    <Badge className={`mt-3 text-base mx-auto ${celebration.badgeClass}`}>
-                                        {celebration.badgeIcon}
-                                        {celebration.badgeText}
-                                    </Badge>
-                                )}
+                {/* --- Profile Hero --- */}
+                <section className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+                    <div className="flex items-center gap-6">
+                        <Image
+                            src={user.avatar_url}
+                            alt={user.login}
+                            width={96}
+                            height={96}
+                            className="rounded-full border border-primary/40 shadow-[0_0_15px_rgba(255,138,0,0.1)]"
+                        />
+                        <div>
+                            <h1 className="text-3xl font-bold text-white mb-1">{user.name || user.login}</h1>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground font-mono">
+                                <span>@{user.login}</span>
+                                <span className="hidden sm:inline text-white/20">•</span>
+                                <a href={user.html_url} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors flex items-center gap-1">
+                                    <Github className="w-3 h-3" /> github.com/{user.login}
+                                </a>
                             </div>
-                            <div className='w-full space-y-2 mt-4'>
-                                <ShareableCardDialog result={result} />
-                                <Button asChild variant="outline" className="w-full bg-white/5 border-white/10">
-                                    <a href={user.html_url} target="_blank" rel="noopener noreferrer">
-                                        <Github className="mr-2 h-4 w-4" />
-                                        View on GitHub
-                                    </a>
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </aside>
+                        </div>
+                    </div>
+                    
+                    <div className="flex flex-col md:items-end gap-2">
+                        <div className="text-xs font-bold tracking-widest text-muted-foreground uppercase">Seriousness Score</div>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-5xl font-bold text-primary tracking-tighter">{invertedScore}</span>
+                            <span className="text-xl text-muted-foreground">/ 1000</span>
+                        </div>
+                        <div className="text-sm font-medium text-white/80 bg-white/5 border border-white/10 px-3 py-1 rounded-md">
+                            {badgeText}
+                        </div>
+                    </div>
+                </section>
 
-                {/* --- Right Scrollable Column --- */}
-                <main className="lg:col-span-2 space-y-8">
-                    {/* Roast Section */}
-                    <Card className="bg-background/50 border-purple-500/50">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-xl">
-                                <FlameIcon className="text-primary"/> Your Roast
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-lg leading-relaxed italic space-y-2 font-serif">
-                                {roastLines.map((line, index) => <p key={index}>{line}</p>)}
-                            </div>
-                        </CardContent>
-                    </Card>
+                {/* --- Primary Actions --- */}
+                <div className="flex flex-wrap items-center gap-3 mb-24">
+                    <ShareableCardDialog result={result} />
+                    <Button asChild size="sm" variant="outline" className="bg-transparent border-white/10 text-white hover:bg-white/5 transition-colors h-9 px-6 shadow-none">
+                        <a href={user.html_url} target="_blank" rel="noopener noreferrer">
+                            <Github className="mr-2 h-4 w-4" /> View on GitHub
+                        </a>
+                    </Button>
+                </div>
+
+                {/* --- The Roast --- */}
+                <section className="mb-24 max-w-[800px]">
+                    <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-primary uppercase mb-6">
+                        <FlameIcon className="w-3 h-3" /> The Roast
+                    </div>
+                    <div className="border-l-2 border-primary pl-6 md:pl-8 space-y-6">
+                        {roastLines.map((line, index) => (
+                            <p key={index} className="text-xl md:text-2xl leading-[1.6] text-white/90">
+                                {line}
+                            </p>
+                        ))}
+                    </div>
+                    <div className="mt-6 pl-6 md:pl-8 text-xs text-muted-foreground">
+                        Generated from public GitHub activity
+                    </div>
+                </section>
+
+                <div className="w-full h-px bg-white/5 mb-24" />
+
+                {/* --- Quick Wins & Profile Analysis Grid --- */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24">
+                    
+                    {/* Quick Wins */}
+                    <section>
+                        <h2 className="text-sm font-bold tracking-widest text-muted-foreground uppercase mb-8">Quick Wins</h2>
+                        <div className="space-y-4">
+                            {wins.map((win, idx) => (
+                                <div key={win.id} className="flex items-start gap-4 p-3 -mx-3 rounded-lg hover:bg-white/5 transition-colors group">
+                                    <div className="text-xs font-mono text-muted-foreground pt-1.5 w-6">0{idx + 1}</div>
+                                    <div className="flex-1">
+                                        <div className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">{win.title}</div>
+                                        <div className="text-xs text-muted-foreground mt-1">{win.timeEstimate}</div>
+                                    </div>
+                                    <div className="text-xs font-bold text-green-400 bg-green-400/10 px-2 py-1 rounded">
+                                        +{win.pointsGain}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
                     {/* Profile Analysis */}
                     {archetype && (
-                         <Card className="bg-background/50 border-purple-500/50">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-xl">
-                                    <Users2 className="text-primary"/> Profile Analysis
-                                </CardTitle>
-                                <CardDescription>
-                                    Based on your activity, you fit the <span className='font-bold text-primary'>{archetype.type}</span> archetype.
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <p className='italic text-muted-foreground'>{archetype.description}</p>
-                                <div className='space-y-2'>
-                                    <h4 className='font-semibold'>Common Traits:</h4>
-                                    <ul className='space-y-2'>
-                                        {archetype.characteristics.map((trait, index) => (
-                                            <li key={index} className='flex items-start gap-2 text-sm'>
-                                                <CheckSquare className='w-4 h-4 mt-0.5 text-green-500 shrink-0' />
-                                                <span>{trait}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <section>
+                            <h2 className="text-sm font-bold tracking-widest text-muted-foreground uppercase mb-8">Profile Analysis</h2>
+                            <div className="mb-6">
+                                <h3 className="text-xl font-bold text-white mb-2">{archetype.type}</h3>
+                                <p className="text-sm text-muted-foreground leading-relaxed">{archetype.description}</p>
+                            </div>
+                            <div>
+                                <h4 className="text-xs font-bold tracking-widest text-white/50 uppercase mb-4">Common Traits</h4>
+                                <ul className="space-y-3">
+                                    {archetype.characteristics.map((trait, index) => (
+                                        <li key={index} className="flex items-start gap-3 text-sm text-white/80">
+                                            <Check className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                                            <span className="leading-snug">{trait}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </section>
                     )}
+                </div>
 
-                    {/* Stats & Score Breakdown */}
-                    <Accordion type="multiple" className="w-full space-y-8" defaultValue={['stats', 'breakdown', 'quick-wins']}>
-                        {/* Stats at a Glance */}
-                        <AccordionItem value="stats" className='border-none'>
-                            <Card className="bg-background/50 border-purple-500/50">
-                                <AccordionTrigger className='p-6 hover:no-underline'>
-                                    <CardTitle className='text-xl flex items-center gap-2'><BarChart className='text-primary' /> Stats at a Glance</CardTitle>
-                                </AccordionTrigger>
-                                <AccordionContent className="px-6 pb-6">
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                                        <div className="bg-white/5 p-4 rounded-lg text-center"><Star className="mx-auto h-6 w-6 text-primary mb-2" /><p className="text-2xl font-bold"><AnimatedNumber value={totalStars ?? 0} /></p><p className="text-xs text-muted-foreground">Stars Received</p></div>
-                                        <div className="bg-white/5 p-4 rounded-lg text-center"><Users className="mx-auto h-6 w-6 text-primary mb-2" /><p className="text-2xl font-bold"><AnimatedNumber value={user.followers} /></p><p className="text-xs text-muted-foreground">Followers</p></div>
-                                        <div className="bg-white/5 p-4 rounded-lg text-center"><Users2 className="mx-auto h-6 w-6 text-primary mb-2" /><p className="text-2xl font-bold"><AnimatedNumber value={user.following} /></p><p className="text-xs text-muted-foreground">Following</p></div>
-                                        <div className="bg-white/5 p-4 rounded-lg text-center"><Package className="mx-auto h-6 w-6 text-primary mb-2" /><p className="text-2xl font-bold"><AnimatedNumber value={user.public_repos} /></p><p className="text-xs text-muted-foreground">Public Repos</p></div>
-                                        <div className="bg-white/5 p-4 rounded-lg text-center"><GitCommit className="mx-auto h-6 w-6 text-primary mb-2" /><p className="text-2xl font-bold"><AnimatedNumber value={totalContributions} /></p><p className="text-xs text-muted-foreground">Total Commits (year)</p></div>
-                                        {topLanguages && topLanguages.length > 0 && <div className="bg-white/5 p-4 rounded-lg text-center col-span-2 sm:col-span-1"><Languages className="mx-auto h-6 w-6 text-primary mb-2" /><div className="flex flex-wrap justify-center gap-1 mt-2">{topLanguages.map(([language]) => <Badge key={language} variant="secondary" className="text-xs font-medium border-purple-500/20">{language}</Badge>)}</div><p className="text-xs text-muted-foreground mt-1">Top Languages</p></div>}
-                                    </div>
-                                </AccordionContent>
-                            </Card>
-                        </AccordionItem>
+                <div className="w-full h-px bg-white/5 mb-24" />
 
-                        {/* Score Breakdown */}
-                        <AccordionItem value="breakdown" className='border-none'>
-                            <Card className="bg-background/50 border-purple-500/50">
-                                <AccordionTrigger className='p-6 hover:no-underline'>
-                                    <CardTitle className='text-xl flex items-center gap-2'><Trophy className='text-primary' /> Score Breakdown</CardTitle>
-                                </AccordionTrigger>
-                                <AccordionContent className="px-6 pb-6 space-y-4">
-                                    {(Object.keys(breakdown) as Array<keyof ScoreBreakdown>).map((key) => {
-                                        const category = breakdown[key as keyof ScoreBreakdown];
-                                        if (key === 'specialBonus' && category.total === 0) return null;
-                                        const meta = breakdownMeta[key as keyof ScoreBreakdown];
-                                        const percentage = (category.total / meta.maxScore) * 100;
-                                        const indicatorClass = percentage > 75 ? 'bg-green-500' : percentage > 40 ? 'bg-yellow-500' : 'bg-red-500';
-                                        return (
-                                            <div key={key}>
-                                                <TooltipProvider><Tooltip delayDuration={100}><TooltipTrigger className='w-full text-left'><div className="flex items-center gap-2 text-sm mb-2"><meta.icon className="h-4 w-4 text-muted-foreground" /><span className='flex-1 font-semibold text-base'>{meta.label}</span><span className='text-primary font-bold'>{category.total} / {meta.maxScore} pts</span></div><Progress value={percentage} indicatorClassName={indicatorClass} /></TooltipTrigger><TooltipContent><p>{meta.description}</p></TooltipContent></Tooltip></TooltipProvider>
-                                                <div className='mt-3 space-y-2 pl-6 border-l-2 border-purple-500/20'>{Object.entries(category.breakdown).map(([subKey, subValue]) => <div key={subKey} className="flex justify-between items-center text-xs"><span className='text-muted-foreground'>{subKey}</span><span className='font-mono'>{subValue} pts</span></div>)}</div>
-                                            </div>
-                                        )
-                                    })}
-                                </AccordionContent>
-                            </Card>
-                        </AccordionItem>
+                {/* --- Stats Grid --- */}
+                <section className="mb-24">
+                    <h2 className="text-sm font-bold tracking-widest text-muted-foreground uppercase mb-8">Stats At A Glance</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+                        <div>
+                            <div className="text-4xl font-bold text-white mb-1">{totalStars ?? 0}</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider">Stars</div>
+                        </div>
+                        <div>
+                            <div className="text-4xl font-bold text-white mb-1">{user.followers}</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider">Followers</div>
+                        </div>
+                        <div>
+                            <div className="text-4xl font-bold text-white mb-1">{user.following}</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider">Following</div>
+                        </div>
+                        <div>
+                            <div className="text-4xl font-bold text-white mb-1">{user.public_repos}</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider">Repos</div>
+                        </div>
+                        <div>
+                            <div className="text-4xl font-bold text-white mb-1">{totalContributions}</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wider">Commits</div>
+                        </div>
+                    </div>
+                    
+                    {topLanguages && topLanguages.length > 0 && (
+                        <div className="mt-12">
+                            <h3 className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-4">Top Languages</h3>
+                            <div className="flex flex-wrap items-center gap-3">
+                                {topLanguages.map(([language]) => (
+                                    <span key={language} className="text-sm font-medium text-white/70 bg-white/5 px-3 py-1 rounded-md border border-white/10">
+                                        {language}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </section>
 
-                        {/* Quick Wins */}
-                         <AccordionItem value="quick-wins" className='border-none'>
-                            <Card className="bg-background/50 border-purple-500/50">
-                                <AccordionTrigger className='p-6 hover:no-underline'>
-                                    <CardTitle className='text-xl flex items-center gap-2'><Lightbulb className='text-primary' /> Quick Wins</CardTitle>
-                                </AccordionTrigger>
-                                <AccordionContent className="px-6 pb-6">
-                                     <div className="grid md:grid-cols-2 gap-6">
-                                        {wins.map((win) => (
-                                          <QuickWinCard key={win.id} win={win} />
-                                        ))}
-                                      </div>
-                                </AccordionContent>
-                            </Card>
-                        </AccordionItem>
+                <div className="w-full h-px bg-white/5 mb-24" />
 
-                    </Accordion>
-                </main>
+                {/* --- Score Breakdown --- */}
+                <section>
+                    <h2 className="text-sm font-bold tracking-widest text-muted-foreground uppercase mb-8">Score Breakdown</h2>
+                    <div className="max-w-[800px]">
+                        {(Object.keys(breakdown) as Array<keyof ScoreBreakdown>).map((key) => (
+                            <ScoreRow key={key} category={key} data={breakdown[key]} />
+                        ))}
+                    </div>
+                </section>
+
             </div>
         </div>
     );
@@ -332,20 +334,24 @@ export function DashboardClient() {
   }, [username]);
 
   if (loading) {
-    return null; // The parent page will show the skeleton
+    return (
+        <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        </div>
+    );
   }
 
   if (error || !result) {
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-4">
-            <Alert variant="destructive" className="max-w-lg">
-                <AlertCircle className="h-4 w-4" />
+        <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-4 gap-4">
+            <Alert variant="destructive" className="max-w-lg bg-red-500/10 border-red-500/20 text-red-400">
+                <AlertCircle className="h-4 w-4 shrink-0" />
                 <AlertTitle>Could Not Load Dashboard</AlertTitle>
                 <AlertDescription>
                     {error || 'An unexpected error occurred.'}
                 </AlertDescription>
             </Alert>
-             <Button asChild>
+             <Button asChild variant="outline" className="bg-white/5 border-white/10 hover:bg-white/10 text-white">
                 <Link href={username ? `/?username=${username}` : '/'}>
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     Back to Roast
