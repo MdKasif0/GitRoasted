@@ -94,8 +94,13 @@ Generate the JSON now.`;
     throw new Error('Groq returned an empty response.');
   }
 
+  let parsed;
   try {
-    const parsed = JSON.parse(rawContent);
+    // Attempt to extract just the JSON object in case the model wraps it in markdown (e.g. ```json ... ```) or adds preamble
+    const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
+    const cleanJsonString = jsonMatch ? jsonMatch[0] : rawContent;
+    parsed = JSON.parse(cleanJsonString);
+    
     return {
       roast: parsed.roast || 'Could not generate roast.',
       leaderboardRoast: parsed.leaderboardRoast || 'Could not generate leaderboard roast.',
