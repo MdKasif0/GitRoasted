@@ -2,6 +2,7 @@ import { NavMenu } from "@/components/NavMenu";
 import Link from 'next/link';
 import { FlameIcon } from '@/components/icons';
 import { FaGithub, FaTwitter, FaYoutube, FaEnvelope } from 'react-icons/fa';
+import { Database, BrainCircuit, Zap, Code2, Cpu, FileCode2 } from 'lucide-react';
 
 export const metadata = {
   title: 'About | GitRoasted',
@@ -40,57 +41,141 @@ export default function AboutPage() {
         </div>
       </header>
 
-      <main className="w-full max-w-3xl flex flex-col items-start relative z-10 px-6 py-20 mx-auto">
+      <main className="w-full max-w-5xl flex flex-col items-center relative z-10 px-6 py-20 mx-auto">
          
-         <div className="flex items-center gap-2 text-primary font-bold text-xs tracking-widest uppercase mb-4 drop-shadow-[0_0_8px_rgba(255,138,0,0.3)]">
-             <FlameIcon className="w-4 h-4" />
-             THE ORIGIN STORY
+         {/* Hero Section */}
+         <div className="text-center max-w-3xl mb-24">
+             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-xs tracking-widest uppercase mb-6 drop-shadow-[0_0_8px_rgba(255,138,0,0.3)]">
+                 <FlameIcon className="w-3 h-3" />
+                 Our Philosophy
+             </div>
+             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                Brutal honesty as a <br className="hidden md:block" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A00] to-[#FF5C00] drop-shadow-[0_0_12px_rgba(255,138,0,0.4)]">service.</span>
+             </h1>
+             <p className="text-[#9CA3AF] text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+                 We believe that if your codebase can't survive a roast, it probably won't survive production. GitRoasted brings humility back to software engineering.
+             </p>
          </div>
 
-         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-8">
-            Built for developers who can <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A00] to-[#FF5C00] drop-shadow-[0_0_12px_rgba(255,138,0,0.4)]">handle the heat.</span>
-         </h1>
-
-         <div className="max-w-none space-y-6 text-[#9CA3AF] text-lg">
-             <p className="font-medium text-xl text-white/80 leading-relaxed">
-                 We believe that if your code can't survive a roast, it probably won't survive production. 
-             </p>
+         {/* The Engine Grid */}
+         <div className="w-full mb-32">
+             <div className="text-center mb-12">
+                 <h2 className="text-3xl font-bold text-white mb-4">How the engine works</h2>
+                 <p className="text-[#9CA3AF] max-w-xl mx-auto">An entirely automated pipeline designed to find every flaw in your perfectly curated GitHub profile.</p>
+             </div>
              
-             <p className="leading-relaxed">
-                 GitRoasted started as a joke during a late-night debugging session. We realized developers take themselves way too seriously, treating their GitHub graphs like sacred monuments. We decided it was time to bring some humility back to the community.
-             </p>
-
-             <h2 className="text-2xl font-bold text-white mt-12 mb-4">How it actually works</h2>
-             <p className="leading-relaxed">
-                 When you submit a username, GitRoasted's engine fetches their public metadata via the GitHub API—including recent commits, repository stats, follower counts, and language breakdowns. 
-             </p>
-             <p className="leading-relaxed">
-                 We then feed this raw data into an advanced Large Language Model with a very specific, sarcastic system prompt. The AI acts as a seasoned, cynical principal engineer who is thoroughly unimpressed by your "Hello World" repositories.
-             </p>
-
-             <h2 className="text-2xl font-bold text-white mt-12 mb-4">The tech stack</h2>
-             <p className="leading-relaxed">
-                 GitRoasted is built with modern web technologies:
-             </p>
-             <ul className="list-disc pl-6 space-y-2 mt-4 marker:text-primary">
-                 <li><strong className="text-white">Next.js 14</strong> for the App Router and Server Actions.</li>
-                 <li><strong className="text-white">Tailwind CSS</strong> for this meticulously crafted dark aesthetic.</li>
-                 <li><strong className="text-white">GitHub REST API</strong> for fetching your embarrassing commit histories.</li>
-                 <li><strong className="text-white">Google Gemini / OpenAI</strong> for generating the brutal roasts.</li>
-                 <li><strong className="text-white">Firebase Firestore</strong> for the Hall of Flame leaderboard.</li>
-             </ul>
-
-             <div className="mt-16 p-8 bg-[#0A0A0A] border border-white/10 rounded-2xl">
-                 <h3 className="text-xl font-bold text-white mb-4">Want to contribute?</h3>
-                 <p className="mb-6 leading-relaxed">
-                    GitRoasted is completely open-source. If you think the AI isn't savage enough, or if you want to help build new features, PRs are always welcome. Just don't write spaghetti code—we will roast it in the PR review.
-                 </p>
-                 <a href="https://github.com/MdKasif0/GitRoasted" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 hover:border-primary/50 text-white rounded-lg font-medium transition-colors">
-                     <FaGithub className="w-5 h-5" /> View on GitHub
-                 </a>
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 <div className="bg-[#0A0A0A] border border-white/10 p-8 rounded-2xl hover:border-primary/30 transition-all duration-300 group">
+                     <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-primary/10 group-hover:border-primary/30 transition-colors">
+                         <Database className="w-6 h-6 text-white group-hover:text-primary" />
+                     </div>
+                     <h3 className="text-xl font-bold text-white mb-3">1. Data Extraction</h3>
+                     <p className="text-[#9CA3AF] text-sm leading-relaxed">
+                         We securely query the GitHub API to fetch your public repository stats, recent commits, follower ratios, and top languages.
+                     </p>
+                 </div>
+                 
+                 <div className="bg-[#0A0A0A] border border-white/10 p-8 rounded-2xl hover:border-primary/30 transition-all duration-300 group">
+                     <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-primary/10 group-hover:border-primary/30 transition-colors">
+                         <BrainCircuit className="w-6 h-6 text-white group-hover:text-primary" />
+                     </div>
+                     <h3 className="text-xl font-bold text-white mb-3">2. AI Analysis</h3>
+                     <p className="text-[#9CA3AF] text-sm leading-relaxed">
+                         The raw metadata is fed into an advanced LLM configured with a hyper-cynical system prompt that mimics a disgruntled Principal Engineer.
+                     </p>
+                 </div>
+                 
+                 <div className="bg-[#0A0A0A] border border-white/10 p-8 rounded-2xl hover:border-primary/30 transition-all duration-300 group">
+                     <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-primary/10 group-hover:border-primary/30 transition-colors">
+                         <Zap className="w-6 h-6 text-white group-hover:text-primary" />
+                     </div>
+                     <h3 className="text-xl font-bold text-white mb-3">3. The Roast</h3>
+                     <p className="text-[#9CA3AF] text-sm leading-relaxed">
+                         You receive an unfiltered, personalized roast complete with a Seriousness Score and an automatic placement on the Hall of Flame.
+                     </p>
+                 </div>
              </div>
          </div>
 
+         {/* Tech Stack Bento */}
+         <div className="w-full mb-32">
+             <div className="flex flex-col md:flex-row items-end justify-between mb-8 gap-4">
+                 <div>
+                    <h2 className="text-3xl font-bold text-white mb-2">Built for scale.</h2>
+                    <p className="text-[#9CA3AF]">The architecture powering the roasts.</p>
+                 </div>
+                 <a href="https://github.com/MdKasif0/GitRoasted" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors text-sm">
+                     View source code &rarr;
+                 </a>
+             </div>
+             
+             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                 {/* Main Block */}
+                 <div className="md:col-span-2 md:row-span-2 bg-[#0A0A0A] border border-white/10 rounded-2xl p-8 flex flex-col justify-between overflow-hidden relative group">
+                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full group-hover:bg-primary/10 transition-colors" />
+                     <div className="relative z-10 mb-12">
+                         <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6 border border-white/10">
+                             <Cpu className="w-6 h-6 text-white" />
+                         </div>
+                         <h3 className="text-2xl font-bold text-white mb-2">Next.js 14 App Router</h3>
+                         <p className="text-[#9CA3AF] text-sm leading-relaxed max-w-sm">
+                             Leveraging Server Actions for secure API calls and React Server Components for lightning-fast initial page loads.
+                         </p>
+                     </div>
+                     <div className="relative z-10 w-full h-32 border border-white/10 rounded-xl bg-[#050505] flex items-center justify-center">
+                          <code className="text-xs text-primary/80 font-mono">export default async function Roast()</code>
+                     </div>
+                 </div>
+                 
+                 {/* Small Block 1 */}
+                 <div className="md:col-span-2 bg-[#0A0A0A] border border-white/10 rounded-2xl p-6 flex items-start gap-4 hover:border-white/20 transition-colors">
+                     <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center shrink-0 border border-white/10">
+                         <BrainCircuit className="w-5 h-5 text-white" />
+                     </div>
+                     <div>
+                         <h3 className="font-bold text-white text-lg mb-1">Google Gemini</h3>
+                         <p className="text-[#9CA3AF] text-xs leading-relaxed">Advanced language models parsing structural code metrics into savage humor.</p>
+                     </div>
+                 </div>
+                 
+                 {/* Small Block 2 */}
+                 <div className="md:col-span-1 bg-[#0A0A0A] border border-white/10 rounded-2xl p-6 flex flex-col justify-between hover:border-white/20 transition-colors">
+                     <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center mb-4 border border-white/10">
+                         <FileCode2 className="w-5 h-5 text-white" />
+                     </div>
+                     <div>
+                         <h3 className="font-bold text-white mb-1">Tailwind CSS</h3>
+                         <p className="text-[#9CA3AF] text-xs">Premium dark aesthetics.</p>
+                     </div>
+                 </div>
+
+                 {/* Small Block 3 */}
+                 <div className="md:col-span-1 bg-[#0A0A0A] border border-white/10 rounded-2xl p-6 flex flex-col justify-between hover:border-white/20 transition-colors">
+                     <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center mb-4 border border-white/10">
+                         <Database className="w-5 h-5 text-white" />
+                     </div>
+                     <div>
+                         <h3 className="font-bold text-white mb-1">Firestore</h3>
+                         <p className="text-[#9CA3AF] text-xs">Realtime leaderboard scaling.</p>
+                     </div>
+                 </div>
+             </div>
+         </div>
+
+         {/* CTA */}
+         <div className="w-full bg-gradient-to-br from-[#101010] to-[#050505] border border-white/10 rounded-[2rem] p-12 text-center relative overflow-hidden shadow-2xl">
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+             <div className="relative z-10 flex flex-col items-center">
+                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Think you can build it better?</h2>
+                 <p className="text-[#9CA3AF] mb-8 max-w-lg mx-auto">
+                    GitRoasted is completely open-source. If the AI isn't savage enough, submit a PR. Just don't push spaghetti code.
+                 </p>
+                 <a href="https://github.com/MdKasif0/GitRoasted" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-8 py-4 bg-white text-black hover:bg-slate-200 rounded-xl font-bold transition-all duration-300 hover:scale-105 shadow-lg">
+                     <FaGithub className="w-5 h-5" /> Fork on GitHub
+                 </a>
+             </div>
+         </div>
       </main>
 
       {/* FOOTER */}
