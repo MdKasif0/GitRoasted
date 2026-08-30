@@ -19,6 +19,10 @@ const config = {
       },
     },
     extend: {
+      boxShadow: {
+        "glow-orange": "0 0 20px -5px rgba(255, 138, 0, 0.4)",
+        "glow-orange-lg": "0 0 40px -10px rgba(255, 138, 0, 0.5)",
+      },
       fontFamily: {
         sans: ["var(--font-inter)"],
         serif: ["Times New Roman", ...fontFamily.serif],

@@ -3,9 +3,28 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 240 10% 3.9%;
-    --foreground: 210 40% 98%;
+  :root, .dark {
+    --background: 0 0% 2%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 32 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 215 14% 65%;
+    --accent: 32 100% 60%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 96%;
+    --border: 0 0% 15%;
+    --input: 0 0% 12%;
+    --ring: 32 100% 50%;
+    --radius: 0.75rem;
+}
 
     --card: 240 10% 3.9%;
     --card-foreground: 210 40% 98%;
@@ -33,67 +52,40 @@
     --ring: 33 100% 50%;
  
     --radius: 0.5rem;
-  }
+}
  
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 210 40% 98%;
- 
-    --card: 240 10% 3.9%;
-    --card-foreground: 210 40% 98%;
- 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 210 40% 98%;
- 
-    --primary: 33 100% 50%;
-    --primary-foreground: 210 40% 98%;
- 
-    --secondary: 289 68% 45%;
-    --secondary-foreground: 210 40% 98%;
- 
-    --muted: 289 68% 37%;
-    --muted-foreground: 215 20.2% 65.1%;
- 
-    --accent: 289 68% 37%;
-    --accent-foreground: 210 40% 98%;
- 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
- 
-    --border: 289 68% 20%;
-    --input: 235 50% 30%;
-    --ring: 33 100% 50%;
-  }
+
 }
  
 @layer base {
   * {
     @apply border-border;
-  }
+}
   body {
     @apply bg-background text-foreground;
     min-height: 100vh;
-  }
+}
   .dark body {
-    background-color: #000000;
+    background-color: #050505;
+    background-image: radial-gradient(circle at 50% 0%, rgba(255,138,0,0.05) 0%, transparent 50%), radial-gradient(circle at 100% 100%, rgba(147,51,234,0.03) 0%, transparent 40%);
   }
 }
 
 @layer components {
     .glass-card {
       @apply bg-slate-800/50 backdrop-blur-xl border border-slate-700/80 shadow-2xl shadow-black/50;
-    }
+  }
 
     .gradient-text {
         @apply bg-gradient-to-r from-white via-slate-200 to-slate-400;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-    }
+  }
     
     .quick-win-card {
       @apply bg-gradient-to-br from-slate-800 to-slate-900 border border-primary/20 rounded-2xl p-6 relative overflow-hidden transition-all duration-300;
-    }
+  }
 
     .quick-win-card::before {
       content: '';
@@ -101,19 +93,19 @@
       z-index: -1;
       background-size: 200%;
       animation: shimmer 5s infinite linear;
-    }
+  }
 
     .quick-win-card:hover {
       @apply -translate-y-2 shadow-2xl shadow-primary/10;
-    }
+  }
 
     .quick-win-card:hover::before {
       @apply opacity-100;
-    }
+  }
 
     .action-button {
       @apply bg-white text-black px-6 py-3 rounded-lg font-semibold border-none cursor-pointer relative overflow-hidden transition-all duration-300 hover:bg-slate-200;
-    }
+  }
 
     .action-button::after {
       content: '';
@@ -126,42 +118,42 @@
         transparent
       );
       transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
+  }
 
     .action-button:hover::after {
       left: 100%;
-    }
+  }
 
     .action-button:hover {
         @apply shadow-lg shadow-white/10;
-    }
+  }
 
     .premium-border-container {
         @apply relative p-px rounded-3xl;
         background: linear-gradient(135deg, hsl(var(--primary) / 0.4), hsl(var(--secondary) / 0.4));
-    }
+  }
 
     .premium-border-container::before {
         content: '';
         @apply absolute -inset-px rounded-3xl opacity-0 transition-opacity duration-300;
         background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
         animation: shimmer 4s infinite;
-    }
+  }
 
     .premium-border-container:hover::before {
         @apply opacity-100;
-    }
+  }
 
     .premium-card-content {
         @apply bg-slate-900/80 backdrop-blur-xl rounded-3xl p-6 text-center h-full;
-    }
+  }
 }
 
 
 @keyframes count-up {
   from {
     --num: 0;
-  }
+}
 }
 
 .animate-count-up {
@@ -176,7 +168,7 @@
 @keyframes draw-circle {
   to {
     stroke-dashoffset: 0;
-  }
+}
 }
 
 .glow {
@@ -191,11 +183,11 @@
   from {
     opacity: 0;
     transform: translateY(10px);
-  }
+}
   to {
     opacity: 1;
     transform: translateY(0);
-  }
+}
 }
 
 .roast-line {
@@ -206,10 +198,10 @@
 @keyframes shimmer {
   0% {
     background-position: -200% center;
-  }
+}
   100% {
     background-position: 200% center;
-  }
+}
 }
 
 
@@ -597,46 +589,46 @@
     body {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
-    }
+  }
     .no-print {
         display: none !important;
-    }
+  }
     
     /* Ensure backgrounds and colors are printed */
     .dark body, .bg-background, .bg-black\/20, .user-score-card, .category-comparison, .radar-comparison, .card, .bg-white\/5 {
         background-color: #0b0918 !important;
-    }
+  }
     .winner-banner {
         background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%) !important;
-    }
+  }
 
     .user-score-card, .category-comparison, .radar-comparison, .card, 
     .bg-white\/5, .bg-black\/20 {
         border-color: rgba(99, 102, 241, 0.3) !important;
-    }
+  }
 
     .text-foreground, h1, h2, h3, h4, h5, p, span, div {
         color: #F1F5F9 !important;
-    }
+  }
     .text-muted-foreground, .score-label {
         color: #94A3B8 !important;
-    }
+  }
     .score-number, .gradient-text {
         background: linear-gradient(135deg, #667EEA 0%, #F093FB 100%) !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         color: transparent !important;
-    }
+  }
 
     /* Fix for Recharts charts not rendering */
     .recharts-surface {
         fill: transparent !important;
-    }
+  }
     .recharts-legend-item-text,
     .recharts-text,
     .recharts-polar-angle-axis-tick-value {
         fill: #94A3B8 !important;
-    }
+  }
 }
 
 /* Mobile Responsive */
@@ -644,27 +636,27 @@
   .comparison-input {
     grid-template-columns: 1fr;
     gap: 20px;
-  }
+}
 
   .vs-separator {
     flex-direction: row;
     transform: rotate(90deg);
-  }
+}
 
   .score-overview {
     grid-template-columns: 1fr;
-  }
+}
 
   .category-row {
     grid-template-columns: 1fr;
     gap: 12px;
-  }
+}
 
   .analysis-grid {
     grid-template-columns: 1fr;
-  }
+}
 
   .hero h1 {
     font-size: 36px;
-  }
+}
 }

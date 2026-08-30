@@ -1,117 +1,131 @@
-
 import GitRoastClient from "@/components/GitRoastClient";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
 import { NavMenu } from "@/components/NavMenu";
-import { BookUser, Trophy, Contact, Github } from "lucide-react";
 import Link from 'next/link';
-import Image from 'next/image';
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { FlameIcon } from '@/components/icons';
 import { Suspense } from "react";
 import { LeaderboardClient } from "@/components/LeaderboardClient";
 import { LeaderboardProvider } from "@/context/LeaderboardContext";
-import { FaGithub, FaTwitter, FaInstagram } from 'react-icons/fa'
-
+import { FaGithub, FaTwitter, FaYoutube, FaEnvelope } from 'react-icons/fa';
 
 export const dynamic = 'force-dynamic';
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 overflow-x-hidden">
-      <header className="w-full max-w-6xl flex items-center justify-between mb-8">
-        <Link href="/" className="flex items-center gap-2 group">
-          <Image
-            src="/app-icon.png"
-            alt="GitRoasted Logo"
-            width={40}
-            height={40}
-            className="w-10 h-10 group-hover:scale-110 transition-transform"
-          />
-          <h1 className="text-2xl font-bold tracking-tighter hidden sm:block">
-            GitRoasted
-          </h1>
-        </Link>
-        <NavMenu />
-      </header>
-      
-      <div className="w-full max-w-4xl mb-12 text-center">
-        <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-            GitRoasted
-        </h1>
-        <p className="text-muted-foreground mt-3 text-lg md:text-xl max-w-2xl mx-auto">
-          Get a savage (but friendly) AI-powered roast of any GitHub profile.
-        </p>
-         <div className="flex items-center justify-center gap-2 sm:gap-4 mt-4">
-            <Button asChild variant="link" className="text-primary">
-              <Link href="/how-it-works" className='flex items-center gap-1'>
-                <BookUser className="w-4 h-4" />
-                How it works
-              </Link>
-            </Button>
-             <Button asChild variant="link" className="text-primary">
-              <Link href="/leaderboard" className='flex items-center gap-1'>
-                <Trophy className="w-4 h-4" />
-                Leaderboard
-              </Link>
-            </Button>
-         </div>
+    <div className="flex flex-col items-center min-h-screen bg-[#050505] text-[#F5F5F5] font-sans selection:bg-primary/30">
+      {/* Background glow effects */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+          <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/10 rounded-full blur-[120px] opacity-50" />
       </div>
 
+      <header className="w-full max-w-7xl flex items-center justify-between py-6 px-6 relative z-10">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-2 group">
+            <FlameIcon className="w-8 h-8 text-primary group-hover:scale-110 transition-transform drop-shadow-[0_0_8px_rgba(255,138,0,0.5)]" />
+            <span className="text-2xl font-bold tracking-tight text-white">GitRoasted</span>
+          </Link>
+          <div className="hidden md:flex items-center px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-muted-foreground">
+             AI-powered GitHub roasts
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-6">
+          <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-muted-foreground">
+            <Link href="#how-it-works" className="hover:text-white transition-colors">How it works</Link>
+            <Link href="#leaderboard" className="hover:text-white transition-colors">Leaderboard</Link>
+            <Link href="/about" className="hover:text-white transition-colors">About</Link>
+            <a href="https://github.com/MdKasif0/GitRoasted" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+               <FaGithub className="w-5 h-5" />
+            </a>
+          </nav>
+          <NavMenu />
+        </div>
+      </header>
+      
+      <main className="w-full max-w-7xl flex flex-col items-center relative z-10 px-4 sm:px-6">
+        
+        {/* HERO SECTION */}
+        <div className="w-full max-w-4xl mt-16 mb-20 text-center flex flex-col items-center">
+          <div className="flex items-center gap-2 text-primary font-bold text-xs tracking-widest uppercase mb-6 drop-shadow-[0_0_8px_rgba(255,138,0,0.3)]">
+             <FlameIcon className="w-4 h-4" />
+             AI-POWERED GITHUB ROASTS
+          </div>
+          
+          <h1 className="text-5xl sm:text-7xl lg:text-[84px] font-extrabold tracking-tight leading-[1.1] text-white mb-6">
+             Your GitHub deserves <br className="hidden sm:block" />
+             to get <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF8A00] to-[#FF5C00] drop-shadow-[0_0_12px_rgba(255,138,0,0.4)]">roasted.</span>
+          </h1>
+          
+          <p className="text-[#9CA3AF] text-lg sm:text-xl max-w-2xl mx-auto mb-8 font-medium">
+            Enter any GitHub username and let AI turn their commits, repos, and developer habits into a savage but friendly roast.
+          </p>
 
-      <main className="w-full flex flex-col items-center gap-16">
-        <LeaderboardProvider>
-          <GitRoastClient />
-          <Suspense fallback={<Skeleton className="h-[400px] w-full max-w-4xl" />}>
-            <LeaderboardClient />
-          </Suspense>
-        </LeaderboardProvider>
-        <HowItWorksSection />
+          <div className="flex items-center justify-center gap-6 text-sm text-[#9CA3AF] font-medium mb-12">
+             <span className="flex items-center gap-2"><span className="text-primary">✨</span> Powered by AI</span>
+             <span className="w-1 h-1 rounded-full bg-white/20" />
+             <span className="flex items-center gap-2"><span className="text-yellow-500">🛡️</span> Based on public GitHub data</span>
+          </div>
+
+          <LeaderboardProvider>
+            <GitRoastClient />
+          </LeaderboardProvider>
+        </div>
+
+        {/* HOW IT WORKS */}
+        <div id="how-it-works" className="w-full mt-10">
+          <HowItWorksSection />
+        </div>
+
+        {/* LEADERBOARD */}
+        <div id="leaderboard" className="w-full mt-32 mb-20">
+          <LeaderboardProvider>
+             <LeaderboardClient />
+          </LeaderboardProvider>
+        </div>
+        
       </main>
 
-      <footer className="w-full max-w-6xl mt-16 border-t border-white/10 pt-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
-          <div className="space-y-3 col-span-2 md:col-span-1">
-            <h3 className="font-bold text-lg text-foreground">GitRoasted</h3>
-            <p className="text-muted-foreground">Get your GitHub profile roasted!</p>
-            <div className="flex items-center gap-3 pt-2">
-                <a href="https://github.com/MdKasif0/GitRoasted" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                    <FaGithub className="w-5 h-5" />
-                </a>
-                <a href="https://twitter.com/md_kasif_uddin" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                    <FaTwitter className="w-5 h-5" />
-                </a>
-                <a href="https://instagram.com/md_kasif_uddin" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                    <FaInstagram className="w-5 h-5" />
-                </a>
+      {/* FOOTER */}
+      <footer className="w-full max-w-7xl mt-auto pt-16 pb-8 px-6 border-t border-white/5">
+         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+            <div className="md:col-span-1 flex flex-col items-start">
+               <Link href="/" className="flex items-center gap-2 mb-4">
+                  <FlameIcon className="w-6 h-6 text-primary" />
+                  <span className="text-xl font-bold text-white">GitRoasted</span>
+               </Link>
+               <p className="text-[#9CA3AF] text-sm mb-6">Turn GitHub activity into comedy.</p>
+               <div className="flex gap-4 text-[#9CA3AF]">
+                  <a href="#" className="hover:text-white transition-colors"><FaGithub className="w-5 h-5"/></a>
+                  <a href="#" className="hover:text-white transition-colors"><FaTwitter className="w-5 h-5"/></a>
+                  <a href="#" className="hover:text-white transition-colors"><FaYoutube className="w-5 h-5"/></a>
+                  <a href="#" className="hover:text-white transition-colors"><FaEnvelope className="w-5 h-5"/></a>
+               </div>
             </div>
-          </div>
-          <div className="space-y-3">
-            <h4 className="font-semibold text-foreground">Quick Links</h4>
-            <ul className="space-y-2 text-muted-foreground">
-              <li><Link href="/" className="hover:text-primary transition-colors">Home</Link></li>
-              <li><Link href="/leaderboard" className="hover:text-primary transition-colors">Leaderboard</Link></li>
-              <li><Link href="/how-it-works" className="hover:text-primary transition-colors">How It Works</Link></li>
-              <li><Link href="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
-            </ul>
-          </div>
-          <div className="space-y-3">
-            <h4 className="font-semibold text-foreground">Support</h4>
-            <ul className="space-y-2 text-muted-foreground">
-              <li><Link href="/support" className="hover:text-primary transition-colors">Buy me a coffee</Link></li>
-              <li><a href="https://github.com/MdKasif0/GitRoasted/issues" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Report a Bug</a></li>
-            </ul>
-          </div>
-          <div className="space-y-3">
-             <h4 className="font-semibold text-foreground">Legal</h4>
-             <ul className="space-y-2 text-muted-foreground">
-              <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-            </ul>
-          </div>
-        </div>
-        <div className="mt-8 text-center text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} GitRoasted. Made with 🔥 for developers.</p>
-        </div>
+            
+            <div className="flex flex-col gap-3">
+               <h4 className="text-white font-semibold mb-2">Product</h4>
+               <Link href="#how-it-works" className="text-[#9CA3AF] hover:text-white text-sm transition-colors">How it works</Link>
+               <Link href="#leaderboard" className="text-[#9CA3AF] hover:text-white text-sm transition-colors">Leaderboard</Link>
+               <Link href="/about" className="text-[#9CA3AF] hover:text-white text-sm transition-colors">About</Link>
+            </div>
+
+            <div className="flex flex-col gap-3">
+               <h4 className="text-white font-semibold mb-2">Resources</h4>
+               <a href="https://github.com/MdKasif0/GitRoasted" className="text-[#9CA3AF] hover:text-white text-sm transition-colors">GitHub</a>
+               <Link href="/privacy" className="text-[#9CA3AF] hover:text-white text-sm transition-colors">Privacy</Link>
+            </div>
+
+            <div className="flex flex-col gap-3">
+               <h4 className="text-white font-semibold mb-2">Built for developers</h4>
+               <p className="text-[#9CA3AF] text-sm mb-4">Built for developers who can handle the heat.</p>
+               <div className="inline-flex items-center self-start px-3 py-1.5 rounded-md bg-white/5 border border-white/10 font-mono text-xs text-primary">
+                  git push --roast
+               </div>
+            </div>
+         </div>
+         <div className="text-center text-[#9CA3AF] text-xs pt-8 border-t border-white/5">
+            © {new Date().getFullYear()} GitRoasted. All rights reserved.
+         </div>
       </footer>
     </div>
   );
