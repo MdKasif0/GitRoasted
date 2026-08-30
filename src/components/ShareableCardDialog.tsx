@@ -1,5 +1,3 @@
-
-// src/components/ShareableCardDialog.tsx
 'use client';
 
 import React, { useCallback, useRef, useState } from 'react';
@@ -8,9 +6,9 @@ import {
   Copy,
   Download,
   Share2,
-  Image as ImageIcon,
-  Instagram,
-  TwitterIcon,
+  X,
+  Minus,
+  Plus
 } from 'lucide-react';
 
 import type { RoastResultState } from '@/lib/types';
@@ -18,18 +16,13 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ShareableCardPreview } from './ShareableCardPreview';
 import { CustomizationPanel } from './CustomizationPanel';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import { cn } from '@/lib/utils';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-
+import { FlameIcon } from './icons';
 
 interface ShareableCardDialogProps {
   result: RoastResultState;
@@ -44,6 +37,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
   const { toast } = useToast();
   const cardRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const [open, setOpen] = useState(false);
 
   const [format, setFormat] = useState<CardFormat>('instagram');
   const [theme, setTheme] = useState<CardTheme>('dark');
@@ -54,7 +48,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
   const [showLogo, setShowLogo] = useState(true);
   const [watermark, setWatermark] = useState(true);
   const [customMessage, setCustomMessage] = useState('');
-  const [previewSize, setPreviewSize] = useState(isMobile ? 60 : 60);
+  const [previewSize, setPreviewSize] = useState(100);
 
   const handleShare = useCallback(async () => {
     if (!cardRef.current) return;
@@ -162,123 +156,130 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     return null;
   }
 
-  // Mobile View
-  if (isMobile) {
-    return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button variant="default" className="w-full bg-orange-500 hover:bg-orange-600 text-[#050505] font-semibold h-10 px-6 rounded-lg transition-colors shadow-none border-none">
-                    <Share2 className="mr-2 h-4 w-4" />
-                    Share Roast
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[100vw] h-[100svh] p-0 overflow-hidden flex flex-col">
-                <DialogHeader className="p-4 border-b">
-                    <DialogTitle>Share Your Card</DialogTitle>
-                </DialogHeader>
-
-                <div className="flex-1 flex justify-center p-4 bg-muted/20 overflow-auto">
-                    <div style={{ transform: `scale(0.6)`, transformOrigin: 'center' }}>
-                         <ShareableCardPreview
-                            ref={cardRef}
-                            result={result}
-                            format={format}
-                            theme={theme}
-                            backgroundStyle={backgroundStyle}
-                            layout={layout}
-                            showRoast={showRoast}
-                            showStats={showStats}
-                            showLogo={showLogo}
-                            watermark={watermark}
-                            customMessage={customMessage}
-                        />
-                    </div>
-                </div>
-
-                <div className="p-4 border-t bg-background space-y-4">
-                    <RadioGroup
-                        value={format}
-                        onValueChange={(value: string) => setFormat(value as CardFormat)}
-                        className="grid grid-cols-3 gap-2"
-                        >
-                        {[
-                            { value: 'instagram', label: 'Post' },
-                            { value: 'twitter', label: 'Card'},
-                            { value: 'portrait', label: 'Story'},
-                        ].map(({ value, label }) => (
-                            <Label
-                            key={value}
-                            htmlFor={`format-${value}`}
-                            className={`border-2 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer transition-colors ${
-                                format === value
-                                ? 'border-primary bg-primary/10'
-                                : 'border-border hover:border-primary/50'
-                            }`}
-                            >
-                            <RadioGroupItem value={value} id={`format-${value}`} className="sr-only" />
-                            <span className="text-sm font-semibold text-center">{label}</span>
-                            </Label>
-                        ))}
-                    </RadioGroup>
-                    <div className='flex gap-2'>
-                        <Button onClick={handleDownload} className="w-full" variant="outline">
-                            <Download className="mr-2 h-4 w-4" /> {isMobile ? 'Save' : 'Download'}
-                        </Button>
-                        <Button onClick={handleCopyToClipboard} className="w-full" variant="outline">
-                            <Copy className="mr-2 h-4 w-4" /> Copy
-                        </Button>
-                        <Button onClick={handleShare} className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white">
-                            <Share2 className="mr-2 h-4 w-4" /> Share
-                        </Button>
-                    </div>
-                </div>
-
-            </DialogContent>
-        </Dialog>
-    )
+  const getFormatLabel = (fmt: CardFormat) => {
+      switch(fmt) {
+          case 'instagram': return 'Instagram Post (1:1)';
+          case 'twitter': return 'X / Twitter (16:9)';
+          case 'portrait': return 'Portrait (3:4)';
+      }
+  }
+  const getFormatDim = (fmt: CardFormat) => {
+      switch(fmt) {
+          case 'instagram': return '1080 × 1080 px';
+          case 'twitter': return '1200 × 675 px';
+          case 'portrait': return '1080 × 1440 px';
+      }
   }
 
-  // Desktop View
+  // Adjust preview scaling to fit the container
+  const scale = (isMobile ? previewSize * 0.5 : previewSize) / 100;
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="default" className="bg-orange-500 hover:bg-orange-600 text-[#050505] font-semibold h-10 px-6 rounded-lg transition-colors shadow-none border-none">
+        <Button variant="default" className="w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-[#050505] font-semibold h-10 px-6 rounded-lg transition-colors shadow-none border-none">
             <Share2 className="mr-2 h-4 w-4" />
             Share Roast
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-5xl max-h-[90vh] p-0 flex flex-col">
-        <DialogHeader className="p-4 border-b shrink-0">
-          <DialogTitle>Share Your GitRoasted Card</DialogTitle>
-        </DialogHeader>
-
-        <div className="grid grid-cols-[1fr_380px] overflow-y-auto">
-          {/* Preview Section */}
-          <div className="flex items-center p-8 bg-muted/20 overflow-auto relative">
-             <div
-              style={{
-                transform: `scale(${previewSize / 100})`,
-                transformOrigin: 'center center',
-              }}
-              className="transition-transform duration-300"
-            >
-                <ShareableCardPreview
-                    ref={cardRef}
-                    result={result}
-                    format={format}
-                    theme={theme}
-                    backgroundStyle={backgroundStyle}
-                    layout={layout}
-                    showRoast={showRoast}
-                    showStats={showStats}
-                    showLogo={showLogo}
-                    watermark={watermark}
-                    customMessage={customMessage}
-                />
+      
+      {/* Custom, borderless, fully controlled DialogContent */}
+      <DialogContent 
+        className="max-w-[1250px] max-h-[90vh] w-full p-0 flex flex-col bg-[#0A0A0A] border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+        style={{ '--radius': '0.75rem' } as React.CSSProperties}
+        hideCloseButton // assuming you have or can add a hideCloseButton prop, or we just position ours over it. Next.js dialog might require CSS to hide default.
+      >
+        {/* --- HEADER --- */}
+        <div className="flex items-start justify-between p-6 pb-4 shrink-0">
+          <div className="flex items-start gap-4">
+             <FlameIcon className="w-6 h-6 text-orange-500 mt-1" />
+             <div>
+                <h2 className="text-xl font-bold text-white mb-1">Share your roast</h2>
+                <p className="text-sm text-muted-foreground font-medium">Create a card worth posting.</p>
              </div>
           </div>
+          <button 
+            onClick={() => setOpen(false)}
+            className="p-2 rounded-md hover:bg-white/10 text-muted-foreground transition-colors"
+          >
+              <X className="w-5 h-5" />
+          </button>
+        </div>
 
-          {/* Customization Panel */}
+        {/* --- MAIN GRID --- */}
+        <div className="flex flex-col md:grid md:grid-cols-[1fr_400px] overflow-hidden flex-1 border-y border-white/5">
+          
+          {/* PREVIEW STAGE */}
+          <div className="bg-[#080808] relative flex flex-col">
+              {/* LIVE PREVIEW Badge */}
+              <div className="absolute top-6 left-6 z-10 flex items-center gap-2 text-[10px] font-bold tracking-widest text-muted-foreground uppercase">
+                  <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                  Live Preview
+              </div>
+
+              {/* Centered Card Canvas */}
+              <div className="flex-1 overflow-auto flex items-center justify-center p-8 relative">
+                 {/* Faint background glow behind the card */}
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-orange-500/5 rounded-full blur-[100px] pointer-events-none" />
+                 
+                 <div
+                  style={{
+                    transform: `scale(${scale})`,
+                    transformOrigin: 'center center',
+                  }}
+                  className="transition-transform duration-300 relative z-10 shadow-2xl"
+                >
+                    <ShareableCardPreview
+                        ref={cardRef}
+                        result={result}
+                        format={format}
+                        theme={theme}
+                        backgroundStyle={backgroundStyle}
+                        layout={layout}
+                        showRoast={showRoast}
+                        showStats={showStats}
+                        showLogo={showLogo}
+                        watermark={watermark}
+                        customMessage={customMessage}
+                    />
+                 </div>
+              </div>
+
+              {/* Bottom Preview Metadata & Zoom */}
+              <div className="h-16 border-t border-white/5 flex items-center justify-between px-6 shrink-0 bg-[#080808]">
+                 <div className="flex items-center gap-8">
+                     <div className="flex items-center gap-3">
+                         <div className="w-8 h-8 rounded-md bg-white/5 flex items-center justify-center text-muted-foreground">
+                             <Copy className="w-4 h-4" /> {/* Format icon placeholder */}
+                         </div>
+                         <div>
+                             <div className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold mb-0.5">Format</div>
+                             <div className="text-xs font-medium text-white/90">{getFormatLabel(format)}</div>
+                         </div>
+                     </div>
+                     <div className="hidden sm:flex items-center gap-3 border-l border-white/10 pl-8">
+                         <div className="w-8 h-8 rounded-md bg-white/5 flex items-center justify-center text-muted-foreground">
+                             <Copy className="w-4 h-4" /> {/* Size icon placeholder */}
+                         </div>
+                         <div>
+                             <div className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold mb-0.5">Size</div>
+                             <div className="text-xs font-medium text-white/90">{getFormatDim(format)}</div>
+                         </div>
+                     </div>
+                 </div>
+                 
+                 {/* Zoom Controls */}
+                 <div className="flex items-center gap-1 bg-white/5 rounded-md p-1 border border-white/10">
+                     <button onClick={() => setPreviewSize(Math.max(10, previewSize - 10))} className="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 text-muted-foreground transition-colors"><Minus className="w-3 h-3" /></button>
+                     <div className="text-[11px] font-mono text-white/80 w-12 text-center">{previewSize}%</div>
+                     <button onClick={() => setPreviewSize(Math.min(200, previewSize + 10))} className="w-7 h-7 flex items-center justify-center rounded hover:bg-white/10 text-muted-foreground transition-colors"><Plus className="w-3 h-3" /></button>
+                     <div className="w-px h-4 bg-white/10 mx-1" />
+                     <button onClick={() => setPreviewSize(100)} className="px-3 h-7 flex items-center justify-center rounded hover:bg-white/10 text-[11px] font-medium text-white/80 transition-colors">Fit</button>
+                 </div>
+              </div>
+          </div>
+
+          {/* CUSTOMIZATION PANEL */}
           <CustomizationPanel
             format={format}
             setFormat={setFormat}
@@ -305,6 +306,34 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
             onShare={handleShare}
           />
         </div>
+
+        {/* --- ACTION BAR FOOTER --- */}
+        <div className="p-6 bg-[#0A0A0A] flex items-center justify-between shrink-0">
+             <Button 
+                variant="outline" 
+                onClick={() => setOpen(false)}
+                className="bg-transparent border-white/10 text-white hover:bg-white/5 h-11 px-6 rounded-lg font-semibold shadow-none"
+             >
+                 Cancel
+             </Button>
+
+             <div className="flex items-center gap-3">
+                 <Button 
+                    variant="outline" 
+                    onClick={handleShare}
+                    className="bg-transparent border-white/10 text-white hover:bg-white/5 h-11 px-6 rounded-lg font-semibold shadow-none"
+                 >
+                     <Share2 className="w-4 h-4 mr-2" /> Share Card
+                 </Button>
+                 <Button 
+                    onClick={handleDownload}
+                    className="bg-orange-500 hover:bg-orange-600 text-[#050505] h-11 px-6 rounded-lg font-bold shadow-none"
+                 >
+                     <Download className="w-4 h-4 mr-2" /> Download Card
+                 </Button>
+             </div>
+        </div>
+
       </DialogContent>
     </Dialog>
   );
