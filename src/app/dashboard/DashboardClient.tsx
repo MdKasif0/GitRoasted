@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { 
     Github, Menu, Quote, Zap, User as UserIcon, Check, Trophy, ChevronDown, 
     ChevronUp, Share2, Copy, Download, Star, Users, GitCommit, SearchCode,
-    LayoutDashboard, Activity, AlertCircle, Home
+    LayoutDashboard, Activity, AlertCircle, Home, ArrowRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
