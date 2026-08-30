@@ -167,7 +167,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button size="sm" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-colors shadow-none border-none">
+                <Button variant="default" className="w-full bg-orange-500 hover:bg-orange-600 text-[#050505] font-semibold h-10 px-6 rounded-lg transition-colors shadow-none border-none">
                     <Share2 className="mr-2 h-4 w-4" />
                     Share Roast
                 </Button>
@@ -242,7 +242,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 rounded-lg transition-colors shadow-none border-none">
+        <Button variant="default" className="bg-orange-500 hover:bg-orange-600 text-[#050505] font-semibold h-10 px-6 rounded-lg transition-colors shadow-none border-none">
             <Share2 className="mr-2 h-4 w-4" />
             Share Roast
         </Button>
