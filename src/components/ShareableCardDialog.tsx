@@ -17,6 +17,8 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
+  DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ShareableCardPreview } from './ShareableCardPreview';
@@ -192,8 +194,8 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
           <div className="flex items-start gap-4">
              <FlameIcon className="w-6 h-6 text-orange-500 mt-1" />
              <div>
-                <h2 className="text-xl font-bold text-white mb-1">Share your roast</h2>
-                <p className="text-sm text-muted-foreground font-medium">Create a card worth posting.</p>
+                <DialogTitle className="text-xl font-bold text-white mb-1">Share your roast</DialogTitle>
+                <DialogDescription className="text-sm text-muted-foreground font-medium">Create a card worth posting.</DialogDescription>
              </div>
           </div>
           <button 
