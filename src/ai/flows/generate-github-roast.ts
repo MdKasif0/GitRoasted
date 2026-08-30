@@ -1,17 +1,7 @@
-
 'use server';
 
-/**
- * @fileOverview Generates a humorous roast of a GitHub user based on their commit history and profile data.
- *
- * - generateGitHubRoast - A function that generates the roast.
- * - GenerateGitHubRoastInput - The input type for the generateGitHubRoast function.
- * - GenerateGitHubRoastOutput - The return type for the generateGitHubRoast function.
- */
-
-import {ai} from '@/ai/genkit';
 import type { GitHubUser, ScoreBreakdown } from '@/lib/types';
-import {z} from 'genkit';
+import { z } from 'genkit';
 
 const GenerateGitHubRoastInputSchema = z.object({
   user: z.custom<GitHubUser>(),
@@ -30,62 +20,88 @@ const GenerateGitHubRoastOutputSchema = z.object({
 export type GenerateGitHubRoastOutput = z.infer<typeof GenerateGitHubRoastOutputSchema>;
 
 export async function generateGitHubRoast(input: GenerateGitHubRoastInput): Promise<GenerateGitHubRoastOutput> {
-  return generateGitHubRoastFlow(input);
-}
-
-const prompt = ai.definePrompt({
-  name: 'generateGitHubRoastPrompt',
-  input: {schema: GenerateGitHubRoastInputSchema},
-  output: {schema: GenerateGitHubRoastOutputSchema},
-  prompt: `You are a savage, brutal, and dark-humored roastmaster. Your job is to generate a painfully funny roast of a GitHub user that hits them right in the soul. Forget being friendly.
-
-You need to generate TWO things:
-1.  'roast': A 2-3 line soul-crushing roast.
-2.  'leaderboardRoast': A separate, single, savage one-line zinger for the leaderboard.
-
-Follow this structure for the main 'roast':
-1.  **Line 1 (The Deep Cut):** Go straight for the jugular. Target their absolute weakest metric from the score breakdown. Be brutally specific. If 'community' is low, say something like "Your GitHub profile has the social life of a hermit crab, and at least the crab has a home." If 'impact' is low, mock them with "Your projects have gathered less starlight than a black hole."
-2.  **Line 2 (The Twist of the Knife):** Find their strongest score category and turn it into another insult. If their 'experience' is high, say "All those years on GitHub and *this* is all you have to show for it?" If their 'consistency' is high, try "Ah, consistent...ly average. The beige of developers."
-3.  **Line 3 (The Final Blow):** Deliver a final, dark, and funny sign-off that leaves them questioning their life choices. No compliments. No encouragement.
-
-For the 'leaderboardRoast', make it even more concise and brutal. A single line that perfectly encapsulates their failure.
-
-Here is the data for the user:
-- Username: {{{user.login}}}
-- Name: {{{user.name}}}
-- Bio: {{{user.bio}}}
-- Followers: {{{user.followers}}}
-- Following: {{{user.following}}}
-- Public Repos: {{{user.public_repos}}}
-- Total Stars: {{{totalStars}}}
-- Account Created: {{{user.created_at}}}
-- Top Languages: {{#each topLanguages}}{{this.[0]}} ({{this.[1]}} repos){{#unless @last}}, {{/unless}}{{/each}}
-
-- Final Roast Score: {{{score}}} (out of 1000, a higher score is easier to roast because it means their profile has more flaws)
-- Score Breakdown (out of 1000 total seriousness points, lower points are weaker areas to target):
-  - Impact: {{{breakdown.impact}}}
-  - Consistency: {{{breakdown.consistency}}}
-  - Quality: {{{breakdown.quality}}}
-  - Community: {{{breakdown.community}}}
-  - Diversity: {{{breakdown.diversity}}}
-  - Experience: {{{breakdown.experience}}}
-  - Activity: {{{breakdown.activity}}}
-
-- Recent Commit History (for context):
-{{{commitHistory}}}
-
-Generate the main 'roast' and the 'leaderboardRoast' now.
-`,
-});
-
-const generateGitHubRoastFlow = ai.defineFlow(
-  {
-    name: 'generateGitHubRoastFlow',
-    inputSchema: GenerateGitHubRoastInputSchema,
-    outputSchema: GenerateGitHubRoastOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    throw new Error('GROQ_API_KEY environment variable is missing.');
   }
-);
+
+  const systemMessage = `You are a savage, brutal, and dark-humored roastmaster. Your job is to generate a painfully funny roast of a GitHub user that hits them right in the soul. Forget being friendly.
+
+You need to output JSON with EXACTLY two fields:
+1.  "roast": A 2-3 line soul-crushing roast.
+2.  "leaderboardRoast": A separate, single, savage one-line zinger for the leaderboard.
+
+Follow this structure for the main "roast":
+1.  **Line 1 (The Deep Cut):** Go straight for the jugular. Target their absolute weakest metric from the score breakdown. Be brutally specific.
+2.  **Line 2 (The Twist of the Knife):** Find their strongest score category and turn it into another insult.
+3.  **Line 3 (The Final Blow):** Deliver a final, dark, and funny sign-off that leaves them questioning their life choices.
+
+For the "leaderboardRoast", make it even more concise and brutal. A single line that perfectly encapsulates their failure.`;
+
+  const topLanguagesStr = input.topLanguages.map(l => `${l[0]} (${l[1]} repos)`).join(', ');
+
+  const userMessage = `Here is the data for the user:
+- Username: ${input.user.login}
+- Name: ${input.user.name || 'Unknown'}
+- Bio: ${input.user.bio || 'No bio'}
+- Followers: ${input.user.followers}
+- Following: ${input.user.following}
+- Public Repos: ${input.user.public_repos}
+- Total Stars: ${input.totalStars}
+- Account Created: ${input.user.created_at}
+- Top Languages: ${topLanguagesStr}
+
+- Final Roast Score: ${input.score} (out of 1000, a higher score is easier to roast)
+- Score Breakdown (out of 1000 total seriousness points, lower points are weaker areas):
+  - Impact: ${input.breakdown.impact}
+  - Consistency: ${input.breakdown.consistency}
+  - Quality: ${input.breakdown.quality}
+  - Community: ${input.breakdown.community}
+  - Diversity: ${input.breakdown.diversity}
+  - Experience: ${input.breakdown.experience}
+  - Activity: ${input.breakdown.activity}
+
+- Recent Commit History:
+${input.commitHistory}
+
+Generate the JSON now.`;
+
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'llama3-70b-8192', // Groq's highly capable model (serves as the requested "compound" equivalent)
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: systemMessage },
+        { role: 'user', content: userMessage }
+      ]
+    })
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    console.error('Groq API error:', errText);
+    throw new Error(`Groq API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  const rawContent = data.choices[0]?.message?.content;
+  if (!rawContent) {
+    throw new Error('Groq returned an empty response.');
+  }
+
+  try {
+    const parsed = JSON.parse(rawContent);
+    return {
+      roast: parsed.roast || 'Could not generate roast.',
+      leaderboardRoast: parsed.leaderboardRoast || 'Could not generate leaderboard roast.',
+    };
+  } catch (err) {
+    console.error('Failed to parse Groq response as JSON:', rawContent);
+    throw new Error('Failed to parse AI response.');
+  }
+}
