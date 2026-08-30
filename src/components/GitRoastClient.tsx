@@ -3,13 +3,13 @@
 import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { getRoast } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Github, Loader2, Lock, BrainCircuit, Zap } from 'lucide-react';
-import { ProfileCard } from './ProfileCard';
 import { AlertCircle } from 'lucide-react';
 import type { RoastResultState } from '@/lib/types';
 import { LoadingModal } from './LoadingModal';
@@ -69,6 +69,7 @@ export default function GitRoastClient() {
   const [state, formAction, isPending] = useActionState(getRoast, initialState);
   const [username, setUsername] = useState('');
   const { addUser } = useLeaderboard();
+  const router = useRouter();
   
   const handleFormAction = (payload: FormData) => {
     const user = payload.get('username') as string;
@@ -92,8 +93,11 @@ export default function GitRoastClient() {
         if (state.newLeaderboardEntry) {
             addUser(state.newLeaderboardEntry);
         }
+
+        // Redirect to the newly redesigned Dashboard page!
+        router.push(`/dashboard?username=${state.user.login}`);
     }
-  }, [state, addUser])
+  }, [state, addUser, router])
 
   return (
     <section className="w-full max-w-4xl mx-auto flex flex-col items-center">
@@ -170,7 +174,6 @@ export default function GitRoastClient() {
             <AlertDescription>{state.message}</AlertDescription>
           </Alert>
         )}
-        {state.status === 'success' && <ProfileCard key={state.user?.id} result={state} />}
       </div>
     </section>
   );
