@@ -1,10 +1,10 @@
+// src/components/ShareableCardPreview.tsx
 import React, { forwardRef } from 'react';
 import Image from 'next/image';
 import type { RoastResultState } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import type { CardFormat, BackgroundStyle, LayoutStyle, CardTheme } from './ShareableCardDialog';
-import { FlameIcon } from './icons';
-import { Trophy, Sparkles, Building, Leaf } from 'lucide-react';
+import { Star, Users, Package, Languages } from 'lucide-react';
 
 interface ShareableCardPreviewProps {
   result: RoastResultState;
@@ -19,28 +19,44 @@ interface ShareableCardPreviewProps {
   customMessage: string;
 }
 
-const formatDimensions: Record<CardFormat, { width: number; height: number }> = {
-  instagram: { width: 1080, height: 1080 },
-  twitter: { width: 1200, height: 675 },
-  portrait: { width: 1080, height: 1440 },
+const formatDimensions: Record<CardFormat, { width: number; height: number; className: string }> = {
+  instagram: { width: 1080, height: 1080, className: 'aspect-square' },
+  twitter: { width: 1200, height: 675, className: 'aspect-[16/9]' },
+  portrait: { width: 1080, height: 1440, className: 'aspect-[3/4]' },
 };
 
-const getScoreCelebration = (score: number) => {
-    const invertedScore = 1000 - score;
-    const percentage = invertedScore / 10;
-    
-    if (percentage >= 90) return { text: 'Git Legend!', icon: Trophy, color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30' };
-    if (percentage >= 75) return { text: 'Star Developer!', icon: Sparkles, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30' };
-    if (percentage >= 50) return { text: 'Keep Building!', icon: Building, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' };
-    return { text: 'Every Expert Started Here!', icon: Leaf, color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30' };
-};
+const StatItem = ({ icon: Icon, label, value, layout }: { icon: React.ElementType, label: string, value: string | number, layout: LayoutStyle }) => (
+    <div className={cn(
+        "flex items-center gap-2 text-left",
+        layout === 'compact' && 'gap-1',
+        layout === 'spacious' && 'gap-3'
+    )}>
+        <Icon className={cn(
+            "w-[1.2em] h-[1.2em] text-primary shrink-0",
+            layout === 'compact' && 'w-[1.1em] h-[1.1em]',
+            layout === 'spacious' && 'w-[1.3em] h-[1.3em]'
+        )} />
+        <div>
+            <p className={cn(
+                "text-[1.2em] font-bold leading-tight",
+                layout === 'compact' && 'text-[1.1em]',
+                layout === 'spacious' && 'text-[1.3em]'
+            )}>{typeof value === 'number' ? value.toLocaleString() : value}</p>
+            <p className={cn(
+                "text-[0.8em] text-muted-foreground leading-tight",
+                 layout === 'compact' && 'text-[0.75em]',
+                 layout === 'spacious' && 'text-[0.85em]'
+            )}>{label}</p>
+        </div>
+    </div>
+)
 
 export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPreviewProps>(
   (
     {
       result,
       format,
-      theme, // Kept for interface compatibility, but we enforce the dark/orange aesthetic
+      theme,
       backgroundStyle,
       layout,
       showRoast,
@@ -57,205 +73,193 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
 
     const { user, score, roast, totalStars, topLanguages } = result;
     const { width, height } = formatDimensions[format];
-    const invertedScore = 1000 - score;
-    const celebration = getScoreCelebration(score);
-    const BadgeIcon = celebration.icon;
 
-    // Use width / 60 as base font size for scaling
-    // For 1080, 1em = 18px
+    const isDark =
+      theme === 'dark' ||
+      (theme === 'auto' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    const invertedScore = 1000 - score;
+
+    const baseStyles = {
+        '--background': isDark ? '240 10% 3.9%' : '0 0% 100%',
+        '--foreground': isDark ? '210 40% 98%' : '240 10% 3.9%',
+        '--card': isDark ? '240 10% 10%' : '0 0% 96%',
+        '--card-foreground': isDark ? '210 40% 98%' : '240 10% 3.9%',
+        '--popover': isDark ? '240 10% 3.9%' : '0 0% 100%',
+        '--popover-foreground': isDark ? '210 40% 98%' : '240 10% 3.9%',
+        '--primary': '33 100% 50%',
+        '--primary-foreground': '210 40% 98%',
+        '--secondary': isDark ? '289 68% 45%' : '240 4.8% 95.9%',
+        '--secondary-foreground': isDark ? '210 40% 98%' : '240 5.9% 10%',
+        '--muted': isDark ? '289 68% 20%' : '240 4.8% 95.9%',
+        '--muted-foreground': isDark ? '215 20.2% 65.1%' : '240 3.8% 46.1%',
+        '--accent': isDark ? '289 68% 37%' : '240 4.8% 95.9%',
+        '--accent-foreground': isDark ? '210 40% 98%' : '240 5.9% 10%',
+        '--destructive': '0 84.2% 60.2%',
+        '--destructive-foreground': '210 40% 98%',
+        '--border': isDark ? '289 68% 20%' : '240 5.9% 90%',
+        '--input': isDark ? '235 50% 30%' : '240 5.9% 90%',
+        '--ring': '33 100% 50%',
+    } as React.CSSProperties;
+
     const baseFontSize = width / 60;
 
     return (
       <div
         ref={ref}
         style={{
+            ...baseStyles,
             width: `${width}px`,
             height: `${height}px`,
             fontSize: `${baseFontSize}px`,
-            backgroundColor: '#050505',
-            color: '#F5F5F5',
         }}
-        className="flex flex-col relative overflow-hidden font-sans box-border"
+        className={cn(
+          'p-[3em] flex flex-col items-center justify-center font-sans',
+          'bg-[hsl(var(--background))] text-[hsl(var(--foreground))]',
+          'relative overflow-hidden'
+        )}
       >
-        {/* Subtle Background Glows */}
-        <div className="absolute top-0 right-0 w-[40em] h-[40em] bg-[#FF8A00] rounded-full blur-[20em] opacity-[0.05]" />
-        <div className="absolute bottom-0 left-0 w-[30em] h-[30em] bg-[#FF8A00] rounded-full blur-[15em] opacity-[0.05]" />
+        <div 
+          className="absolute inset-0 w-full h-full" 
+          style={{
+            backgroundImage: `radial-gradient(at 27% 37%, hsla(273,81%,63%,${isDark ? '0.15' : '0.1'}) 0px, transparent 50%), radial-gradient(at 77% 30%, hsla(202,68%,73%,${isDark ? '0.15' : '0.1'}) 0px, transparent 50%), radial-gradient(at 50% 100%, hsla(303,81%,63%,${isDark ? '0.15' : '0.1'}) 0px, transparent 50%)`
+          }}
+        ></div>
         
-        {/* Faint dot pattern */}
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at center, #ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-
-        {/* Inner Card Container */}
         <div className={cn(
-            "relative z-10 w-full h-full flex flex-col p-[3.5em]",
-            layout === 'compact' && 'p-[2.5em]',
-            layout === 'spacious' && 'p-[4.5em]'
+            "z-10 w-full h-full flex flex-col items-center text-center p-[2em] bg-[hsl(var(--card))]/30 backdrop-blur-2xl border border-[hsl(var(--border))] rounded-3xl",
+            layout === 'compact' && 'p-[1.5em] justify-around',
+            layout === 'balanced' && 'p-[2em] justify-center',
+            layout === 'spacious' && 'p-[2.5em] justify-between'
         )}>
-            {/* Top Bar: Brand & Logo */}
-            {showLogo && (
-                <div className="flex items-center gap-[0.5em] mb-[2em] shrink-0">
-                    <FlameIcon className="w-[1.2em] h-[1.2em] text-[#FF8A00]" />
-                    <span className="text-[0.9em] font-bold tracking-[0.2em] text-[#FF8A00]">GITROASTED</span>
-                </div>
-            )}
+
+            <div className="relative">
+                 <Image
+                    src={user.avatar_url}
+                    alt={user.login}
+                    width={96}
+                    height={96}
+                    className={cn(
+                        "rounded-full border-4 border-primary shadow-lg",
+                        layout === 'compact' && 'w-[5em] h-[5em]',
+                        layout === 'balanced' && 'w-[6em] h-[6em]',
+                        layout === 'spacious' && 'w-[7em] h-[7em]'
+                    )}
+                />
+            </div>
             
-            {/* Main Content Area */}
+            <div>
+                <h1 className={cn(
+                    `font-bold leading-none`,
+                    layout === 'compact' && 'text-[2.2em] mt-2',
+                    layout === 'balanced' && 'text-[2.5em] mt-4',
+                    layout === 'spacious' && 'text-[2.8em] mt-2'
+                )}>{user.name || user.login}</h1>
+                <p className={cn(
+                    `text-[hsl(var(--muted-foreground))]`,
+                    layout === 'compact' && 'text-[1em]',
+                    layout === 'balanced' && 'text-[1.2em]',
+                    layout === 'spacious' && 'text-[1.4em]'
+                )}>@{user.login}</p>
+            </div>
+            
             <div className={cn(
-                "flex-1 flex",
-                format === 'twitter' ? 'flex-row items-center gap-[4em]' : 'flex-col justify-center'
+                "relative my-6",
+                layout === 'compact' && 'w-[10em] h-[10em] my-2',
+                layout === 'balanced' && 'w-[12em] h-[12em] my-6',
+                layout === 'spacious' && 'w-[14em] h-[14em] my-4'
             )}>
-                
-                {/* Column 1: Profile & Score */}
-                <div className={cn(
-                    "flex flex-col",
-                    format === 'twitter' ? 'w-5/12 shrink-0' : 'items-center text-center'
-                )}>
-                    {/* Avatar */}
-                    <div className="relative mb-[1.5em]">
-                        <Image
-                            src={user.avatar_url}
-                            alt={user.login}
-                            width={160}
-                            height={160}
-                            className={cn(
-                                "rounded-full border-[0.25em] border-[#FF8A00] object-cover bg-[#0A0A0A]",
-                                layout === 'compact' && 'w-[5em] h-[5em]',
-                                layout === 'balanced' && 'w-[7em] h-[7em]',
-                                layout === 'spacious' && 'w-[9em] h-[9em]'
-                            )}
-                        />
-                    </div>
-                    
-                    {/* Name & Handle */}
-                    <div className="mb-[2.5em]">
-                        <h1 className={cn(
-                            "font-bold leading-none mb-[0.2em] text-[#F5F5F5]",
-                            layout === 'compact' && 'text-[2em]',
-                            layout === 'balanced' && 'text-[2.6em]',
-                            layout === 'spacious' && 'text-[3.2em]'
-                        )}>
-                            {user.name || user.login}
-                        </h1>
-                        <p className={cn(
-                            "text-[#8B949E]",
-                            layout === 'compact' && 'text-[1.1em]',
-                            layout === 'balanced' && 'text-[1.3em]',
-                            layout === 'spacious' && 'text-[1.5em]'
-                        )}>
-                            @{user.login}
-                        </p>
-                    </div>
-
-                    {/* Score Area */}
-                    <div className={cn("flex flex-col", format !== 'twitter' && 'items-center')}>
-                        <div className="text-[0.8em] font-bold tracking-widest text-[#8B949E] uppercase mb-[0.5em]">
-                            Seriousness Score
-                        </div>
-                        <div className="flex items-baseline gap-[0.2em] mb-[1em]">
-                            <span className={cn(
-                                "font-bold text-[#FF8A00] leading-none",
-                                layout === 'compact' && 'text-[3.5em]',
-                                layout === 'balanced' && 'text-[4.5em]',
-                                layout === 'spacious' && 'text-[5.5em]'
-                            )}>
-                                {Math.round(invertedScore)}
-                            </span>
-                            <span className={cn(
-                                "font-bold text-[#8B949E]",
-                                layout === 'compact' && 'text-[1.5em]',
-                                layout === 'balanced' && 'text-[2em]',
-                                layout === 'spacious' && 'text-[2.5em]'
-                            )}>
-                                / 1000
-                            </span>
-                        </div>
-                        
-                        {/* Archetype / Badge */}
-                        <div className={cn(
-                            "flex items-center gap-[0.5em] px-[0.8em] py-[0.4em] rounded-full border border-white/10 bg-white/5",
-                            format === 'twitter' && 'self-start'
-                        )}>
-                            <BadgeIcon className={cn("w-[1em] h-[1em]", celebration.color)} />
-                            <span className={cn("text-[0.8em] font-semibold tracking-wide uppercase", celebration.color)}>
-                                {celebration.text}
-                            </span>
-                        </div>
-                    </div>
+                <svg className="w-full h-full" viewBox="0 0 120 120">
+                    <defs>
+                        <linearGradient id="share-card-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="hsl(var(--primary))" />
+                            <stop offset="50%" stopColor="#A855F7" />
+                            <stop offset="100%" stopColor="#EC4899" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="60" cy="60" r="56" fill="none" stroke="hsl(var(--border))" strokeWidth="6"/>
+                    <circle
+                        cx="60"
+                        cy="60"
+                        r="56"
+                        fill="none"
+                        stroke="url(#share-card-gradient)"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        strokeDasharray={352}
+                        strokeDashoffset={352 * (1 - invertedScore / 1000)}
+                        className="transform -rotate-90 origin-center transition-all duration-1000 ease-out"
+                    />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <p className={cn(
+                        "font-bold text-primary",
+                        layout === 'compact' && 'text-[3em]',
+                        layout === 'balanced' && 'text-[3.5em]',
+                        layout === 'spacious' && 'text-[4em]'
+                    )}>{Math.round(invertedScore)}</p>
+                    <p className={cn(
+                        "text-[hsl(var(--muted-foreground))] -mt-2",
+                         layout === 'compact' && 'text-[0.9em]',
+                         layout === 'balanced' && 'text-[1em]',
+                         layout === 'spacious' && 'text-[1.1em]'
+                    )}>/ 1000</p>
                 </div>
-
-                {/* Column 2 / Row 2: Roast & Stats */}
-                <div className={cn(
-                    "flex flex-col",
-                    format === 'twitter' 
-                        ? 'flex-1 border-l border-white/10 pl-[4em] justify-center' 
-                        : 'mt-[3em] items-center border-t border-white/10 pt-[3em]'
-                )}>
-                    {/* Roast Quote */}
-                    {showRoast && (
-                        <div className={cn(
-                            "relative pl-[1.5em] border-l-[4px] border-[#FF8A00]",
-                            format !== 'twitter' && 'max-w-[35em]'
-                        )}>
-                            <p className={cn(
-                                "font-serif italic leading-relaxed text-[#D1D5DB]",
-                                layout === 'compact' && 'text-[1.2em]',
-                                layout === 'balanced' && 'text-[1.5em]',
-                                layout === 'spacious' && 'text-[1.8em]'
-                            )}>
-                                "{result.leaderboardRoast}"
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Stats Grid */}
-                    {showStats && (
-                        <div className={cn(
-                            "grid grid-cols-2 mt-[3em]",
-                            format === 'twitter' ? 'gap-x-[4em] gap-y-[1.5em]' : 'gap-x-[6em] gap-y-[2em] w-full max-w-[35em]'
-                        )}>
-                            <div className="flex flex-col">
-                                <span className="font-mono text-[1.4em] font-bold text-[#F5F5F5]">{totalStars ?? 0}</span>
-                                <span className="text-[0.8em] font-bold tracking-wider text-[#8B949E] uppercase mt-[0.2em]">Total Stars</span>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="font-mono text-[1.4em] font-bold text-[#F5F5F5]">{user.public_repos}</span>
-                                <span className="text-[0.8em] font-bold tracking-wider text-[#8B949E] uppercase mt-[0.2em]">Public Repos</span>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="font-mono text-[1.4em] font-bold text-[#F5F5F5]">{user.followers}</span>
-                                <span className="text-[0.8em] font-bold tracking-wider text-[#8B949E] uppercase mt-[0.2em]">Followers</span>
-                            </div>
-                            {topLanguages?.[0] && (
-                                <div className="flex flex-col">
-                                    <span className="font-mono text-[1.4em] font-bold text-[#F5F5F5]">{topLanguages[0][0]}</span>
-                                    <span className="text-[0.8em] font-bold tracking-wider text-[#8B949E] uppercase mt-[0.2em]">Top Language</span>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-
             </div>
 
-            {/* Footer / Watermark */}
-            {(customMessage || watermark) && (
+            {showRoast && (
                 <div className={cn(
-                    "shrink-0 flex items-center justify-between w-full mt-[3em] pt-[2em]",
-                    !showLogo && 'border-t border-white/10'
+                    "italic text-[hsl(var(--muted-foreground))] max-w-md",
+                    layout === 'compact' && 'text-[1em]',
+                    layout === 'balanced' && 'text-[1.1em]',
+                    layout === 'spacious' && 'text-[1.2em]'
                 )}>
-                    {customMessage ? (
-                        <p className="text-[1em] text-[#8B949E] font-medium">{customMessage}</p>
-                    ) : (
-                        <div />
-                    )}
-                    
-                    {watermark && (
-                        <p className="text-[0.9em] font-medium tracking-wide text-[#8B949E]">
-                            gitroasted.netlify.app
-                        </p>
-                    )}
+                   <p>"{result.leaderboardRoast}"</p>
                 </div>
             )}
             
+            {showStats && (
+                <div className={cn(
+                    "grid grid-cols-2 mt-8",
+                    layout === 'compact' && 'gap-x-6 gap-y-2',
+                    layout === 'balanced' && 'gap-x-8 gap-y-4',
+                    layout === 'spacious' && 'gap-x-12 gap-y-6'
+                )}>
+                    <StatItem icon={Star} label="Total Stars" value={totalStars ?? 0} layout={layout} />
+                    <StatItem icon={Users} label="Followers" value={user.followers} layout={layout} />
+                    <StatItem icon={Package} label="Public Repos" value={user.public_repos} layout={layout} />
+                    {topLanguages?.[0] && <StatItem icon={Languages} label="Top Language" value={topLanguages[0][0]} layout={layout} />}
+                </div>
+            )}
+
+            {customMessage && (
+                <p className={cn("text-[hsl(var(--muted-foreground))] text-center mt-4", layout === 'compact' && 'text-[0.9em]', layout === 'balanced' && 'text-[1em]')}>
+                    {customMessage}
+                </p>
+            )}
+
+            <div className={cn("flex items-center gap-3", layout !== 'spacious' && 'mt-auto')}>
+                 {showLogo && (
+                    <Image
+                        src="/app-icon.png"
+                        alt="GitRoasted Logo"
+                        width={24}
+                        height={24}
+                        className={cn(
+                            "w-[1.5em] h-[1.5em]",
+                            layout === 'compact' && 'w-[1.2em] h-[1.2em]',
+                            layout === 'spacious' && 'w-[1.8em] h-[1.8em]'
+                        )}
+                    />
+                 )}
+                 {watermark && <p className={cn(
+                    "text-[hsl(var(--muted-foreground))]",
+                    layout === 'compact' && 'text-[0.9em]',
+                    layout === 'balanced' && 'text-[1em]',
+                    layout === 'spacious' && 'text-[1.1em]'
+                )}>gitroasted.netlify.app</p>}
+            </div>
+
         </div>
       </div>
     );
