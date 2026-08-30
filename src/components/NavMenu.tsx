@@ -173,7 +173,7 @@ export function NavMenu() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="rounded-full bg-white/5 border-white/10 backdrop-blur-sm text-foreground font-semibold px-4 py-2 text-sm h-auto"
+          className="rounded-full bg-[#0A0A0A] border-white/10 hover:border-white/20 hover:bg-[#151515] text-[#F5F5F5] transition-all duration-300 font-semibold px-4 py-2 text-sm h-auto"
         >
           {isOpen ? (
             <>
