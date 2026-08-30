@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation';
 
 type MenuState = 'main' | 'dashboard' | 'quick-wins';
 
-export function NavMenu() {
+function NavMenuContent() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [menuState, setMenuState] = React.useState<MenuState>('main');
   const [availableUsers, setAvailableUsers] = React.useState<string[]>([]);
@@ -199,5 +199,13 @@ export function NavMenu() {
         {renderContent()}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+export function NavMenu() {
+  return (
+    <React.Suspense fallback={<div className="w-[88px] h-[36px] bg-[#0A0A0A] border border-white/10 rounded-full animate-pulse" />}>
+      <NavMenuContent />
+    </React.Suspense>
   );
 }
