@@ -73,7 +73,7 @@ Generate the JSON now.`;
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile', // Updated from decommissioned llama3-70b-8192
+      model: 'groq/compound',
       response_format: { type: 'json_object' },
       messages: [
         { role: 'system', content: systemMessage },
