@@ -79,164 +79,187 @@ export const ShareableCardPreview = forwardRef<HTMLDivElement, ShareableCardPrev
       (theme === 'auto' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
     const invertedScore = 1000 - score;
-    const percentage = Math.round((invertedScore / 1000) * 100);
 
-    const getScoreCelebration = (s: number) => {
-        const inv = 1000 - s;
-        const pct = inv / 10;
-        if (pct >= 90) return 'Git Legend!';
-        if (pct >= 75) return 'Star Developer!';
-        if (pct >= 50) return 'Keep Building!';
-        return 'Rising Developer';
-    };
+    const baseStyles = {
+        '--background': isDark ? '240 10% 3.9%' : '0 0% 100%',
+        '--foreground': isDark ? '210 40% 98%' : '240 10% 3.9%',
+        '--card': isDark ? '240 10% 10%' : '0 0% 96%',
+        '--card-foreground': isDark ? '210 40% 98%' : '240 10% 3.9%',
+        '--popover': isDark ? '240 10% 3.9%' : '0 0% 100%',
+        '--popover-foreground': isDark ? '210 40% 98%' : '240 10% 3.9%',
+        '--primary': '33 100% 50%',
+        '--primary-foreground': '210 40% 98%',
+        '--secondary': isDark ? '289 68% 45%' : '240 4.8% 95.9%',
+        '--secondary-foreground': isDark ? '210 40% 98%' : '240 5.9% 10%',
+        '--muted': isDark ? '289 68% 20%' : '240 4.8% 95.9%',
+        '--muted-foreground': isDark ? '215 20.2% 65.1%' : '240 3.8% 46.1%',
+        '--accent': isDark ? '289 68% 37%' : '240 4.8% 95.9%',
+        '--accent-foreground': isDark ? '210 40% 98%' : '240 5.9% 10%',
+        '--destructive': '0 84.2% 60.2%',
+        '--destructive-foreground': '210 40% 98%',
+        '--border': isDark ? '289 68% 20%' : '240 5.9% 90%',
+        '--input': isDark ? '235 50% 30%' : '240 5.9% 90%',
+        '--ring': '33 100% 50%',
+    } as React.CSSProperties;
 
-    // Calculate dynamic base font size based on format width to keep scaling consistent
-    const baseFontSize = width / 100; // 1em = 1% of width
-
-    // Icon helper since lucide-react might not scale perfectly with ems in some older setups, but it usually does.
-    const FlameIcon = ({ className }: { className?: string }) => (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
-        </svg>
-    );
-
-    const totalContributions = result.events?.filter(e => e.type === 'PushEvent').length || 0;
+    const baseFontSize = width / 60;
 
     return (
       <div
         ref={ref}
         style={{
+            ...baseStyles,
             width: `${width}px`,
             height: `${height}px`,
             fontSize: `${baseFontSize}px`,
-            backgroundColor: isDark ? '#050505' : '#ffffff',
-            color: isDark ? '#ffffff' : '#050505',
         }}
         className={cn(
-          'p-[4em] flex flex-col items-center justify-center font-sans relative overflow-hidden',
-          theme === 'light' ? 'light-mode-card' : ''
+          'p-[3em] flex flex-col items-center justify-center font-sans',
+          'bg-[hsl(var(--background))] text-[hsl(var(--foreground))]',
+          'relative overflow-hidden'
         )}
       >
-        {/* Glow behind the card within the export area if we want, but usually it's just solid black for the card itself. The prompt says "card generated itself should feel like a premium artifact". Let's make the card edge-to-edge dark. */}
         <div 
-            className="absolute inset-[3em] rounded-[2em] border border-[#FF8A00]/20 bg-[#0A0A0A] overflow-hidden flex flex-col"
-            style={{ 
-                boxShadow: 'inset 0 0 100px rgba(255,138,0,0.02), 0 20px 40px rgba(0,0,0,0.5)',
-                backgroundColor: isDark ? '#0A0A0A' : '#FAFAFA',
-                borderColor: isDark ? 'rgba(255,138,0,0.2)' : 'rgba(255,138,0,0.3)'
-            }}
-        >
-            {/* Subtle dotted pattern at bottom corners */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
-                backgroundImage: `radial-gradient(#FF8A00 1px, transparent 1px)`,
-                backgroundSize: '1.5em 1.5em',
-                maskImage: 'linear-gradient(to top right, black, transparent 40%)',
-                WebkitMaskImage: 'linear-gradient(to top right, black, transparent 40%)'
-            }} />
-            <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
-                backgroundImage: `radial-gradient(#FF8A00 1px, transparent 1px)`,
-                backgroundSize: '1.5em 1.5em',
-                maskImage: 'linear-gradient(to top left, black, transparent 40%)',
-                WebkitMaskImage: 'linear-gradient(to top left, black, transparent 40%)'
-            }} />
+          className="absolute inset-0 w-full h-full" 
+          style={{
+            backgroundImage: `radial-gradient(at 27% 37%, hsla(273,81%,63%,${isDark ? '0.15' : '0.1'}) 0px, transparent 50%), radial-gradient(at 77% 30%, hsla(202,68%,73%,${isDark ? '0.15' : '0.1'}) 0px, transparent 50%), radial-gradient(at 50% 100%, hsla(303,81%,63%,${isDark ? '0.15' : '0.1'}) 0px, transparent 50%)`
+          }}
+        ></div>
+        
+        <div className={cn(
+            "z-10 w-full h-full flex flex-col items-center text-center p-[2em] bg-[hsl(var(--card))]/30 backdrop-blur-2xl border border-[hsl(var(--border))] rounded-3xl",
+            layout === 'compact' && 'p-[1.5em] justify-around',
+            layout === 'balanced' && 'p-[2em] justify-center',
+            layout === 'spacious' && 'p-[2.5em] justify-between'
+        )}>
 
-            <div className={cn(
-                "relative z-10 w-full h-full flex flex-col p-[4em]",
-                layout === 'compact' && 'p-[3em]',
-                layout === 'spacious' && 'p-[5em]'
-            )}>
-                
-                {/* Header Section */}
-                <div className="flex justify-between items-start w-full">
-                    
-                    {/* Left Column: Brand, Name, Score */}
-                    <div className="flex flex-col items-start">
-                        {showLogo && (
-                            <div className="flex items-center gap-[0.5em] text-[#FF8A00] font-bold tracking-[0.2em] uppercase text-[1.2em]">
-                                <FlameIcon className="w-[1.2em] h-[1.2em]" /> 
-                                <span>GITROASTED</span>
-                            </div>
-                        )}
-
-                        <div className={cn("mt-[3em]", !showLogo && "mt-0")}>
-                            <h1 className="text-[4em] font-bold leading-tight tracking-tight" style={{ color: isDark ? '#FFFFFF' : '#050505' }}>{user.name || user.login}</h1>
-                            <p className="text-[2em] font-medium" style={{ color: isDark ? '#8B949E' : '#666666' }}>@{user.login}</p>
-                        </div>
-
-                        <div className="mt-[3em]">
-                            <h2 className="text-[1.1em] text-[#FF8A00] uppercase tracking-[0.2em] font-bold mb-[0.5em]">Seriousness Score</h2>
-                            <div className="flex items-baseline gap-[0.3em]">
-                                <span className="text-[6em] font-bold text-[#FF8A00] leading-none tracking-tighter">{Math.round(invertedScore)}</span>
-                                <span className="text-[2em]" style={{ color: isDark ? '#8B949E' : '#666666' }}>/ 1000</span>
-                            </div>
-                            <div className="mt-[1.5em] inline-flex items-center gap-[0.6em] border border-[#FF8A00]/30 rounded-full px-[1.2em] py-[0.6em] text-[#FF8A00] text-[1em] uppercase font-bold tracking-[0.1em] bg-[#FF8A00]/10">
-                                <FlameIcon className="w-[1.2em] h-[1.2em]" /> 
-                                <span>{getScoreCelebration(score)}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right Column: Avatar, Circular Gauge */}
-                    <div className="flex flex-col items-end pt-[1em]">
-                        <div className="relative">
-                            <div className="absolute inset-0 rounded-full bg-[#FF8A00] blur-xl opacity-30" />
-                            <Image
-                                src={user.avatar_url}
-                                alt={user.login}
-                                width={200}
-                                height={200}
-                                className="w-[9em] h-[9em] rounded-full border-[0.3em] border-[#FF8A00] relative z-10"
-                                style={{ objectFit: 'cover' }}
-                            />
-                        </div>
-
-                        <div className="w-[11em] h-[11em] relative mt-[4em] mr-[1em]">
-                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
-                                <circle cx="60" cy="60" r="54" fill="none" stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} strokeWidth="8"/>
-                                <circle
-                                    cx="60"
-                                    cy="60"
-                                    r="54"
-                                    fill="none"
-                                    stroke="#FF8A00"
-                                    strokeWidth="8"
-                                    strokeLinecap="round"
-                                    strokeDasharray={339.29}
-                                    strokeDashoffset={339.29 * (1 - (percentage / 100))}
-                                />
-                            </svg>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <span className="text-[2.5em] font-bold leading-none text-[#FF8A00]">{percentage}%</span>
-                                <span className="text-[1.1em] font-medium mt-[0.2em]" style={{ color: isDark ? '#8B949E' : '#666666' }}>serious</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Roast Quote */}
-                {showRoast && (
-                    <div className="mt-[4em] border-t border-white/10 pt-[3em] w-full text-left flex-1 flex flex-col justify-center">
-                        <p className="text-[2em] italic font-serif leading-relaxed" style={{ color: isDark ? '#A1A1AA' : '#555555' }}>
-                            "{result.leaderboardRoast || result.roast?.split('\n')[0] || "Your code is a cosmic joke."}"
-                        </p>
-                    </div>
-                )}
-
-                {/* Stats Row */}
-                {showStats && (
-                    <div className={cn(
-                        "mt-auto pt-[4em] flex items-center justify-between w-full",
-                        !showRoast && "pt-[6em]"
-                    )}>
-                        <StatItem icon={Star} label="Total Stars" value={totalStars ?? 0} layout={layout} isDark={isDark} />
-                        <StatItem icon={Package} label="Public Repos" value={user.public_repos} layout={layout} isDark={isDark} />
-                        <StatItem icon={Users} label="Followers" value={user.followers} layout={layout} isDark={isDark} />
-                        <StatItem icon={FlameIcon} label="Commits (yr)" value={totalContributions} layout={layout} isDark={isDark} />
-                        {topLanguages?.[0] && <StatItem icon={Languages} label="Top Languages" value={topLanguages.length} layout={layout} isDark={isDark} />}
-                    </div>
-                )}
-
+            <div className="relative">
+                 <Image
+                    src={user.avatar_url}
+                    alt={user.login}
+                    width={96}
+                    height={96}
+                    className={cn(
+                        "rounded-full border-4 border-primary shadow-lg",
+                        layout === 'compact' && 'w-[5em] h-[5em]',
+                        layout === 'balanced' && 'w-[6em] h-[6em]',
+                        layout === 'spacious' && 'w-[7em] h-[7em]'
+                    )}
+                />
             </div>
+            
+            <div>
+                <h1 className={cn(
+                    `font-bold leading-none`,
+                    layout === 'compact' && 'text-[2.2em] mt-2',
+                    layout === 'balanced' && 'text-[2.5em] mt-4',
+                    layout === 'spacious' && 'text-[2.8em] mt-2'
+                )}>{user.name || user.login}</h1>
+                <p className={cn(
+                    `text-[hsl(var(--muted-foreground))]`,
+                    layout === 'compact' && 'text-[1em]',
+                    layout === 'balanced' && 'text-[1.2em]',
+                    layout === 'spacious' && 'text-[1.4em]'
+                )}>@{user.login}</p>
+            </div>
+            
+            <div className={cn(
+                "relative my-6",
+                layout === 'compact' && 'w-[10em] h-[10em] my-2',
+                layout === 'balanced' && 'w-[12em] h-[12em] my-6',
+                layout === 'spacious' && 'w-[14em] h-[14em] my-4'
+            )}>
+                <svg className="w-full h-full" viewBox="0 0 120 120">
+                    <defs>
+                        <linearGradient id="share-card-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="hsl(var(--primary))" />
+                            <stop offset="50%" stopColor="#A855F7" />
+                            <stop offset="100%" stopColor="#EC4899" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="60" cy="60" r="56" fill="none" stroke="hsl(var(--border))" strokeWidth="6"/>
+                    <circle
+                        cx="60"
+                        cy="60"
+                        r="56"
+                        fill="none"
+                        stroke="url(#share-card-gradient)"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        strokeDasharray={352}
+                        strokeDashoffset={352 * (1 - invertedScore / 1000)}
+                        className="transform -rotate-90 origin-center transition-all duration-1000 ease-out"
+                    />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <p className={cn(
+                        "font-bold text-primary",
+                        layout === 'compact' && 'text-[3em]',
+                        layout === 'balanced' && 'text-[3.5em]',
+                        layout === 'spacious' && 'text-[4em]'
+                    )}>{Math.round(invertedScore)}</p>
+                    <p className={cn(
+                        "text-[hsl(var(--muted-foreground))] -mt-2",
+                         layout === 'compact' && 'text-[0.9em]',
+                         layout === 'balanced' && 'text-[1em]',
+                         layout === 'spacious' && 'text-[1.1em]'
+                    )}>/ 1000</p>
+                </div>
+            </div>
+
+            {showRoast && (
+                <div className={cn(
+                    "italic text-[hsl(var(--muted-foreground))] max-w-md",
+                    layout === 'compact' && 'text-[1em]',
+                    layout === 'balanced' && 'text-[1.1em]',
+                    layout === 'spacious' && 'text-[1.2em]'
+                )}>
+                   <p>"{result.leaderboardRoast}"</p>
+                </div>
+            )}
+            
+            {showStats && (
+                <div className={cn(
+                    "grid grid-cols-2 mt-8",
+                    layout === 'compact' && 'gap-x-6 gap-y-2',
+                    layout === 'balanced' && 'gap-x-8 gap-y-4',
+                    layout === 'spacious' && 'gap-x-12 gap-y-6'
+                )}>
+                    <StatItem icon={Star} label="Total Stars" value={totalStars ?? 0} layout={layout} />
+                    <StatItem icon={Users} label="Followers" value={user.followers} layout={layout} />
+                    <StatItem icon={Package} label="Public Repos" value={user.public_repos} layout={layout} />
+                    {topLanguages?.[0] && <StatItem icon={Languages} label="Top Language" value={topLanguages[0][0]} layout={layout} />}
+                </div>
+            )}
+
+            {customMessage && (
+                <p className={cn("text-[hsl(var(--muted-foreground))] text-center mt-4", layout === 'compact' && 'text-[0.9em]', layout === 'balanced' && 'text-[1em]')}>
+                    {customMessage}
+                </p>
+            )}
+
+            <div className={cn("flex items-center gap-3", layout !== 'spacious' && 'mt-auto')}>
+                 {showLogo && (
+                    <Image
+                        src="/app-icon.png"
+                        alt="GitRoasted Logo"
+                        width={24}
+                        height={24}
+                        className={cn(
+                            "w-[1.5em] h-[1.5em]",
+                            layout === 'compact' && 'w-[1.2em] h-[1.2em]',
+                            layout === 'spacious' && 'w-[1.8em] h-[1.8em]'
+                        )}
+                    />
+                 )}
+                 {watermark && <p className={cn(
+                    "text-[hsl(var(--muted-foreground))]",
+                    layout === 'compact' && 'text-[0.9em]',
+                    layout === 'balanced' && 'text-[1em]',
+                    layout === 'spacious' && 'text-[1.1em]'
+                )}>gitroasted.netlify.app</p>}
+            </div>
+
         </div>
       </div>
     );
