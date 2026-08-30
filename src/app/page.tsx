@@ -35,7 +35,7 @@ export default function Home() {
       </header>
       
       <div className="w-full max-w-4xl mb-12 text-center">
-        <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-red-400 to-purple-500">
+        <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
             GitRoasted
         </h1>
         <p className="text-muted-foreground mt-3 text-lg md:text-xl max-w-2xl mx-auto">
@@ -68,7 +68,7 @@ export default function Home() {
         <HowItWorksSection />
       </main>
 
-      <footer className="w-full max-w-6xl mt-16 border-t border-purple-500/10 pt-10">
+      <footer className="w-full max-w-6xl mt-16 border-t border-white/10 pt-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
           <div className="space-y-3 col-span-2 md:col-span-1">
             <h3 className="font-bold text-lg text-foreground">GitRoasted</h3>

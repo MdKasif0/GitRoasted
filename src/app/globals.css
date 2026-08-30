@@ -75,8 +75,7 @@
     min-height: 100vh;
   }
   .dark body {
-    background-color: #0b0918;
-    background-image: radial-gradient(at 27% 37%, hsla(273,81%,63%,0.15) 0px, transparent 50%), radial-gradient(at 77% 30%, hsla(202,68%,73%,0.15) 0px, transparent 50%), radial-gradient(at 50% 100%, hsla(303,81%,63%,0.15) 0px, transparent 50%);
+    background-color: #000000;
   }
 }
 
@@ -86,7 +85,7 @@
     }
 
     .gradient-text {
-        @apply bg-gradient-to-r from-primary via-purple-400 to-accent;
+        @apply bg-gradient-to-r from-white via-slate-200 to-slate-400;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -113,7 +112,7 @@
     }
 
     .action-button {
-      @apply bg-gradient-to-r from-primary to-purple-600 px-6 py-3 rounded-lg text-white font-semibold border-none cursor-pointer relative overflow-hidden transition-all duration-300;
+      @apply bg-white text-black px-6 py-3 rounded-lg font-semibold border-none cursor-pointer relative overflow-hidden transition-all duration-300 hover:bg-slate-200;
     }
 
     .action-button::after {
@@ -134,7 +133,7 @@
     }
 
     .action-button:hover {
-        @apply shadow-lg shadow-primary/20;
+        @apply shadow-lg shadow-white/10;
     }
 
     .premium-border-container {
@@ -217,7 +216,7 @@
 /* Compare Page Styles */
 .compare-page {
   min-height: 100vh;
-  background: linear-gradient(to bottom, #0F172A 0%, #1E293B 100%);
+  background: #000000;
   padding: 40px 24px;
 }
 

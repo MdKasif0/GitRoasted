@@ -29,7 +29,7 @@ function SubmitButton() {
         type="submit" 
         disabled={pending} 
         size="lg" 
-        className="shrink-0 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold hover:from-purple-700 hover:to-pink-600 transition-all duration-300 hover:scale-105"
+        className="shrink-0 bg-white text-black font-bold hover:bg-slate-200 transition-all duration-300 hover:scale-105"
     >
       {pending ? (
           <span className="flex items-center gap-2">
