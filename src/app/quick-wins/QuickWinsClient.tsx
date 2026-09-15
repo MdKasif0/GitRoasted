@@ -1,24 +1,35 @@
-
-
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import { 
+  AlertCircle, 
+  ArrowLeft, 
+  ArrowRight, 
+  CheckCircle2, 
+  Lightbulb, 
+  BookOpen, 
+  Tag, 
+  Flame, 
+  Zap, 
+  User, 
+  GitBranch, 
+  Languages, 
+  Users,
+  ExternalLink,
+  Check
+} from 'lucide-react';
+
 import { calculateQuickWins } from '@/lib/quickWins';
 import type { RoastResultState, QuickWin, GitHubUser } from '@/lib/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, ArrowLeft, ArrowRight, Lightbulb, RefreshCw, Star, CheckCircle, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { BookOpen, Tag, Flame, Zap, User, GitBranch, Languages, Users } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
 import { AnimatedNumber } from '@/components/AnimatedNumber';
 
-const iconMap: { [key: string]: React.ElementType } = {
+const iconMap: Record<string, React.ElementType> = {
   'add-readme': BookOpen,
   'add-bio': User,
   'add-topics': Tag,
@@ -31,85 +42,130 @@ const iconMap: { [key: string]: React.ElementType } = {
   'improve-ratio': Users,
 };
 
-const categoryMap: { [key: string]: string } = {
-    'add-readme': 'Documentation',
-    'add-bio': 'Profile',
-    'add-topics': 'Discoverability',
-    'add-license': 'Legal',
-    'build-streak': 'Consistency',
-    'increase-activity': 'Activity',
-    'complete-profile': 'Profile',
-    'add-ci': 'Best Practices',
-    'learn-languages': 'Versatility',
-    'improve-ratio': 'Community',
+const categoryMap: Record<string, string> = {
+  'add-readme': 'Documentation',
+  'add-bio': 'Profile',
+  'add-topics': 'Discoverability',
+  'add-license': 'Legal',
+  'build-streak': 'Consistency',
+  'increase-activity': 'Activity',
+  'complete-profile': 'Profile',
+  'add-ci': 'Best Practices',
+  'learn-languages': 'Versatility',
+  'improve-ratio': 'Community',
 };
 
+const difficultyConfig: Record<string, { label: string; textClass: string; dotClass: string }> = {
+  easy: {
+    label: 'Easy',
+    textClass: 'text-emerald-400',
+    dotClass: 'bg-emerald-400',
+  },
+  medium: {
+    label: 'Medium',
+    textClass: 'text-amber-400',
+    dotClass: 'bg-amber-400',
+  },
+  hard: {
+    label: 'Hard',
+    textClass: 'text-rose-400',
+    dotClass: 'bg-rose-400',
+  },
+};
 
 type Difficulty = 'all' | 'easy' | 'medium' | 'hard';
 
 function QuickWinCard({ win, index }: { win: QuickWin; index: number }) {
-  const Icon = iconMap[win.id] || Lightbulb;
-  const category = categoryMap[win.id] || 'General';
-  const progress = win.progress || 0;
-  
-  const difficultyClasses = {
-    easy: {
-      badge: "bg-green-500/10 text-green-400 border-green-500/20",
-    },
-    medium: {
-      badge: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-    },
-    hard: {
-      badge: "bg-red-500/10 text-red-400 border-red-500/20",
-    }
-  };
+  const Icon = iconMap[win.id] || win.icon || Lightbulb;
+  const category = categoryMap[win.id] || 'Improvement';
+  const progress = Math.min(100, Math.max(0, win.progress || 0));
+  const diff = difficultyConfig[win.difficulty] || difficultyConfig.easy;
+  const indexFormatted = String(index + 1).padStart(2, '0');
 
   return (
-    <div className="premium-border-container card-entrance" style={{ animationDelay: `${400 + index * 50}ms`}}>
-      <div className="premium-card-content flex flex-col justify-between">
-        <div className="w-full">
-            <div className="flex justify-between items-start text-left mb-4">
-                <Badge variant="outline" className="border-primary/50 text-primary bg-primary/10">
-                    <Award className="w-3 h-3 mr-1.5" />
-                    {category}
-                </Badge>
+    <div className="bg-[#0A0A0A] border border-white/[0.08] hover:border-orange-500/30 rounded-xl p-5 md:p-6 transition-all duration-200 flex flex-col justify-between group hover:-translate-y-0.5">
+      <div>
+        {/* Top Header Row: Task Number + Category Icon/Label + Point Reward */}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xs font-mono text-muted-foreground/50 font-medium">
+              {indexFormatted}
+            </span>
+            <div className="flex items-center gap-1.5 text-[11px] font-bold tracking-[0.15em] text-orange-400 uppercase">
+              <Icon className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+              <span>{category}</span>
             </div>
-            
-            <Icon className="w-12 h-12 text-primary/80 mx-auto mb-4" />
-            
-            <h3 className="text-xl font-bold text-slate-100 mb-2 text-center">{win.title}</h3>
-            <p className="text-slate-400 text-sm text-center mb-6">{win.description}</p>
-        </div>
-        
-        <div className="w-full space-y-5">
-            <div>
-              <Progress value={progress} indicatorClassName="bg-gradient-to-r from-purple-500 to-pink-500" />
-              <div className="flex justify-between items-center mt-2 text-sm">
-                  <span className="text-slate-400">{win.progressLabel || 'Progress'}</span>
-                  <span className="font-bold text-primary">{win.progressValue || `${Math.round(progress)}%`}</span>
-              </div>
-            </div>
+          </div>
 
-            <div className="flex justify-between items-center">
-                 <Badge className={cn("capitalize", difficultyClasses[win.difficulty].badge)}>
-                    {win.difficulty}
-                 </Badge>
-                 {win.actionUrl && (
-                    <Button asChild className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold shadow-lg hover:shadow-yellow-400/30">
-                        <a href={win.actionUrl} target="_blank" rel="noopener noreferrer">
-                            Complete Win
-                        </a>
-                    </Button>
-                 )}
+          <div className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded shrink-0">
+            +{win.pointsGain} pts
+          </div>
+        </div>
+
+        {/* Title & Description (Left-aligned, crisp) */}
+        <h3 className="text-base md:text-lg font-semibold text-[#F5F5F5] group-hover:text-white transition-colors leading-snug mb-1.5 text-left">
+          {win.title}
+        </h3>
+        <p className="text-xs md:text-sm text-[#8B949E] line-clamp-2 leading-relaxed text-left mb-5">
+          {win.description}
+        </p>
+      </div>
+
+      <div>
+        {/* Progress Section */}
+        <div className="pt-3 border-t border-white/5 mb-5">
+          <div className="flex justify-between items-center text-xs mb-2">
+            <span className="text-muted-foreground font-medium">{win.progressLabel || 'Progress'}</span>
+            <span className="font-mono font-semibold text-white/90">{win.progressValue || `${Math.round(progress)}%`}</span>
+          </div>
+          <div className="h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-orange-500 rounded-full transition-all duration-500 ease-out" 
+              style={{ width: `${progress}%` }} 
+            />
+          </div>
+        </div>
+
+        {/* Bottom Row: Difficulty + Time Estimate + Action Button */}
+        <div className="flex items-center justify-between gap-3 pt-1">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5 font-mono uppercase text-[11px] font-semibold">
+              <span className={cn("w-1.5 h-1.5 rounded-full", diff.dotClass)} />
+              <span className={diff.textClass}>{diff.label}</span>
             </div>
+            {win.timeEstimate && (
+              <>
+                <span className="text-white/20">•</span>
+                <span className="text-muted-foreground/70 text-[11px] truncate max-w-[120px] sm:max-w-none">
+                  {win.timeEstimate}
+                </span>
+              </>
+            )}
+          </div>
+
+          {win.completed ? (
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg">
+              <Check className="w-3.5 h-3.5" />
+              <span>Done</span>
+            </div>
+          ) : win.actionUrl ? (
+            <Button 
+              asChild 
+              className="bg-orange-500 hover:bg-orange-400 text-black font-semibold text-xs h-8 px-3.5 rounded-lg flex items-center gap-1 shadow-none transition-all hover:-translate-y-0.5 shrink-0"
+            >
+              <a href={win.actionUrl} target="_blank" rel="noopener noreferrer">
+                Complete <ArrowRight className="w-3 h-3 ml-0.5" />
+              </a>
+            </Button>
+          ) : null}
         </div>
       </div>
     </div>
   );
 }
 
-function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUser, initialWins: QuickWin[], initialScore: number }) {
-  const [wins, setWins] = useState<QuickWin[]>(initialWins);
+function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUser; initialWins: QuickWin[]; initialScore: number }) {
+  const [wins] = useState<QuickWin[]>(initialWins);
   const [totalPoints, setTotalPoints] = useState(0);
   const [activeFilter, setActiveFilter] = useState<Difficulty>('all');
 
@@ -119,7 +175,7 @@ function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUse
   }, [initialWins]);
 
   const potentialScore = Math.min(1000, Math.round(initialScore + totalPoints));
-  const progressPercentage = (initialScore / potentialScore) * 100;
+  const progressPercentage = potentialScore > 0 ? (initialScore / potentialScore) * 100 : 0;
 
   const filteredWins = activeFilter === 'all'
     ? wins
@@ -129,130 +185,235 @@ function QuickWinsContent({ user, initialWins, initialScore }: { user: GitHubUse
     acc[win.difficulty] = (acc[win.difficulty] || 0) + 1;
     return acc;
   }, {} as Record<'easy' | 'medium' | 'hard', number>);
-  
 
   return (
-    <div className="min-h-screen w-full p-4 sm:p-6 md:p-8">
-      {/* Header */}
-      <div className="relative mb-8 text-center animate-in fade-in-0 duration-500 scale-95" style={{animationName: 'slideInUp'}}>
-        <Button asChild variant="ghost" className="absolute top-0 left-0 bg-white/5 backdrop-blur-sm border border-white/10 h-12 w-12 rounded-full z-20">
-          <Link href={`/?username=${user.login}`}>
-            <ArrowLeft className="w-5 h-5" />
+    <div className="min-h-screen bg-[#050505] text-[#F5F5F5]">
+      <div className="max-w-[1220px] mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-10">
+        {/* Minimal Navigation Header */}
+        <header className="w-full flex items-center justify-between pb-6 border-b border-white/5 mb-8">
+          <Link href="/" className="flex items-center gap-2 group">
+            <Flame className="w-5 h-5 text-orange-500 group-hover:scale-110 transition-transform" />
+            <span className="text-lg font-bold tracking-tight text-white">GitRoasted</span>
           </Link>
-        </Button>
-        
-        <div className="flex flex-col items-center">
-            <div className="relative mb-4">
-                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-primary to-accent animate-slow-spin"></div>
+          <div className="flex items-center gap-3">
+            <Button asChild variant="outline" className="bg-[#111] border-white/10 text-xs text-muted-foreground hover:text-white hover:bg-white/5 h-8 px-3 rounded-lg shadow-none">
+              <Link href={`/dashboard?username=${user.login}`} className="flex items-center gap-1.5">
+                <ArrowLeft className="w-3.5 h-3.5" /> Back to Roast
+              </Link>
+            </Button>
+          </div>
+        </header>
+
+        {/* Profile Context & Page Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+          <div>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="relative shrink-0">
                 <Image
                   src={user.avatar_url}
                   alt={user.login}
-                  width={80}
-                  height={80}
-                  className="relative rounded-full border-4 border-slate-900"
+                  width={64}
+                  height={64}
+                  className="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 border-orange-500/60 object-cover"
                 />
+              </div>
+              <div>
+                <div className="text-xl md:text-2xl font-bold text-white leading-tight">
+                  {user.name || user.login}
+                </div>
+                <div className="text-sm text-muted-foreground flex items-center gap-2 mt-0.5">
+                  <a 
+                    href={`https://github.com/${user.login}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:text-white transition-colors"
+                  >
+                    @{user.login}
+                  </a>
+                  <span>•</span>
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-orange-400 font-medium">Action Plan</span>
+                </div>
+              </div>
             </div>
-            <h2 className="text-2xl font-bold">{user.name || user.login}</h2>
-            <p className="text-md text-slate-400">@{user.login}</p>
-        </div>
-
-        <div className="mt-8">
-             <h1 className="text-4xl md:text-5xl font-bold tracking-tighter gradient-text">
-                Quick Wins
+            <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-2">
+              Quick Wins
             </h1>
-            <p className="text-lg text-slate-400 mt-2 max-w-xl mx-auto">
-                Your personalized roadmap to level up your GitHub score.
+            <p className="text-sm md:text-base text-muted-foreground max-w-xl">
+              Turn small GitHub improvements into a bigger developer score.
             </p>
+          </div>
         </div>
-      </div>
 
-      {/* Score Overview */}
-      <div className="glass-card max-w-4xl mx-auto p-6 md:p-8 mb-12 card-entrance" style={{ animationDelay: '100ms' }}>
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-4 text-center">
+        {/* Score Progression Panel */}
+        <div className="bg-[#0A0A0A] border border-white/[0.08] rounded-xl p-6 md:p-8 mb-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/5">
             {/* Current Score */}
-            <div className='flex flex-col items-center justify-center'>
-                <CardDescription className='text-slate-400'>Current Score</CardDescription>
-                <div className='text-6xl font-bold text-slate-100'><AnimatedNumber value={Math.round(initialScore)} /></div>
+            <div className="flex flex-col">
+              <span className="text-[11px] font-bold tracking-[0.2em] text-muted-foreground uppercase mb-1">
+                Current Score
+              </span>
+              <div className="text-4xl md:text-5xl font-bold text-white tracking-tight font-mono">
+                <AnimatedNumber value={Math.round(initialScore)} />
+              </div>
+              <span className="text-xs text-muted-foreground/60 mt-1 font-mono">out of 1000</span>
             </div>
-            {/* Arrow */}
-            <div className="hidden md:block text-4xl text-slate-500 font-light mx-8">→</div>
-            <div className='block md:hidden text-3xl text-slate-500 font-light rotate-90 mx-auto'>→</div>
+
+            {/* Progression Connector */}
+            <div className="flex flex-col items-center justify-center my-2 md:my-0">
+              <div className="flex items-center gap-3">
+                <div className="h-px w-8 md:w-16 bg-white/10 hidden sm:block" />
+                <div className="flex items-center gap-1 text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
+                  <span>+{totalPoints} pts</span>
+                </div>
+                <div className="h-px w-8 md:w-16 bg-white/10 hidden sm:block" />
+              </div>
+              <span className="text-[11px] text-muted-foreground/60 mt-1.5">
+                Potential Gain
+              </span>
+            </div>
+
             {/* Potential Score */}
-            <div className='flex flex-col items-center justify-center'>
-                <CardDescription className='text-slate-400'>Potential Score</CardDescription>
-                <div className='text-6xl font-bold gradient-text'><AnimatedNumber value={potentialScore} /></div>
-                <Badge className="mt-2 bg-green-500/10 text-green-300 border-green-500/20">🎯 +{totalPoints} pts</Badge>
+            <div className="flex flex-col md:items-end">
+              <span className="text-[11px] font-bold tracking-[0.2em] text-muted-foreground uppercase mb-1">
+                Potential Score
+              </span>
+              <div className="text-4xl md:text-5xl font-bold text-orange-500 tracking-tight font-mono">
+                <AnimatedNumber value={potentialScore} />
+              </div>
+              <span className="text-xs text-muted-foreground/60 mt-1 font-mono">+{totalPoints} points available</span>
             </div>
-        </div>
-        <div className="mt-8">
-            <Progress value={progressPercentage} className="h-3" />
-            <div className="flex justify-between text-sm text-slate-400 mt-2">
-                <span>{initialWins.length} Quick Wins Available</span>
-                <span>Est. 2-3 weeks to complete</span>
+          </div>
+
+          {/* Progress Bar & Subtitle */}
+          <div className="pt-6">
+            <div className="flex justify-between items-center text-xs text-muted-foreground mb-2">
+              <span>Score headroom</span>
+              <span className="font-mono">{Math.round(progressPercentage)}% of potential</span>
             </div>
+            <div className="h-2 w-full bg-white/[0.06] rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-orange-500 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${Math.min(100, progressPercentage)}%` }}
+              />
+            </div>
+
+            {/* Metadata Row */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-4 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-orange-500" />
+                <span className="font-medium text-white/90">{initialWins.length} Quick Wins Available</span>
+                <span className="text-white/20">•</span>
+                <span>Complete tasks to gain +{totalPoints} points</span>
+              </div>
+              <div className="font-mono text-muted-foreground/70">
+                Est. 2-3 weeks to complete
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      {/* Filter Pills */}
-      <div className="flex flex-wrap justify-center gap-2 mb-8 card-entrance" style={{ animationDelay: '300ms' }}>
-        {(['all', 'easy', 'medium', 'hard'] as Difficulty[]).map((difficulty) => {
-            const count = difficulty === 'all' ? initialWins.length : (difficultyCounts[difficulty as 'easy'|'medium'|'hard'] || 0);
-            if (count === 0 && difficulty !== 'all') return null;
-            
-            return (
-              <Button 
-                key={difficulty}
-                onClick={() => setActiveFilter(difficulty)}
-                variant="ghost"
-                className={cn(
-                    'capitalize rounded-full border border-transparent transition-all duration-300',
-                    activeFilter === difficulty 
-                        ? 'bg-primary text-primary-foreground border-primary/50' 
-                        : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-700/50 hover:text-slate-200'
-                )}
-              >
-                {difficulty} <Badge variant="secondary" className="ml-2 bg-slate-600/50 text-slate-300">{count}</Badge>
-              </Button>
-            )
-        })}
-      </div>
 
+        {/* Action List Section Header & Segmented Filter */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-lg md:text-xl font-bold text-white tracking-tight">
+              Your Quick Wins
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Small changes. A bigger GitHub score.
+            </p>
+          </div>
 
-      {/* Quick Wins List */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        {filteredWins.map((win, index) => (
-          <QuickWinCard key={win.id} win={win} index={index} />
-        ))}
-      </div>
-       {filteredWins.length === 0 && activeFilter !== 'all' && (
-           <div className="text-center py-16 col-span-full">
-                <CheckCircle className="mx-auto w-12 h-12 text-green-500 mb-4" />
-                <h3 className="text-xl font-bold">All '{activeFilter}' wins completed!</h3>
-                <p className="text-slate-400">Great job! Try another category.</p>
-           </div>
-       )}
+          {/* Segmented Filter Control */}
+          <div className="flex items-center gap-1 p-1 bg-[#0A0A0A] border border-white/10 rounded-lg self-start sm:self-auto">
+            {(['all', 'easy', 'medium', 'hard'] as Difficulty[]).map((difficulty) => {
+              const count = difficulty === 'all' ? initialWins.length : (difficultyCounts[difficulty as 'easy'|'medium'|'hard'] || 0);
+              if (count === 0 && difficulty !== 'all') return null;
+              const isSelected = activeFilter === difficulty;
+              return (
+                <button
+                  key={difficulty}
+                  onClick={() => setActiveFilter(difficulty)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-md transition-all h-7",
+                    isSelected 
+                      ? "bg-orange-500 text-black font-bold shadow-sm" 
+                      : "text-muted-foreground hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  <span>{difficulty}</span>
+                  <span className={cn(
+                    "text-[10px] font-mono px-1 py-0.2 rounded",
+                    isSelected ? "bg-black/20 text-black" : "bg-white/10 text-muted-foreground"
+                  )}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-      {/* Bottom CTA */}
-      <div className="text-center mt-16 max-w-2xl mx-auto p-8 rounded-2xl bg-gradient-to-t from-slate-900 to-slate-800/50 border border-slate-700">
-        <h3 className="text-2xl font-bold">Ready to level up? 🚀</h3>
-        <p className="text-slate-400 mt-2 mb-6">Complete these {initialWins.length} quick wins to gain +{totalPoints} points!</p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button asChild size="lg">
-              <Link href={`/?username=${user.login}`}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
+        {/* Quick Wins 2-Column Responsive Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5 mb-12">
+          {filteredWins.map((win, index) => (
+            <QuickWinCard key={win.id} win={win} index={index} />
+          ))}
+        </div>
+
+        {/* Empty Filter State */}
+        {filteredWins.length === 0 && (
+          <div className="bg-[#0A0A0A] border border-white/10 rounded-xl p-12 text-center my-8">
+            <CheckCircle2 className="mx-auto w-10 h-10 text-emerald-400 mb-3" />
+            <h3 className="text-lg font-bold text-white mb-1">All {activeFilter} wins completed!</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Great job! Switch to another category to view more opportunities.
+            </p>
+            <Button 
+              onClick={() => setActiveFilter('all')} 
+              variant="outline" 
+              className="bg-[#111] border-white/10 text-white hover:bg-white/5 text-xs h-8 px-4"
+            >
+              View all Quick Wins
+            </Button>
+          </div>
+        )}
+
+        {/* Compact Conclusion / Completion Summary */}
+        <div className="bg-[#0A0A0A] border border-white/[0.08] rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
+          <div>
+            <div className="text-[11px] font-bold tracking-[0.2em] text-orange-500 uppercase mb-1">
+              Your Next Move
+            </div>
+            <h3 className="text-lg md:text-xl font-bold text-white mb-1">
+              Ready to level up your developer profile?
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Complete these {initialWins.length} quick wins to gain +{totalPoints} points on your GitRoasted score.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <Button asChild variant="outline" className="flex-1 md:flex-initial bg-[#111] border-white/10 text-white hover:bg-white/5 h-10 px-5 rounded-lg text-xs font-medium shadow-none">
+              <Link href="/">
+                <ArrowLeft className="mr-2 h-3.5 w-3.5" /> Back to Home
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href={`/?username=${user.login}`}>
-                Back to Roast <ArrowRight className="ml-2 h-4 w-4" />
+            <Button asChild className="flex-1 md:flex-initial bg-orange-500 hover:bg-orange-400 text-black font-semibold h-10 px-5 rounded-lg text-xs shadow-none">
+              <Link href={`/dashboard?username=${user.login}`}>
+                Back to Roast <ArrowRight className="ml-2 h-3.5 w-3.5" />
               </Link>
             </Button>
+          </div>
         </div>
+
+        {/* Minimal Footer */}
+        <footer className="text-center text-xs text-muted-foreground/50 py-8 border-t border-white/5">
+          <p>GitRoasted — Roast your GitHub. Improve your craft.</p>
+        </footer>
       </div>
     </div>
-  )
+  );
 }
-
 
 export function QuickWinsClient() {
   const searchParams = useSearchParams();
@@ -280,8 +441,8 @@ export function QuickWinsClient() {
       const userData: RoastResultState = JSON.parse(cachedDataString);
 
       if (userData.status !== 'success' || !userData.user) {
-          setError(`Could not load Quick Wins. The last roast for "${username}" was not successful.`);
-          return;
+        setError(`Could not load Quick Wins. The last roast for "${username}" was not successful.`);
+        return;
       }
 
       const quickWins = calculateQuickWins(userData);
@@ -291,32 +452,30 @@ export function QuickWinsClient() {
       setCurrentScore(invertedScore);
       setUser(userData.user);
     } catch (e) {
-        console.error("Failed to load or parse data for Quick Wins", e);
-        setError("An error occurred while loading the Quick Wins data.");
+      console.error("Failed to load or parse data for Quick Wins", e);
+      setError("An error occurred while loading the Quick Wins data.");
     }
   }, [username, router]);
 
   if (error || !user) {
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 gap-4">
-            <Alert variant="destructive" className="max-w-lg">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Could Not Load Quick Wins</AlertTitle>
-                <AlertDescription>
-                    {error || 'An unexpected error occurred.'}
-                </AlertDescription>
-            </Alert>
-             <Button asChild>
-                <Link href={username ? `/?username=${username}` : '/'}>
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to Home
-                </Link>
-            </Button>
-        </div>
+      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-4 gap-4">
+        <Alert variant="destructive" className="max-w-lg bg-[#0A0A0A] border-red-500/20 text-white">
+          <AlertCircle className="h-4 w-4 text-red-400" />
+          <AlertTitle className="text-red-400 font-bold">Could Not Load Quick Wins</AlertTitle>
+          <AlertDescription className="text-sm text-muted-foreground mt-1">
+            {error || 'An unexpected error occurred.'}
+          </AlertDescription>
+        </Alert>
+        <Button asChild variant="outline" className="bg-[#111] border-white/10 text-white hover:bg-white/5 text-xs">
+          <Link href={username ? `/?username=${username}` : '/'}>
+            <ArrowLeft className="h-3.5 w-3.5 mr-2" />
+            Back to Home
+          </Link>
+        </Button>
+      </div>
     );
   }
 
   return <QuickWinsContent user={user} initialWins={wins} initialScore={currentScore} />;
 }
-
-    

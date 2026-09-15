@@ -282,7 +282,7 @@ function DashboardContent({ result, wins }: { result: RoastResultState, wins: Qu
                             ))}
                         </div>
                         
-                        <Link href="/" className="text-sm font-medium text-orange-500 hover:text-orange-400 transition-colors flex items-center gap-1">
+                        <Link href={`/quick-wins?username=${user.login}`} className="text-sm font-medium text-orange-500 hover:text-orange-400 transition-colors flex items-center gap-1">
                             View all suggestions <ArrowRight className="w-3 h-3" />
                         </Link>
                     </div>
