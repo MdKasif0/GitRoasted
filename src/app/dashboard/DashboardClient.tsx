@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { 
     Github, Menu, Quote, Zap, User as UserIcon, Check, Trophy, ChevronDown, 
     ChevronUp, Share2, Copy, Download, Star, Users, GitCommit, SearchCode,
-    LayoutDashboard, Activity, AlertCircle, Home, ArrowRight
+    LayoutDashboard, Activity, AlertCircle, Home, ArrowRight, Flame
 } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -17,7 +17,6 @@ import { ShareableCardDialog } from '@/components/ShareableCardDialog';
 import { calculateQuickWins } from '@/lib/quickWins';
 import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { FlameIcon } from '@/components/icons';
 
 const breakdownMeta: Record<keyof ScoreBreakdown, { label: string; maxScore: number; icon: React.ElementType }> = {
     impact: { label: 'Impact', maxScore: 250, icon: SearchCode },
@@ -67,14 +66,14 @@ function TopNav() {
     return (
         <header className="w-full flex items-center justify-between py-6">
             <Link href="/" className="flex items-center gap-2 group">
-                <FlameIcon className="w-6 h-6 text-orange-500 group-hover:scale-110 transition-transform" />
+                <Flame className="w-6 h-6 text-orange-500 group-hover:scale-110 transition-transform" />
                 <span className="text-xl font-bold tracking-tight text-white">GitRoasted</span>
             </Link>
             
             <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
                 <div className="relative">
                     <Link href="/" className="text-white flex items-center gap-2">
-                        <FlameIcon className="w-4 h-4 text-orange-500" /> Roast another
+                        <Flame className="w-4 h-4 text-orange-500" /> Roast another
                     </Link>
                     <div className="absolute -bottom-7 left-0 right-0 h-0.5 bg-orange-500 rounded-t-full" />
                 </div>
@@ -184,7 +183,7 @@ function DashboardContent({ result, wins }: { result: RoastResultState, wins: Qu
                             />
                             <div className="absolute -bottom-2 -right-2 bg-[#050505] rounded-full p-1 border border-orange-500/50">
                                 <div className="bg-orange-500/20 rounded-full w-8 h-8 flex items-center justify-center">
-                                    <FlameIcon className="w-5 h-5 text-orange-500" />
+                                    <Flame className="w-5 h-5 text-orange-500" />
                                 </div>
                             </div>
                         </div>
@@ -213,7 +212,7 @@ function DashboardContent({ result, wins }: { result: RoastResultState, wins: Qu
                             <SegmentedProgressBar score={invertedScore} />
                         </div>
                         <div className="flex items-center gap-2 text-sm font-medium text-orange-400 bg-orange-500/10 border border-orange-500/30 px-4 py-1.5 rounded-full">
-                            <FlameIcon className="w-4 h-4" /> {badgeText}
+                            <Flame className="w-4 h-4" /> {badgeText}
                         </div>
                     </div>
                 </section>
@@ -239,7 +238,7 @@ function DashboardContent({ result, wins }: { result: RoastResultState, wins: Qu
                 <div className="bg-[#0A0A0A] border border-orange-500/20 rounded-xl p-8 mb-8 relative shadow-[0_0_40px_rgba(255,140,0,0.03)] group hover:border-orange-500/40 transition-colors">
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] text-orange-500 uppercase">
-                            <FlameIcon className="w-4 h-4" /> The Roast
+                            <Flame className="w-4 h-4" /> The Roast
                         </div>
                         <Quote className="w-8 h-8 text-orange-500/40" />
                     </div>
@@ -385,7 +384,7 @@ function DashboardContent({ result, wins }: { result: RoastResultState, wins: Qu
                     <div className="flex items-center gap-4 mb-12">
                         <Button asChild variant="outline" className="bg-[#111] border-white/10 text-white hover:bg-white/5 h-11 px-6 rounded-lg shadow-none">
                             <Link href={`/?username=${user.login}`}>
-                                <FlameIcon className="mr-2 h-4 w-4 text-orange-500" /> Roast Another Developer
+                                <Flame className="mr-2 h-4 w-4 text-orange-500" /> Roast Another Developer
                             </Link>
                         </Button>
                         <Button asChild variant="outline" className="bg-[#111] border-white/10 text-white hover:bg-white/5 h-11 px-6 rounded-lg shadow-none">
@@ -397,7 +396,7 @@ function DashboardContent({ result, wins }: { result: RoastResultState, wins: Qu
 
                     <div className="w-full flex flex-col md:flex-row items-center justify-between text-xs text-muted-foreground">
                         <div className="flex items-center gap-2">
-                            <FlameIcon className="w-4 h-4 text-orange-500" />
+                            <Flame className="w-4 h-4 text-orange-500" />
                             GitRoasted — Turning GitHub activity into comedy since 2024.
                         </div>
                         <div className="flex items-center gap-4 mt-4 md:mt-0">

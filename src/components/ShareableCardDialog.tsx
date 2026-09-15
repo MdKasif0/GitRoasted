@@ -8,7 +8,8 @@ import {
   Share2,
   X,
   Minus,
-  Plus
+  Plus,
+  Flame
 } from 'lucide-react';
 
 import type { RoastResultState } from '@/lib/types';
@@ -24,7 +25,6 @@ import { useToast } from '@/hooks/use-toast';
 import { ShareableCardPreview } from './ShareableCardPreview';
 import { CustomizationPanel } from './CustomizationPanel';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import { FlameIcon } from './icons';
 
 interface ShareableCardDialogProps {
   result: RoastResultState;
@@ -192,7 +192,7 @@ export function ShareableCardDialog({ result }: ShareableCardDialogProps) {
         {/* --- HEADER --- */}
         <div className="flex items-start justify-between p-6 pb-4 shrink-0">
           <div className="flex items-start gap-4">
-             <FlameIcon className="w-6 h-6 text-orange-500 mt-1" />
+             <Flame className="w-6 h-6 text-orange-500 mt-1" />
              <div>
                 <DialogTitle className="text-xl font-bold text-white mb-1">Share your roast</DialogTitle>
                 <DialogDescription className="text-sm text-muted-foreground font-medium">Create a card worth posting.</DialogDescription>
