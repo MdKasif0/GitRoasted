@@ -66,32 +66,51 @@ ${input.commitHistory}
 
 Generate the JSON now.`;
 
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'groq/compound',
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: systemMessage },
-        { role: 'user', content: userMessage }
-      ]
-    })
-  });
+  const preferredModel = process.env.GROQ_MODEL || 'qwen/qwen3.8-27b';
+  const candidateModels = Array.from(
+    new Set([preferredModel, 'qwen/qwen3.8-27b'])
+  );
 
-  if (!response.ok) {
-    const errText = await response.text();
-    console.error('Groq API error:', errText);
-    throw new Error(`Groq API error: ${response.status} ${response.statusText}`);
+  let lastError: Error | null = null;
+  let rawContent: string | null = null;
+
+  for (const model of candidateModels) {
+    try {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model,
+          response_format: { type: 'json_object' },
+          messages: [
+            { role: 'system', content: systemMessage },
+            { role: 'user', content: userMessage }
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error(`Groq API error on model ${model}:`, errText);
+        lastError = new Error(`Groq API error: ${response.status} ${response.statusText}`);
+        continue;
+      }
+
+      const data = await response.json();
+      rawContent = data.choices[0]?.message?.content;
+      if (rawContent) {
+        break;
+      }
+    } catch (err: any) {
+      lastError = err;
+    }
   }
 
-  const data = await response.json();
-  const rawContent = data.choices[0]?.message?.content;
   if (!rawContent) {
-    throw new Error('Groq returned an empty response.');
+    throw lastError || new Error('Groq returned an empty response.');
   }
 
   let parsed;
