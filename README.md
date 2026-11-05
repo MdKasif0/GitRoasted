@@ -16,7 +16,7 @@
 
 <br/>
 
-[![Next.js 14](https://img.shields.io/badge/Next.js-14%20(we%20like%20pain)-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16%20(we%20like%20pain)-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%20(any%20gang)-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-Firestore%20(lazy%20backend)-orange?style=flat-square&logo=firebase)](https://firebase.google.com/)
 [![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-no%20vanilla%20css%20allowed-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
@@ -142,7 +142,7 @@ Viewing final score:     [░░░░░░░░░░░░░░░░░░
 ### Quick Run:
 1. Hit up [gitroasted.netlify.app](https://gitroasted.netlify.app)
 2. Enter any GitHub username (yours, your boss's, your rival's)
-3. Receive certified organic emotional damage in < 3 seconds!
+3. Receive certified organic emotional damage in a few seconds!
 
 ---
 
@@ -193,21 +193,21 @@ You start with a theoretical **1000 points**. Most mortals get humbled real quic
 ```mermaid
 flowchart LR
     subgraph Frontend ["🎨 Front End (Looking Clean)"]
-        A[Next.js 14 App Router]
+        A[Next.js 16 App Router]
         B[TypeScript 5 Strict Mode]
         C[Tailwind CSS + Glass UI]
         D[Radix UI Primitives]
         E[Lucide Icons]
     end
 
-    subgraph Backend ["⚡ Back End (Zero Delay)"]
+    subgraph Backend ["⚡ Back End (Doing the Cooking)"]
         F[GitHub REST API v3]
-        G[Firebase Firestore Live Sync]
-        H[Edge Runtime Streaming]
+        G[Firebase Firestore Leaderboard]
+        H[Next.js Server Actions]
     end
 
     subgraph AI ["🧠 Violence Engine"]
-        I[AI Roast Pipeline]
+        I[Groq Roast Pipeline]
         J[Score Multi-factor Cruncher]
     end
 
@@ -215,11 +215,12 @@ flowchart LR
     Backend <--> AI
 ```
 
-- **Next.js 14**: Because we love server components fighting our client state at 3am.
+- **Next.js 16**: Because we love server components fighting our client state at 3am.
 - **TypeScript 5**: To ensure your low score is delivered with 100% type safety.
 - **Tailwind CSS**: Because hand-writing 12 CSS files gives us the ick.
-- **Firebase Firestore**: Real-time leaderboard so you can watch people pass you in real-time.
-- **HTML5 Canvas**: To bake your roast cards into crisp images ready for Twitter clout.
+- **Groq**: Writes the roast, with a second model on standby for when the first one taps out.
+- **Firebase Firestore**: The leaderboard. Anyone can read it, only the server can write it, so no editing your way to #1.
+- **html-to-image**: To bake your roast cards into crisp images ready for Twitter clout.
 
 ---
 
@@ -250,6 +251,13 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
+# Firebase service account, as one line of JSON. Server-only: never prefix it with NEXT_PUBLIC_.
+# Leaderboard writes go through this. Without it roasts still work but nothing gets saved.
+FIREBASE_SERVICE_ACCOUNT='{"project_id":"your_project_id","client_email":"...","private_key":"..."}'
+
+# Groq API key (Required, the AI won't insult you for free without it)
+GROQ_API_KEY=gsk_yourGroqKeyHere
+
 # GitHub Token (Optional, unless you wanna hit the 60 req/hr rate limit wall)
 GITHUB_TOKEN=ghp_yourPersonalAccessTokenHere
 
@@ -262,11 +270,17 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) and prepare yourself emotionally.
+Open [http://localhost:9002](http://localhost:9002) and prepare yourself emotionally.
 
 ---
 
 ## 🚢 How to Deploy (Send It)
+
+Set `FIREBASE_SERVICE_ACCOUNT` on your host and ship the app first, then lock the database. Reverse the order and leaderboard saves fail until the app catches up:
+
+```bash
+firebase deploy --only firestore:rules
+```
 
 ### Deploying to Netlify (Recommended)
 Hit the button, link your repo, paste your env vars, boom. Instant emotional damage globally hosted.
@@ -304,14 +318,6 @@ vercel
 <details>
 <summary><b>Q: How do I improve my score?</b></summary>
 <p>A: Write actual documentation, stop committing directly to main, contribute to open source, and occasionally touch real grass.</p>
-</details>
-
-<details>
-<summary><b>Q: Can I embed my roast card on my GitHub profile?</b></summary>
-<p>A: Absolutely. Self-deprecating humor is a senior engineer trait:
-<br/>
-<code>[![GitRoasted Score](https://gitroasted.netlify.app/api/badge/YOUR_USERNAME)](https://gitroasted.netlify.app)</code>
-</p>
 </details>
 
 ---
