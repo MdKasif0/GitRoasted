@@ -6,11 +6,9 @@ import { fetchComprehensiveGitHubData } from '@/lib/github';
 import { calculateRoastScore } from '@/lib/scoring';
 import type { RoastResultState, LeaderboardEntry } from '@/lib/types';
 import { z } from 'zod';
-import { initializeFirebase } from '@/firebase';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { getAdminFirestore } from '@/firebase/admin';
+import { FieldValue } from 'firebase-admin/firestore';
 import { revalidateTag } from 'next/cache';
-
-const { firestore: db } = initializeFirebase();
 
 const usernameSchema = z.string().min(1, 'GitHub username cannot be empty.').max(39, 'GitHub username is too long.');
 
@@ -18,7 +16,7 @@ async function saveToLeaderboard(result: RoastResultState): Promise<LeaderboardE
     if (result.status !== 'success' || !result.user || !result.score || !result.leaderboardRoast) return null;
 
     try {
-        const leaderboardRef = doc(db, 'leaderboard', result.user.login);
+        const leaderboardRef = getAdminFirestore().collection('leaderboard').doc(result.user.login);
         const seriousnessScore = 1000 - result.score;
         
         const entry: Omit<LeaderboardEntry, 'roastedAt'> = {
@@ -30,14 +28,12 @@ async function saveToLeaderboard(result: RoastResultState): Promise<LeaderboardE
             roast: result.leaderboardRoast,
         };
         
-        await setDoc(leaderboardRef, {
+        await leaderboardRef.set({
             ...entry,
-            roastedAt: serverTimestamp()
+            roastedAt: FieldValue.serverTimestamp()
         }, { merge: true });
 
         revalidateTag('leaderboard');
-        
-        await new Promise(resolve => setTimeout(resolve, 1000));
 
         return { ...entry, roastedAt: new Date().toISOString() } as LeaderboardEntry;
     } catch (error) {

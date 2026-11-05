@@ -68,7 +68,7 @@ Generate the JSON now.`;
 
   const preferredModel = process.env.GROQ_MODEL || 'qwen/qwen3.8-27b';
   const candidateModels = Array.from(
-    new Set([preferredModel, 'qwen/qwen3.8-27b'])
+    new Set([preferredModel, 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'])
   );
 
   let lastError: Error | null = null;
